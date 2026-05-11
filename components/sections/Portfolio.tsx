@@ -10,14 +10,14 @@ export default function Portfolio() {
     const router = useRouter();
 
     return (
-        <section id="portfolio" style={{ padding: "120px 0", backgroundColor: "#ffffff" }}>
+        <section id="portfolio" style={{ padding: "120px 0", position: "relative" }}>
             <Container>
                 <SectionTitle title="Роботи" />
                 <div
                     style={{
                         display: "grid",
                         gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
-                        gap: "32px",
+                        gap: "16px",
                     }}
                 >
                     {PROJECTS.map((project, i) => (
@@ -32,30 +32,33 @@ export default function Portfolio() {
                         >
                             <div
                                 style={{
-                                    border: "1px solid #EEEEEE",
-                                    borderRadius: "10px",
+                                    background: "rgba(255,255,255,0.04)",
+                                    border: "0.5px solid rgba(255,255,255,0.08)",
+                                    borderRadius: "16px",
                                     overflow: "hidden",
-                                    transition: "border-color 0.2s, transform 0.2s",
+                                    transition: "border-color 0.2s, background 0.2s",
                                 }}
                                 onMouseEnter={(e) => {
-                                    (e.currentTarget as HTMLDivElement).style.borderColor = "#0066FF";
-                                    (e.currentTarget as HTMLDivElement).style.transform = "translateY(-4px)";
+                                    (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(107,63,240,0.4)";
+                                    (e.currentTarget as HTMLDivElement).style.background = "rgba(107,63,240,0.06)";
                                 }}
                                 onMouseLeave={(e) => {
-                                    (e.currentTarget as HTMLDivElement).style.borderColor = "#EEEEEE";
-                                    (e.currentTarget as HTMLDivElement).style.transform = "translateY(0)";
+                                    (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(255,255,255,0.08)";
+                                    (e.currentTarget as HTMLDivElement).style.background = "rgba(255,255,255,0.04)";
                                 }}
                             >
+                                {/* Preview */}
                                 <div
                                     style={{
                                         width: "100%",
                                         aspectRatio: "16/9",
-                                        backgroundColor: "#F5F7FA",
+                                        background: "rgba(107,63,240,0.1)",
                                         display: "flex",
                                         alignItems: "center",
                                         justifyContent: "center",
-                                        fontSize: "14px",
-                                        color: "#666666",
+                                        fontSize: "13px",
+                                        color: "rgba(255,255,255,0.3)",
+                                        borderBottom: "0.5px solid rgba(255,255,255,0.06)",
                                     }}
                                 >
                                     {project.title}
@@ -64,9 +67,9 @@ export default function Portfolio() {
                                 <div style={{ padding: "24px" }}>
                                     <h3
                                         style={{
-                                            fontSize: "18px",
-                                            fontWeight: 700,
-                                            color: "#0A0A0A",
+                                            fontSize: "17px",
+                                            fontWeight: 600,
+                                            color: "#ffffff",
                                             marginBottom: "8px",
                                         }}
                                     >
@@ -75,7 +78,7 @@ export default function Portfolio() {
                                     <p
                                         style={{
                                             fontSize: "14px",
-                                            color: "#666666",
+                                            color: "rgba(255,255,255,0.5)",
                                             marginBottom: "16px",
                                         }}
                                     >
@@ -95,10 +98,11 @@ export default function Portfolio() {
                                                 style={{
                                                     fontSize: "12px",
                                                     fontWeight: 500,
-                                                    color: "#0066FF",
-                                                    backgroundColor: "#EEF4FF",
+                                                    color: "rgba(107,63,240,0.9)",
+                                                    background: "rgba(107,63,240,0.1)",
+                                                    border: "0.5px solid rgba(107,63,240,0.2)",
                                                     padding: "4px 10px",
-                                                    borderRadius: "4px",
+                                                    borderRadius: "6px",
                                                 }}
                                             >
                         {tag}
@@ -107,9 +111,9 @@ export default function Portfolio() {
                                     </div>
                                     <span
                                         style={{
-                                            fontSize: "14px",
-                                            fontWeight: 600,
-                                            color: "#0066FF",
+                                            fontSize: "13px",
+                                            fontWeight: 500,
+                                            color: "rgba(255,255,255,0.4)",
                                         }}
                                     >
                     {"Детальніше →"}

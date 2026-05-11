@@ -10,8 +10,7 @@ export default function Footer() {
         <footer
             style={{
                 padding: "32px 0",
-                borderTop: "1px solid #EEEEEE",
-                backgroundColor: "#ffffff",
+                borderTop: "0.5px solid rgba(255,255,255,0.08)",
             }}
         >
             <Container>
@@ -24,7 +23,7 @@ export default function Footer() {
                         gap: "16px",
                     }}
                 >
-          <span style={{ fontSize: "14px", color: "#666666" }}>
+          <span style={{ fontSize: "14px", color: "rgba(255,255,255,0.3)" }}>
             {"© "}{year}{" "}{SITE.name}
           </span>
                     <div style={{ display: "flex", gap: "24px" }}>
@@ -32,11 +31,12 @@ export default function Footer() {
                 onClick={() => window.open(SITE.github, "_blank")}
                 style={{
                     fontSize: "14px",
-                    color: "#666666",
+                    color: "rgba(255,255,255,0.3)",
                     cursor: "pointer",
+                    transition: "color 0.2s",
                 }}
-                onMouseEnter={(e) => (e.currentTarget.style.color = "#0A0A0A")}
-                onMouseLeave={(e) => (e.currentTarget.style.color = "#666666")}
+                onMouseEnter={(e) => (e.currentTarget.style.color = "#ffffff")}
+                onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.3)")}
             >
               GitHub
             </span>
@@ -44,11 +44,12 @@ export default function Footer() {
                             onClick={() => window.open(SITE.telegram, "_blank")}
                             style={{
                                 fontSize: "14px",
-                                color: "#666666",
+                                color: "rgba(255,255,255,0.3)",
                                 cursor: "pointer",
+                                transition: "color 0.2s",
                             }}
-                            onMouseEnter={(e) => (e.currentTarget.style.color = "#0A0A0A")}
-                            onMouseLeave={(e) => (e.currentTarget.style.color = "#666666")}
+                            onMouseEnter={(e) => (e.currentTarget.style.color = "#ffffff")}
+                            onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.3)")}
                         >
               Telegram
             </span>

@@ -43,24 +43,24 @@ export default function Contact() {
     const inputStyle = {
         width: "100%",
         padding: "12px 16px",
-        fontSize: "15px",
-        border: "1.5px solid #EEEEEE",
+        fontSize: "14px",
+        background: "rgba(255,255,255,0.05)",
+        border: "0.5px solid rgba(255,255,255,0.1)",
         borderRadius: "8px",
         outline: "none",
-        color: "#0A0A0A",
-        backgroundColor: "#ffffff",
-        transition: "border-color 0.2s",
+        color: "#ffffff",
         fontFamily: "inherit",
+        transition: "border-color 0.2s",
     };
 
     const errorStyle = {
-        fontSize: "13px",
-        color: "#E53E3E",
+        fontSize: "12px",
+        color: "#F87171",
         marginTop: "4px",
     };
 
     return (
-        <section id="contact" style={{ padding: "120px 0", backgroundColor: "#ffffff" }}>
+        <section id="contact" style={{ padding: "120px 0", position: "relative" }}>
             <Container>
                 <SectionTitle
                     title="Зв'язатись"
@@ -75,9 +75,10 @@ export default function Contact() {
                         alignItems: "start",
                     }}
                 >
+                    {/* Form */}
                     <form
                         onSubmit={handleSubmit(onSubmit)}
-                        style={{ display: "flex", flexDirection: "column", gap: "20px" }}
+                        style={{ display: "flex", flexDirection: "column", gap: "16px" }}
                     >
                         <input
                             {...register("honeypot")}
@@ -93,8 +94,8 @@ export default function Contact() {
                                 type="text"
                                 placeholder="Ваше ім'я"
                                 style={inputStyle}
-                                onFocus={(e) => (e.currentTarget.style.borderColor = "#0066FF")}
-                                onBlur={(e) => (e.currentTarget.style.borderColor = "#EEEEEE")}
+                                onFocus={(e) => (e.currentTarget.style.borderColor = "rgba(107,63,240,0.6)")}
+                                onBlur={(e) => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)")}
                             />
                             {errors.name && <p style={errorStyle}>{errors.name.message}</p>}
                         </div>
@@ -105,8 +106,8 @@ export default function Contact() {
                                 type="text"
                                 placeholder="Telegram або телефон"
                                 style={inputStyle}
-                                onFocus={(e) => (e.currentTarget.style.borderColor = "#0066FF")}
-                                onBlur={(e) => (e.currentTarget.style.borderColor = "#EEEEEE")}
+                                onFocus={(e) => (e.currentTarget.style.borderColor = "rgba(107,63,240,0.6)")}
+                                onBlur={(e) => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)")}
                             />
                             {errors.contact && <p style={errorStyle}>{errors.contact.message}</p>}
                         </div>
@@ -117,8 +118,8 @@ export default function Contact() {
                   placeholder="Опишіть проєкт"
                   rows={5}
                   style={{ ...inputStyle, resize: "vertical" }}
-                  onFocus={(e) => (e.currentTarget.style.borderColor = "#0066FF")}
-                  onBlur={(e) => (e.currentTarget.style.borderColor = "#EEEEEE")}
+                  onFocus={(e) => (e.currentTarget.style.borderColor = "rgba(107,63,240,0.6)")}
+                  onBlur={(e) => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)")}
               />
                             {errors.message && <p style={errorStyle}>{errors.message.message}</p>}
                         </div>
@@ -128,22 +129,25 @@ export default function Contact() {
                             disabled={status === "loading"}
                             style={{
                                 padding: "14px 32px",
-                                backgroundColor: status === "loading" ? "#99BBFF" : "#0066FF",
+                                background: status === "loading"
+                                    ? "rgba(107,63,240,0.4)"
+                                    : "linear-gradient(135deg, #6B3FF0, #0066FF)",
                                 color: "#ffffff",
                                 fontWeight: 600,
-                                fontSize: "16px",
+                                fontSize: "15px",
                                 borderRadius: "8px",
                                 border: "none",
                                 cursor: status === "loading" ? "not-allowed" : "pointer",
                                 fontFamily: "inherit",
+                                transition: "opacity 0.2s",
                             }}
                             onMouseEnter={(e) => {
                                 if (status !== "loading")
-                                    (e.currentTarget as HTMLButtonElement).style.backgroundColor = "#0052CC";
+                                    (e.currentTarget as HTMLButtonElement).style.opacity = "0.85";
                             }}
                             onMouseLeave={(e) => {
                                 if (status !== "loading")
-                                    (e.currentTarget as HTMLButtonElement).style.backgroundColor = "#0066FF";
+                                    (e.currentTarget as HTMLButtonElement).style.opacity = "1";
                             }}
                         >
                             {status === "loading" ? "Надсилаємо..." : "Надіслати"}
@@ -153,78 +157,87 @@ export default function Contact() {
                             <motion.p
                                 initial={{ opacity: 0, y: 8 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                style={{ fontSize: "15px", color: "#38A169", fontWeight: 500 }}
+                                style={{ fontSize: "14px", color: "#22C55E", fontWeight: 500 }}
                             >
                                 {"✓ Дякую! Отримав повідомлення. Відповім якнайшвидше."}
                             </motion.p>
                         )}
                         {status === "error" && (
-                            <p style={{ fontSize: "15px", color: "#E53E3E" }}>
+                            <p style={{ fontSize: "14px", color: "#F87171" }}>
                                 {"Щось пішло не так. Напишіть мені напряму в Telegram."}
                             </p>
                         )}
                     </form>
 
-                    <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+                    {/* Contacts */}
+                    <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
                         <div
+                            onClick={() => window.open(SITE.telegram, "_blank")}
                             style={{
                                 display: "flex",
                                 alignItems: "center",
                                 gap: "16px",
                                 padding: "20px 24px",
-                                border: "1.5px solid #EEEEEE",
-                                borderRadius: "10px",
+                                background: "rgba(255,255,255,0.04)",
+                                border: "0.5px solid rgba(255,255,255,0.08)",
+                                borderRadius: "12px",
                                 cursor: "pointer",
+                                transition: "border-color 0.2s, background 0.2s",
                             }}
-                            onClick={() => window.open(SITE.telegram, "_blank")}
-                            onMouseEnter={(e) =>
-                                (e.currentTarget.style.borderColor = "#0066FF")
-                            }
-                            onMouseLeave={(e) =>
-                                (e.currentTarget.style.borderColor = "#EEEEEE")
-                            }
+                            onMouseEnter={(e) => {
+                                (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(107,63,240,0.4)";
+                                (e.currentTarget as HTMLDivElement).style.background = "rgba(107,63,240,0.06)";
+                            }}
+                            onMouseLeave={(e) => {
+                                (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(255,255,255,0.08)";
+                                (e.currentTarget as HTMLDivElement).style.background = "rgba(255,255,255,0.04)";
+                            }}
                         >
-                            <span style={{ fontSize: "28px" }}>✈️</span>
+                            <span style={{ fontSize: "24px" }}>✈️</span>
                             <div>
-                                <div style={{ fontSize: "13px", color: "#666666", marginBottom: "2px" }}>
+                                <div style={{ fontSize: "12px", color: "rgba(255,255,255,0.4)", marginBottom: "2px" }}>
                                     Telegram
                                 </div>
-                                <div style={{ fontSize: "16px", fontWeight: 600, color: "#0A0A0A" }}>
+                                <div style={{ fontSize: "15px", fontWeight: 500, color: "#ffffff" }}>
                                     {SITE.telegramNick}
                                 </div>
                             </div>
                         </div>
 
                         <div
+                            onClick={() => window.open(`mailto:${SITE.email}`)}
                             style={{
                                 display: "flex",
                                 alignItems: "center",
                                 gap: "16px",
                                 padding: "20px 24px",
-                                border: "1.5px solid #EEEEEE",
-                                borderRadius: "10px",
+                                background: "rgba(255,255,255,0.04)",
+                                border: "0.5px solid rgba(255,255,255,0.08)",
+                                borderRadius: "12px",
                                 cursor: "pointer",
+                                transition: "border-color 0.2s, background 0.2s",
                             }}
-                            onClick={() => window.open(`mailto:${SITE.email}`)}
-                            onMouseEnter={(e) =>
-                                (e.currentTarget.style.borderColor = "#0066FF")
-                            }
-                            onMouseLeave={(e) =>
-                                (e.currentTarget.style.borderColor = "#EEEEEE")
-                            }
+                            onMouseEnter={(e) => {
+                                (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(107,63,240,0.4)";
+                                (e.currentTarget as HTMLDivElement).style.background = "rgba(107,63,240,0.06)";
+                            }}
+                            onMouseLeave={(e) => {
+                                (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(255,255,255,0.08)";
+                                (e.currentTarget as HTMLDivElement).style.background = "rgba(255,255,255,0.04)";
+                            }}
                         >
-                            <span style={{ fontSize: "28px" }}>✉️</span>
+                            <span style={{ fontSize: "24px" }}>✉️</span>
                             <div>
-                                <div style={{ fontSize: "13px", color: "#666666", marginBottom: "2px" }}>
+                                <div style={{ fontSize: "12px", color: "rgba(255,255,255,0.4)", marginBottom: "2px" }}>
                                     Email
                                 </div>
-                                <div style={{ fontSize: "16px", fontWeight: 600, color: "#0A0A0A" }}>
+                                <div style={{ fontSize: "15px", fontWeight: 500, color: "#ffffff" }}>
                                     {SITE.email}
                                 </div>
                             </div>
                         </div>
 
-                        <p style={{ fontSize: "14px", color: "#666666" }}>
+                        <p style={{ fontSize: "13px", color: "rgba(255,255,255,0.3)", marginTop: "8px" }}>
                             {"Робочі години: пн–пт, 10:00–19:00"}
                         </p>
                     </div>

@@ -10,7 +10,11 @@ function FAQItem({ question, answer }: { question: string; answer: string }) {
     const [open, setOpen] = useState(false);
 
     return (
-        <div style={{ borderBottom: "1px solid #EEEEEE" }}>
+        <div
+            style={{
+                borderBottom: "0.5px solid rgba(255,255,255,0.08)",
+            }}
+        >
             <button
                 onClick={() => setOpen(!open)}
                 style={{
@@ -27,15 +31,15 @@ function FAQItem({ question, answer }: { question: string; answer: string }) {
                     fontFamily: "inherit",
                 }}
             >
-        <span style={{ fontSize: "16px", fontWeight: 600, color: "#0A0A0A" }}>
+        <span style={{ fontSize: "15px", fontWeight: 500, color: "#ffffff" }}>
           {question}
         </span>
                 <motion.span
                     animate={{ rotate: open ? 45 : 0 }}
                     transition={{ duration: 0.2 }}
                     style={{
-                        fontSize: "24px",
-                        color: "#0066FF",
+                        fontSize: "22px",
+                        color: "rgba(107,63,240,0.9)",
                         flexShrink: 0,
                         lineHeight: 1,
                     }}
@@ -55,9 +59,9 @@ function FAQItem({ question, answer }: { question: string; answer: string }) {
                     >
                         <p
                             style={{
-                                fontSize: "15px",
-                                color: "#666666",
-                                lineHeight: 1.7,
+                                fontSize: "14px",
+                                color: "rgba(255,255,255,0.5)",
+                                lineHeight: 1.8,
                                 paddingBottom: "20px",
                             }}
                         >
@@ -72,7 +76,7 @@ function FAQItem({ question, answer }: { question: string; answer: string }) {
 
 export default function FAQSection() {
     return (
-        <section id="faq" style={{ padding: "120px 0", backgroundColor: "#F5F7FA" }}>
+        <section id="faq" style={{ padding: "120px 0", position: "relative" }}>
             <Container>
                 <SectionTitle title="Часті питання" />
                 <div style={{ maxWidth: "720px" }}>

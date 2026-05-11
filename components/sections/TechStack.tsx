@@ -7,35 +7,41 @@ import { TECH_STACK } from "@/lib/constants";
 
 export default function TechStack() {
     return (
-        <section id="tech" style={{ padding: "80px 0", backgroundColor: "#ffffff" }}>
-    <Container>
-        <SectionTitle
-            title="Технології"
-    subtitle="Сучасний стек, який працює швидко і легко масштабується."
-    />
-    <div style={{ display: "flex", flexWrap: "wrap", gap: "12px" }}>
-    {TECH_STACK.map((tech, i) => (
-        <motion.span
-            key={tech}
-        initial={{ opacity: 0, y: 12 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.4, delay: i * 0.06 }}
-        style={{
-        fontSize: "15px",
-            fontWeight: 500,
-            color: "#0A0A0A",
-            backgroundColor: "#F5F7FA",
-            border: "1px solid #EEEEEE",
-            padding: "10px 20px",
-            borderRadius: "8px",
-    }}
-    >
-        {tech}
-        </motion.span>
-    ))}
-    </div>
-    </Container>
-    </section>
-);
+        <section id="tech" style={{ padding: "80px 0", position: "relative" }}>
+            <Container>
+                <SectionTitle
+                    title="Технології"
+                    subtitle="Сучасний стек, який працює швидко і легко масштабується."
+                />
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
+                    {TECH_STACK.map((tech, i) => (
+                        <motion.span
+                            key={tech}
+                            initial={{ opacity: 0, y: 12 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.4, delay: i * 0.06 }}
+                            style={{
+                                fontSize: "14px",
+                                fontWeight: 500,
+                                color: "rgba(255,255,255,0.7)",
+                                background: "rgba(255,255,255,0.05)",
+                                border: "0.5px solid rgba(255,255,255,0.1)",
+                                padding: "10px 20px",
+                                borderRadius: "8px",
+                                transition: "border-color 0.2s, color 0.2s",
+                                cursor: "default",
+                            }}
+                            whileHover={{
+                                borderColor: "rgba(107,63,240,0.5)",
+                                color: "#ffffff",
+                            }}
+                        >
+                            {tech}
+                        </motion.span>
+                    ))}
+                </div>
+            </Container>
+        </section>
+    );
 }
