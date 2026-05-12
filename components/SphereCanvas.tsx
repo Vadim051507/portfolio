@@ -25,6 +25,12 @@ export default function SphereCanvas() {
             renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
             renderer.setSize(w, h);
             renderer.setClearColor(0x000000, 0);
+
+            // Обмежити canvas щоб не вилазив за межі контейнера
+            renderer.domElement.style.width = "100%";
+            renderer.domElement.style.height = "100%";
+            renderer.domElement.style.display = "block";
+
             mount.appendChild(renderer.domElement);
 
             const scene = new THREE.Scene();
@@ -113,8 +119,10 @@ export default function SphereCanvas() {
                 camera.aspect = nw / nh;
                 camera.updateProjectionMatrix();
                 renderer.setSize(nw, nh);
+                renderer.domElement.style.width = "100%";
+                renderer.domElement.style.height = "100%";
             };
-// Додай також ResizeObserver замість window resize — він реагує на зміну контейнера
+
             const ro = new ResizeObserver(onResize);
             ro.observe(mount);
             window.addEventListener("resize", onResize, { passive: true });
@@ -184,6 +192,11 @@ export default function SphereCanvas() {
     }
 
     return (
-        <div ref={mountRef} style={{ width: "100%", height: "100%", position: "relative" }} />
+        <div ref={mountRef} style={{
+            width: "100%",
+            height: "100%",
+            position: "relative",
+            overflow: "hidden",  // canvas не вилазить за межі div
+        }} />
     );
 }

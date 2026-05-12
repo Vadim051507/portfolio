@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { SITE } from "@/lib/constants";
-import Nav from "@/components/Nav";
-import NavMobile from "@/components/NavMobile";
 
 export const metadata: Metadata = {
     title: SITE.title,
@@ -23,8 +21,6 @@ export default function RootLayout({
     return (
         <html lang="uk">
         <body>
-        <Nav />
-        <NavMobile />
         {children}
         </body>
         </html>

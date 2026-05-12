@@ -1,12 +1,13 @@
 export const SITE = {
-    name: "YOUR_NAME",           // замінити
+    name: "KINDRATYAK",
     title: "Розробка сайтів для малого бізнесу — YOUR_NAME",
     description:
         "Інтернет-магазини, корпоративні сайти та лендінги для малого бізнесу в Україні. Швидко, надійно, з підтримкою після запуску.",
-    telegram: "https://t.me/YOUR_NICK",  // замінити
-    telegramNick: "@YOUR_NICK",          // замінити
+    telegram: "https://t.me/YOUR_NICK",
+    telegramNick: "@YOUR_NICK",
     email: "wadimlikar@gmail.com",
-    github: "https://github.com/YOUR",   // замінити
+    github: "https://github.com/YOUR",
+    instagram: "https://instagram.com/YOUR_INSTA",  // ← додати
 };
 
 export const SERVICES = [

@@ -31,7 +31,6 @@ export default function Hero() {
                 paddingTop: "120px",
                 paddingBottom: "80px",
                 position: "relative",
-                overflow: "hidden",
                 background: "#F2F1F6",
             }}
         >
@@ -56,33 +55,20 @@ export default function Hero() {
                 }
                 .hero-sphere {
                     position: relative;
-                    height: 560px;
+                    width: 100%;
+                    aspect-ratio: 1 / 1;
                     overflow: hidden;
                 }
                 .hero-text {
                     position: relative;
                     z-index: 1;
                 }
-                @media (max-width: 900px) {
-                    .hero-sphere {
-                        height: 400px;
-                    }
-                }
-                @media (max-width: 640px) {
+                @media (max-width: 860px) {
                     .hero-grid {
                         grid-template-columns: 1fr;
                     }
                     .hero-sphere {
-                        position: absolute;
-                        top: 50%;
-                        left: 50%;
-                        transform: translate(-50%, -50%);
-                        width: 100vw;
-                        height: 100vw;
-                        opacity: 0.2;
-                        z-index: 0;
-                        overflow: hidden;
-                        pointer-events: none;
+                        display: none;
                     }
                 }
             `}</style>
