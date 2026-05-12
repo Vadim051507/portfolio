@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { SITE } from "@/lib/constants";
+import Nav from "@/components/Nav";
 
 export const metadata: Metadata = {
     title: SITE.title,
@@ -21,6 +22,7 @@ export default function RootLayout({
     return (
         <html lang="uk">
         <body>
+        <Nav />
         {children}
         </body>
         </html>

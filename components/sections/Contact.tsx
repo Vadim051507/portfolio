@@ -61,20 +61,27 @@ export default function Contact() {
 
     return (
         <section id="contact" style={{ padding: "120px 0", position: "relative" }}>
+            <style>{`
+                .contact-grid {
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 64px;
+                    align-items: start;
+                }
+                @media (max-width: 768px) {
+                    .contact-grid {
+                        grid-template-columns: 1fr;
+                        gap: 40px;
+                    }
+                }
+            `}</style>
             <Container>
                 <SectionTitle
                     title="Зв'язатись"
                     subtitle="Розкажіть про проєкт — відповім протягом дня."
                 />
 
-                <div
-                    style={{
-                        display: "grid",
-                        gridTemplateColumns: "1fr 1fr",
-                        gap: "64px",
-                        alignItems: "start",
-                    }}
-                >
+                <div className="contact-grid">
                     {/* Form */}
                     <form
                         onSubmit={handleSubmit(onSubmit)}
@@ -113,14 +120,14 @@ export default function Contact() {
                         </div>
 
                         <div>
-              <textarea
-                  {...register("message")}
-                  placeholder="Опишіть проєкт"
-                  rows={5}
-                  style={{ ...inputStyle, resize: "vertical" }}
-                  onFocus={(e) => (e.currentTarget.style.borderColor = "rgba(107,63,240,0.6)")}
-                  onBlur={(e) => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)")}
-              />
+                            <textarea
+                                {...register("message")}
+                                placeholder="Опишіть проєкт"
+                                rows={5}
+                                style={{ ...inputStyle, resize: "vertical" }}
+                                onFocus={(e) => (e.currentTarget.style.borderColor = "rgba(107,63,240,0.6)")}
+                                onBlur={(e) => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)")}
+                            />
                             {errors.message && <p style={errorStyle}>{errors.message.message}</p>}
                         </div>
 
@@ -194,11 +201,11 @@ export default function Contact() {
                             }}
                         >
                             <span style={{ fontSize: "24px" }}>✈️</span>
-                            <div>
+                            <div style={{ minWidth: 0 }}>
                                 <div style={{ fontSize: "12px", color: "rgba(255,255,255,0.4)", marginBottom: "2px" }}>
                                     Telegram
                                 </div>
-                                <div style={{ fontSize: "15px", fontWeight: 500, color: "#ffffff" }}>
+                                <div style={{ fontSize: "15px", fontWeight: 500, color: "#ffffff", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                                     {SITE.telegramNick}
                                 </div>
                             </div>
@@ -227,11 +234,11 @@ export default function Contact() {
                             }}
                         >
                             <span style={{ fontSize: "24px" }}>✉️</span>
-                            <div>
+                            <div style={{ minWidth: 0 }}>
                                 <div style={{ fontSize: "12px", color: "rgba(255,255,255,0.4)", marginBottom: "2px" }}>
                                     Email
                                 </div>
-                                <div style={{ fontSize: "15px", fontWeight: 500, color: "#ffffff" }}>
+                                <div style={{ fontSize: "15px", fontWeight: 500, color: "#ffffff", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                                     {SITE.email}
                                 </div>
                             </div>

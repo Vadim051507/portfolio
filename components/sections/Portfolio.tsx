@@ -11,15 +11,21 @@ export default function Portfolio() {
 
     return (
         <section id="portfolio" style={{ padding: "120px 0", position: "relative" }}>
+            <style>{`
+                .portfolio-grid {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+                    gap: 16px;
+                }
+                @media (max-width: 700px) {
+                    .portfolio-grid {
+                        grid-template-columns: 1fr;
+                    }
+                }
+            `}</style>
             <Container>
                 <SectionTitle title="Роботи" />
-                <div
-                    style={{
-                        display: "grid",
-                        gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
-                        gap: "16px",
-                    }}
-                >
+                <div className="portfolio-grid">
                     {PROJECTS.map((project, i) => (
                         <motion.div
                             key={project.id}
@@ -47,7 +53,6 @@ export default function Portfolio() {
                                     (e.currentTarget as HTMLDivElement).style.background = "rgba(255,255,255,0.04)";
                                 }}
                             >
-                                {/* Preview */}
                                 <div
                                     style={{
                                         width: "100%",
@@ -65,33 +70,13 @@ export default function Portfolio() {
                                 </div>
 
                                 <div style={{ padding: "24px" }}>
-                                    <h3
-                                        style={{
-                                            fontSize: "17px",
-                                            fontWeight: 600,
-                                            color: "#ffffff",
-                                            marginBottom: "8px",
-                                        }}
-                                    >
+                                    <h3 style={{ fontSize: "17px", fontWeight: 600, color: "#ffffff", marginBottom: "8px" }}>
                                         {project.title}
                                     </h3>
-                                    <p
-                                        style={{
-                                            fontSize: "14px",
-                                            color: "rgba(255,255,255,0.5)",
-                                            marginBottom: "16px",
-                                        }}
-                                    >
+                                    <p style={{ fontSize: "14px", color: "rgba(255,255,255,0.5)", marginBottom: "16px" }}>
                                         {project.description}
                                     </p>
-                                    <div
-                                        style={{
-                                            display: "flex",
-                                            flexWrap: "wrap",
-                                            gap: "8px",
-                                            marginBottom: "20px",
-                                        }}
-                                    >
+                                    <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginBottom: "20px" }}>
                                         {project.tags.map((tag) => (
                                             <span
                                                 key={tag}
@@ -105,19 +90,13 @@ export default function Portfolio() {
                                                     borderRadius: "6px",
                                                 }}
                                             >
-                        {tag}
-                      </span>
+                                                {tag}
+                                            </span>
                                         ))}
                                     </div>
-                                    <span
-                                        style={{
-                                            fontSize: "13px",
-                                            fontWeight: 500,
-                                            color: "rgba(255,255,255,0.4)",
-                                        }}
-                                    >
-                    {"Детальніше →"}
-                  </span>
+                                    <span style={{ fontSize: "13px", fontWeight: 500, color: "rgba(255,255,255,0.4)" }}>
+                                        {"Детальніше →"}
+                                    </span>
                                 </div>
                             </div>
                         </motion.div>

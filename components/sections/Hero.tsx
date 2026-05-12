@@ -32,6 +32,7 @@ export default function Hero() {
                 paddingBottom: "80px",
                 position: "relative",
                 background: "#F2F1F6",
+                overflow: "hidden",
             }}
         >
             <style>{`
