@@ -121,3 +121,40 @@ export const FAQ = [
             "30% передоплата перед початком, решта — по етапах або після здачі. Залежить від обсягу проєкту.",
     },
 ];
+/**
+ * Додати у lib/constants.ts (поряд з PROJECTS).
+ *
+ * Тут зумисне окремий масив, а не повторне використання PROJECTS,
+ * бо для Hero потрібен підмножина проєктів + спеціальний accent-колір,
+ * а PROJECTS може містити проєкти, які в Hero не показуються.
+ */
+
+export const HERO_BROWSER_PROJECTS = [
+    {
+        slug: "tokarchuk-dental",
+        domain: "tokarchuk-dental.com.ua",
+        title: "Tokarchuk Dental Clinic",
+        image: "/projects/tokarchuk-dental.png",
+        // Холодний м'ятно-блакитний — характерний для медицини
+        accent: "rgba(56, 178, 172, 0.45)",
+        href: "/projects/tokarchuk-dental",
+    },
+    {
+        slug: "bavovnastore",
+        domain: "bavovnastore.com.ua",
+        title: "Bavovna Store",
+        image: "/projects/bavovnastore.png",
+        // Теплий бурштиновий — товари, тепло, український колорит
+        accent: "rgba(217, 119, 6, 0.4)",
+        href: "/projects/bavovnastore",
+    },
+    // Якщо додаси третій проєкт, наприклад адмін-панель Bavovna:
+    // {
+    //   slug: "bavovnastore-admin",
+    //   domain: "admin.bavovnastore.com.ua",
+    //   title: "Bavovna — адмін-панель",
+    //   image: "/projects/bavovnastore-admin.png",
+    //   accent: "rgba(107, 63, 240, 0.4)",
+    //   href: "/projects/bavovnastore", // або окрема сторінка
+    // },
+] as const;

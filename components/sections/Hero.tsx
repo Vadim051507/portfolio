@@ -1,11 +1,51 @@
 "use client";
 
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import { motion } from "framer-motion";
 import dynamic from "next/dynamic";
 import Container from "@/components/ui/Container";
+import { HERO_BROWSER_PROJECTS } from "@/lib/constants";
 
-const SphereCanvas = dynamic(() => import("@/components/SphereCanvas"), { ssr: false });
+// ProjectsBrowser підвантажується динамічно з ssr: false,
+// бо використовує window.matchMedia і performance.now() в useEffect.
+const ProjectsBrowser = dynamic(() => import("@/components/ProjectsBrowser"), { ssr: false });
+
+const GUARANTEES = [
+    {
+        icon: (
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+        ),
+        gradient: "linear-gradient(135deg, rgba(107,63,240,0.12) 0%, rgba(0,102,255,0.08) 100%)",
+        borderGradient: "linear-gradient(135deg, rgba(107,63,240,0.35), rgba(0,102,255,0.20))",
+        iconBg: "linear-gradient(135deg, #6B3FF0, #4F46E5)",
+        text: "Без передоплати — платите лише після того, як побачите результат",
+    },
+    {
+        icon: (
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+            </svg>
+        ),
+        gradient: "linear-gradient(135deg, rgba(0,102,255,0.10) 0%, rgba(107,63,240,0.08) 100%)",
+        borderGradient: "linear-gradient(135deg, rgba(0,102,255,0.30), rgba(107,63,240,0.20))",
+        iconBg: "linear-gradient(135deg, #0066FF, #6B3FF0)",
+        text: "На зв'язку щодня — ви завжди знаєте на якому етапі ваш сайт",
+    },
+    {
+        icon: (
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
+                <polyline points="17 6 23 6 23 12"/>
+            </svg>
+        ),
+        gradient: "linear-gradient(135deg, rgba(107,63,240,0.10) 0%, rgba(0,180,180,0.07) 100%)",
+        borderGradient: "linear-gradient(135deg, rgba(107,63,240,0.30), rgba(0,180,180,0.20))",
+        iconBg: "linear-gradient(135deg, #4F46E5, #0066FF)",
+        text: "Підтримка після запуску — не залишу наодинці з готовим сайтом",
+    },
+];
 
 export default function Hero() {
     useEffect(() => {
@@ -54,23 +94,145 @@ export default function Hero() {
                     gap: 40px;
                     align-items: center;
                 }
-                .hero-sphere {
+                /* Раніше було .hero-sphere з aspect-ratio: 1/1 і display:none на мобільному.
+                   Браузер має інше співвідношення сторін і має лишатися видимим на мобільному
+                   (саме він робить "вау"-момент), тому окремий клас .hero-visual. */
+                .hero-visual {
                     position: relative;
                     width: 100%;
-                    aspect-ratio: 1 / 1;
-                    overflow: hidden;
                 }
                 .hero-text {
                     position: relative;
                     z-index: 1;
                 }
+                .hero-guarantees {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 10px;
+                    margin-bottom: 40px;
+                }
+                .guarantee-wrap {
+                    position: relative;
+                    border-radius: 100px;
+                    padding: 1px;
+                }
+                .guarantee-wrap::before {
+                    content: '';
+                    position: absolute;
+                    inset: 0;
+                    border-radius: 100px;
+                    padding: 1px;
+                    background: var(--g-border);
+                    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+                    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+                    -webkit-mask-composite: xor;
+                    mask-composite: exclude;
+                    transition: opacity 0.25s;
+                    opacity: 0.7;
+                }
+                .guarantee-wrap:hover::before { opacity: 1; }
+                .guarantee-item {
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                    padding: 11px 20px;
+                    background: var(--g-bg);
+                    border-radius: 100px;
+                    backdrop-filter: blur(12px);
+                    -webkit-backdrop-filter: blur(12px);
+                    transition: filter 0.25s;
+                }
+                .guarantee-wrap:hover .guarantee-item { filter: brightness(1.04); }
+                .guarantee-icon {
+                    width: 34px; height: 34px;
+                    border-radius: 10px;
+                    display: flex; align-items: center; justify-content: center;
+                    flex-shrink: 0;
+                    color: #fff;
+                    box-shadow: 0 2px 8px rgba(107,63,240,0.30);
+                }
+                .guarantee-text {
+                    font-size: 14px;
+                    color: rgba(15,14,26,0.62);
+                    line-height: 1.5;
+                }
+                .guarantee-text strong {
+                    color: #0F0E1A;
+                    font-weight: 650;
+                }
+
+                /* ── CTA кнопки ── */
+                .btn-primary {
+                    position: relative;
+                    padding: 15px 36px;
+                    background: linear-gradient(135deg, #7B3FF2, #0055FF);
+                    color: #fff;
+                    font-weight: 700;
+                    font-size: 16px;
+                    border-radius: 100px;
+                    border: none;
+                    cursor: pointer;
+                    font-family: inherit;
+                    letter-spacing: -0.2px;
+                    transition: transform 0.18s, box-shadow 0.18s;
+                    /* Glow під кнопкою */
+                    box-shadow:
+                        0 0 0 0 rgba(123,63,242,0),
+                        0 8px 32px rgba(107,63,240,0.45),
+                        0 2px 8px rgba(0,85,255,0.30);
+                }
+                .btn-primary::before {
+                    content: '';
+                    position: absolute;
+                    inset: 0;
+                    border-radius: 100px;
+                    background: linear-gradient(135deg, rgba(255,255,255,0.18) 0%, transparent 60%);
+                    pointer-events: none;
+                }
+                .btn-primary:hover {
+                    transform: translateY(-2px);
+                    box-shadow:
+                        0 0 40px rgba(123,63,242,0.35),
+                        0 12px 48px rgba(107,63,240,0.55),
+                        0 4px 12px rgba(0,85,255,0.35);
+                }
+                .btn-primary:active { transform: translateY(0); }
+
+                .btn-secondary {
+                    position: relative;
+                    padding: 15px 36px;
+                    background: transparent;
+                    color: #6B3FF0;
+                    font-weight: 700;
+                    font-size: 16px;
+                    border-radius: 100px;
+                    border: none;
+                    cursor: pointer;
+                    font-family: inherit;
+                    letter-spacing: -0.2px;
+                    /* Градієнтна рамка */
+                    background-image: linear-gradient(#F2F1F6, #F2F1F6),
+                                      linear-gradient(135deg, #7B3FF2, #0055FF);
+                    background-origin: border-box;
+                    background-clip: padding-box, border-box;
+                    border: 1.5px solid transparent;
+                    transition: transform 0.18s, box-shadow 0.18s, color 0.18s;
+                    box-shadow: 0 4px 16px rgba(107,63,240,0.12);
+                }
+                .btn-secondary:hover {
+                    transform: translateY(-2px);
+                    color: #5B2FD0;
+                    box-shadow: 0 8px 28px rgba(107,63,240,0.22);
+                }
+                .btn-secondary:active { transform: translateY(0); }
+
                 @media (max-width: 860px) {
                     .hero-grid {
                         grid-template-columns: 1fr;
+                        gap: 50px;
                     }
-                    .hero-sphere {
-                        display: none;
-                    }
+                    /* Браузер лишається видимим — це головний візуальний елемент */
+                    .hero-visual { order: -1; }
                 }
             `}</style>
 
@@ -98,7 +260,6 @@ export default function Hero() {
             <Container>
                 <div className="hero-grid" style={{ position: "relative", zIndex: 1 }}>
 
-                    {/* Text */}
                     <motion.div
                         className="hero-text"
                         initial={{ opacity: 0, y: 32 }}
@@ -106,25 +267,33 @@ export default function Hero() {
                         transition={{ duration: 0.7, ease: "easeOut" }}
                         style={{ order: -1 }}
                     >
-                        <div style={{
-                            display: "inline-flex", alignItems: "center", gap: "8px",
-                            background: "rgba(107,63,240,0.08)",
-                            border: "0.5px solid rgba(107,63,240,0.25)",
-                            borderRadius: "100px", padding: "5px 14px", marginBottom: "32px",
-                        }}>
+                        {/* Badge */}
+                        <motion.div
+                            initial={{ opacity: 0, y: -8 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.5, delay: 0.1 }}
+                            style={{
+                                display: "inline-flex", alignItems: "center", gap: "8px",
+                                background: "rgba(107,63,240,0.08)",
+                                border: "0.5px solid rgba(107,63,240,0.25)",
+                                borderRadius: "100px", padding: "5px 14px", marginBottom: "28px",
+                            }}
+                        >
                             <span style={{
                                 width: "7px", height: "7px", borderRadius: "50%",
                                 backgroundColor: "#22C55E", display: "inline-block",
+                                boxShadow: "0 0 0 3px rgba(34,197,94,0.2)",
                             }} />
                             <span style={{ fontSize: "13px", color: "rgba(40,30,80,0.8)" }}>
                                 Доступний для нових проєктів
                             </span>
-                        </div>
+                        </motion.div>
 
+                        {/* Heading */}
                         <h1 style={{
                             fontSize: "clamp(36px, 5vw, 68px)",
                             fontWeight: 700, color: "#0F0E1A",
-                            letterSpacing: "-2.5px", lineHeight: 1.04, marginBottom: "24px",
+                            letterSpacing: "-2.5px", lineHeight: 1.04, marginBottom: "20px",
                         }}>
                             Сайти які{" "}
                             <span style={{
@@ -139,54 +308,64 @@ export default function Hero() {
                             ваш бізнес
                         </h1>
 
+                        {/* Description */}
                         <p style={{
                             fontSize: "17px", color: "rgba(15,14,26,0.5)",
-                            lineHeight: 1.7, marginBottom: "40px", maxWidth: "460px",
+                            lineHeight: 1.7, marginBottom: "28px", maxWidth: "460px",
                         }}>
                             Інтернет-магазини, корпоративні сайти та лендінги
                             для малого бізнесу в Україні. З адмінкою та підтримкою після запуску.
                         </p>
 
-                        <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
-                            <button
-                                onClick={() => scrollTo("#contact")}
-                                style={{
-                                    padding: "14px 32px",
-                                    background: "linear-gradient(135deg, #6B3FF0, #0066FF)",
-                                    color: "#ffffff", fontWeight: 600, fontSize: "16px",
-                                    borderRadius: "8px", border: "none", cursor: "pointer",
-                                    fontFamily: "inherit", transition: "opacity 0.2s",
-                                }}
-                                onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.85")}
-                                onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
-                            >
+                        {/* Guarantees */}
+                        <motion.div
+                            className="hero-guarantees"
+                            initial={{ opacity: 0, y: 16 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.6, delay: 0.35, ease: "easeOut" }}
+                        >
+                            {GUARANTEES.map((g, i) => {
+                                const dashIdx = g.text.indexOf(" — ");
+                                const bold = g.text.slice(0, dashIdx);
+                                const rest = g.text.slice(dashIdx);
+                                return (
+                                    <div
+                                        key={i}
+                                        className="guarantee-wrap"
+                                        style={{ "--g-border": g.borderGradient, "--g-bg": g.gradient } as React.CSSProperties}
+                                    >
+                                        <div className="guarantee-item">
+                                            <div className="guarantee-icon" style={{ background: g.iconBg }}>
+                                                {g.icon}
+                                            </div>
+                                            <span className="guarantee-text">
+                                                <strong>{bold}</strong>{rest}
+                                            </span>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </motion.div>
+
+                        {/* CTA */}
+                        <div style={{ display: "flex", gap: "16px", flexWrap: "wrap", alignItems: "center" }}>
+                            <button className="btn-primary" onClick={() => scrollTo("#contact")}>
                                 Обговорити проєкт
                             </button>
-                            <button
-                                onClick={() => scrollTo("#portfolio")}
-                                style={{
-                                    padding: "14px 32px",
-                                    background: "rgba(0,0,0,0.04)",
-                                    color: "rgba(15,14,26,0.8)", fontWeight: 600, fontSize: "16px",
-                                    borderRadius: "8px", border: "0.5px solid rgba(0,0,0,0.12)",
-                                    cursor: "pointer", fontFamily: "inherit", transition: "background 0.2s",
-                                }}
-                                onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(0,0,0,0.08)")}
-                                onMouseLeave={(e) => (e.currentTarget.style.background = "rgba(0,0,0,0.04)")}
-                            >
+                            <button className="btn-secondary" onClick={() => scrollTo("#portfolio")}>
                                 Подивитись роботи
                             </button>
                         </div>
                     </motion.div>
 
-                    {/* Sphere */}
+                    {/* Browser mockup (раніше тут була SphereCanvas) */}
                     <motion.div
-                        className="hero-sphere"
-                        initial={{ opacity: 0, scale: 0.8 }}
+                        className="hero-visual"
+                        initial={{ opacity: 0, scale: 0.9 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ duration: 1, delay: 0.3, ease: "easeOut" }}
                     >
-                        <SphereCanvas />
+                        <ProjectsBrowser projects={[...HERO_BROWSER_PROJECTS]} />
                     </motion.div>
 
                 </div>
