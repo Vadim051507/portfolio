@@ -1,4 +1,5 @@
 import Container from "@/components/ui/Container";
+import BackButton from "@/components/ui/BackButton";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -23,22 +24,7 @@ export default function TokarchukDentalPage() {
     return (
         <div style={{ padding: "120px 0 80px", backgroundColor: "#ffffff" }}>
             <Container>
-                <button
-                    onClick={() => window.history.back()}
-                    style={{
-                        fontSize: "14px",
-                        color: "#666666",
-                        background: "none",
-                        border: "none",
-                        cursor: "pointer",
-                        fontFamily: "inherit",
-                        marginBottom: "40px",
-                        display: "block",
-                        padding: 0,
-                    }}
-                >
-                    {"← Назад до портфоліо"}
-                </button>
+                <BackButton />
 
                 <h1
                     style={{
@@ -69,8 +55,8 @@ export default function TokarchukDentalPage() {
                                 borderRadius: "6px",
                             }}
                         >
-              {tag}
-            </span>
+                            {tag}
+                        </span>
                     ))}
                 </div>
 
