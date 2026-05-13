@@ -6,9 +6,8 @@ import dynamic from "next/dynamic";
 import Container from "@/components/ui/Container";
 import { HERO_BROWSER_PROJECTS } from "@/lib/constants";
 
-// ProjectsBrowser підвантажується динамічно з ssr: false,
-// бо використовує window.matchMedia і performance.now() в useEffect.
 const ProjectsBrowser = dynamic(() => import("@/components/ProjectsBrowser"), { ssr: false });
+const ParticleTrail   = dynamic(() => import("@/components/ParticleTrail"),    { ssr: false });
 
 const GUARANTEES = [
     {
@@ -47,6 +46,7 @@ const GUARANTEES = [
     },
 ];
 
+
 export default function Hero() {
     useEffect(() => {
         const onMove = (e: MouseEvent) => {
@@ -80,7 +80,7 @@ export default function Hero() {
                     position: fixed;
                     width: 500px; height: 500px;
                     border-radius: 50%;
-                    background: radial-gradient(circle, rgba(107,63,240,0.06) 0%, transparent 70%);
+                    background: radial-gradient(circle, rgba(107,63,240,0.04) 0%, transparent 70%);
                     left: var(--glow-x, 50%);
                     top: var(--glow-y, 50%);
                     transform: translate(-50%, -50%);
@@ -94,9 +94,6 @@ export default function Hero() {
                     gap: 40px;
                     align-items: center;
                 }
-                /* Раніше було .hero-sphere з aspect-ratio: 1/1 і display:none на мобільному.
-                   Браузер має інше співвідношення сторін і має лишатися видимим на мобільному
-                   (саме він робить "вау"-момент), тому окремий клас .hero-visual. */
                 .hero-visual {
                     position: relative;
                     width: 100%;
@@ -160,8 +157,6 @@ export default function Hero() {
                     color: #0F0E1A;
                     font-weight: 650;
                 }
-
-                /* ── CTA кнопки ── */
                 .btn-primary {
                     position: relative;
                     padding: 15px 36px;
@@ -175,7 +170,6 @@ export default function Hero() {
                     font-family: inherit;
                     letter-spacing: -0.2px;
                     transition: transform 0.18s, box-shadow 0.18s;
-                    /* Glow під кнопкою */
                     box-shadow:
                         0 0 0 0 rgba(123,63,242,0),
                         0 8px 32px rgba(107,63,240,0.45),
@@ -197,7 +191,6 @@ export default function Hero() {
                         0 4px 12px rgba(0,85,255,0.35);
                 }
                 .btn-primary:active { transform: translateY(0); }
-
                 .btn-secondary {
                     position: relative;
                     padding: 15px 36px;
@@ -210,7 +203,6 @@ export default function Hero() {
                     cursor: pointer;
                     font-family: inherit;
                     letter-spacing: -0.2px;
-                    /* Градієнтна рамка */
                     background-image: linear-gradient(#F2F1F6, #F2F1F6),
                                       linear-gradient(135deg, #7B3FF2, #0055FF);
                     background-origin: border-box;
@@ -231,28 +223,25 @@ export default function Hero() {
                         grid-template-columns: 1fr;
                         gap: 50px;
                     }
-                    /* Браузер лишається видимим — це головний візуальний елемент */
                     .hero-visual { order: -1; }
+                }
+                @media (prefers-reduced-motion: reduce) {
+                    .hero-aurora { display: none; }
                 }
             `}</style>
 
+            {/* ── Particle trail (Three.js) ── */}
+            <ParticleTrail />
+
             <div className="cursor-glow" />
 
-            <div style={{
-                position: "absolute", width: "700px", height: "700px", borderRadius: "50%",
-                background: "radial-gradient(circle, rgba(107,63,240,0.12) 0%, transparent 65%)",
-                top: "-200px", left: "-150px", pointerEvents: "none",
-            }} />
-            <div style={{
-                position: "absolute", width: "500px", height: "500px", borderRadius: "50%",
-                background: "radial-gradient(circle, rgba(0,100,255,0.08) 0%, transparent 65%)",
-                top: "100px", right: "-100px", pointerEvents: "none",
-            }} />
+            {/* Dot grid поверх аурори */}
             <div style={{
                 position: "absolute", inset: 0,
-                backgroundImage: "radial-gradient(rgba(0,0,0,0.07) 1px, transparent 1px)",
+                backgroundImage: "radial-gradient(rgba(0,0,0,0.06) 1px, transparent 1px)",
                 backgroundSize: "28px 28px",
                 pointerEvents: "none",
+                zIndex: 0,
                 maskImage: "radial-gradient(ellipse 80% 80% at 50% 40%, black 30%, transparent 100%)",
                 WebkitMaskImage: "radial-gradient(ellipse 80% 80% at 50% 40%, black 30%, transparent 100%)",
             }} />
@@ -358,9 +347,7 @@ export default function Hero() {
                         </div>
                     </motion.div>
 
-                    {/* Browser mockup (раніше тут була SphereCanvas).
-                        ВАЖЛИВО: НЕ використовуємо scale у motion.div — він створює
-                        композитний шар, який ламає 3D-перспективу всередині. */}
+                    {/* Browser mockup — НЕ використовуємо scale у motion.div */}
                     <motion.div
                         className="hero-visual"
                         initial={{ opacity: 0, y: 20 }}

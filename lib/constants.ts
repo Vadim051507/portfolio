@@ -134,6 +134,8 @@ export const HERO_BROWSER_PROJECTS = [
         slug: "tokarchuk-dental",
         domain: "tokarchuk-dental.com.ua",
         title: "Tokarchuk Dental Clinic",
+        tags: ["Next.js", "Tailwind", "Framer Motion"],
+        description: "Лендінг, який викликає в пацієнтів більше довіри",
         image: "/projects/tokarchuk-dental.png",
         // Холодний м'ятно-блакитний — характерний для медицини
         accent: "rgba(56, 178, 172, 0.45)",
@@ -143,6 +145,8 @@ export const HERO_BROWSER_PROJECTS = [
         slug: "bavovnastore",
         domain: "bavovnastore.com.ua",
         title: "Bavovna Store",
+        tags: ["Spring Boot", "React", "PostgreSQL"],
+        description: "Просто класний сайт",
         image: "/projects/bavovnastore.png",
         // Теплий бурштиновий — товари, тепло, український колорит
         accent: "rgba(217, 119, 6, 0.4)",
@@ -153,6 +157,8 @@ export const HERO_BROWSER_PROJECTS = [
         slug: "florist-shop",
         domain: "florist-shop.com.ua",
         title: "Florist Shop",
+        tags: ["Spring Boot", "React", "PostgreSQL"],
+        description: "Ще один класний сайт, написаний мною",
         image: "/projects/florist-shop.png",
         accent: "rgba(217, 119, 6, 0.4)",
         href: "/projects/florist-shop",

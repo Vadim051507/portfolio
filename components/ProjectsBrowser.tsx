@@ -7,42 +7,29 @@ import Link from "next/link";
 
 /**
  * ProjectsBrowser — інтерактивний браузер-mockup з ротацією проєктів.
- * Використовується в Hero як основний візуал правої колонки (заміна або
- * доповнення до SphereCanvas).
  *
- * Особливості:
- * - 3D-перспектива з плавною float-анімацією
- * - Автоматична ротація проєктів кожні 4.5с (пауза при hover)
- * - Динамічне оновлення URL у адресному рядку
- * - Точкові індикатори + клік на них для ручного перемикання
- * - Прогрес-бар автоплею знизу
- * - Reduced-motion support
- * - Lazy-loading зображень через next/image
- * - Клік на браузер → перехід на сторінку кейсу
+ * Зміни v2:
+ * - Підпис під браузером: назва проєкту + теги стеку, плавна зміна через AnimatePresence
+ * - Aurora-friendly: акцент-glow підсилено для кращої взаємодії з фоном Hero
  */
 
 type Project = {
-    /** Внутрішній slug, узгоджується з PROJECTS у lib/constants.ts */
     slug: string;
-    /** Назва проєкту (показується в адресному рядку як домен) */
     domain: string;
-    /** Заголовок під браузером при наведенні */
     title: string;
-    /** Шлях до скріншоту в /public (наприклад "/projects/tokarchuk-dental.png") */
+    /** Короткий опис для підпису під браузером */
+    description?: string;
+    /** Теги стеку/технологій */
+    tags?: string[];
     image: string;
-    /** Опційний акцентний колір рамки (для тонкого світіння під браузером) */
     accent?: string;
-    /** Куди веде клік — як правило, /projects/{slug} */
     href: string;
 };
 
 type Props = {
     projects: Project[];
-    /** Інтервал автоплею в мілісекундах. За замовч. 4500. */
     intervalMs?: number;
-    /** Чи показувати прогрес-бар автоплею. За замовч. true. */
     showProgress?: boolean;
-    /** Затримка появи компонента, мс. Для координації зі stagger у Hero. */
     appearDelay?: number;
 };
 
@@ -62,7 +49,6 @@ export default function ProjectsBrowser({
     const startTsRef = useRef<number>(0);
     const elapsedRef = useRef<number>(0);
 
-    // Враховуємо системну налаштування reduced motion
     useEffect(() => {
         const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
         const apply = () => setPrefersReducedMotion(mq.matches);
@@ -71,8 +57,6 @@ export default function ProjectsBrowser({
         return () => mq.removeEventListener("change", apply);
     }, []);
 
-    // Прогрес автоплею через requestAnimationFrame.
-    // Не setInterval, щоб не накопичувався drift і щоб коректно паузити.
     useEffect(() => {
         if (paused || prefersReducedMotion) return;
 
@@ -105,7 +89,6 @@ export default function ProjectsBrowser({
         };
     }, [paused, prefersReducedMotion, intervalMs, projects.length]);
 
-    // Скидаємо прогрес при ручному перемиканні
     const goTo = useCallback((idx: number) => {
         elapsedRef.current = 0;
         if (progressRef.current) progressRef.current.style.transform = "scaleX(0)";
@@ -128,17 +111,12 @@ export default function ProjectsBrowser({
         >
             <div
                 className="pb-float"
-                style={{
-                    // Float-анімація вимикається при reduced-motion
-                    animation: prefersReducedMotion ? "none" : undefined,
-                }}
+                style={{ animation: prefersReducedMotion ? "none" : undefined }}
             >
-                {/* М'яке акцентне світіння під браузером, змінюється з проєктом */}
+                {/* Акцентне світіння під браузером */}
                 <div
                     className="pb-accent-glow"
-                    style={{
-                        background: current.accent ?? "rgba(107,63,240,0.35)",
-                    }}
+                    style={{ background: current.accent ?? "rgba(107,63,240,0.35)" }}
                     aria-hidden
                 />
 
@@ -147,7 +125,7 @@ export default function ProjectsBrowser({
                     className="pb-browser"
                     aria-label={`Відкрити кейс: ${current.title}`}
                 >
-                    {/* Chrome браузера */}
+                    {/* Chrome */}
                     <div className="pb-chrome">
                         <div className="pb-dots">
                             <span className="pb-dot" style={{ background: "#ED6A5E" }} />
@@ -155,13 +133,7 @@ export default function ProjectsBrowser({
                             <span className="pb-dot" style={{ background: "#61C554" }} />
                         </div>
                         <div className="pb-url">
-                            <svg
-                                width="11"
-                                height="11"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                aria-hidden
-                            >
+                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" aria-hidden>
                                 <path
                                     d="M17 10V7a5 5 0 0 0-10 0v3M5 10h14v11H5z"
                                     stroke="#1D9E75"
@@ -183,17 +155,11 @@ export default function ProjectsBrowser({
                             </AnimatePresence>
                         </div>
                         <div className="pb-actions" aria-hidden>
-                            <span />
-                            <span />
-                            <span />
+                            <span /><span /><span />
                         </div>
                     </div>
 
-                    {/* Екран браузера — всі слайди в DOM одночасно.
-              Вмикаємо/гасимо через opacity замість unmount, щоб:
-              1) браузер не перерендерював <img> при кожній зміні (плавніше)
-              2) всі картинки могли завантажитись паралельно при першому візиті
-              3) повернення на попередній слайд миттєве (з кешу) */}
+                    {/* Екран — всі слайди в DOM, керування через opacity */}
                     <div className="pb-screen">
                         {projects.map((p, i) => (
                             <div
@@ -207,18 +173,12 @@ export default function ProjectsBrowser({
                                     fill
                                     sizes="(max-width: 860px) 90vw, 580px"
                                     style={{ objectFit: "cover", objectPosition: "top center" }}
-                                    /* priority для всіх — браузер у Hero, видно одразу.
-                                       Без цього Next.js lazy-load чекає intersection, а вони ВЖЕ у viewport. */
                                     priority
-                                    /* Quality 80 — компроміс між якістю і вагою.
-                                       За замовч. Next.js робить 75, для скріншотів сайтів цього мало,
-                                       текст починає мутніти. 80-85 = солодке місце. */
                                     quality={82}
                                 />
                             </div>
                         ))}
 
-                        {/* Прогрес-бар автоплею */}
                         {showProgress && !prefersReducedMotion && (
                             <div className="pb-progress-track" aria-hidden>
                                 <div ref={progressRef} className="pb-progress-bar" />
@@ -240,6 +200,34 @@ export default function ProjectsBrowser({
                         />
                     ))}
                 </div>
+
+                {/* ── Підпис під браузером ── */}
+                <div className="pb-caption-wrap" aria-live="polite">
+                    <AnimatePresence mode="wait">
+                        <motion.div
+                            key={current.slug}
+                            className="pb-caption"
+                            initial={{ opacity: 0, y: 6 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -6 }}
+                            transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                        >
+                            <span className="pb-caption-title">{current.title}</span>
+                            {current.tags && current.tags.length > 0 && (
+                                <span className="pb-caption-tags">
+                                    {current.tags.map((tag, i) => (
+                                        <span key={tag} className="pb-caption-tag">
+                                            {tag}
+                                            {i < current.tags!.length - 1 && (
+                                                <span className="pb-caption-dot">·</span>
+                                            )}
+                                        </span>
+                                    ))}
+                                </span>
+                            )}
+                        </motion.div>
+                    </AnimatePresence>
+                </div>
             </div>
 
             <style jsx>{`
@@ -251,10 +239,6 @@ export default function ProjectsBrowser({
                     justify-content: center;
                 }
 
-                /* Перспектива застосована ПРЯМО до transform — не залежить від батька.
-                   Це критично: коли .pb-wrap огорнутий у motion.div з opacity/scale,
-                   Framer Motion створює композитний шар, який може зруйнувати
-                   ланцюг perspective→child. Self-contained perspective() цьому стійка. */
                 .pb-float {
                     position: relative;
                     width: 100%;
@@ -290,9 +274,6 @@ export default function ProjectsBrowser({
                     border-radius: 14px;
                     overflow: hidden;
                     border: 0.5px solid rgba(0, 0, 0, 0.08);
-                    /* Багатошарова тінь з реальним вертикальним зміщенням —
-                       дає відчуття "браузер парить над поверхнею". Тіні зміщені вниз
-                       і трохи вправо, відповідаючи нахилу rotateY(-14deg). */
                     box-shadow:
                             0 50px 100px -20px rgba(40, 30, 100, 0.45),
                             0 30px 60px -30px rgba(20, 20, 50, 0.35),
@@ -327,14 +308,10 @@ export default function ProjectsBrowser({
                     border-bottom: 0.5px solid rgba(0, 0, 0, 0.06);
                 }
 
-                .pb-dots {
-                    display: flex;
-                    gap: 6px;
-                }
+                .pb-dots { display: flex; gap: 6px; }
 
                 .pb-dot {
-                    width: 11px;
-                    height: 11px;
+                    width: 11px; height: 11px;
                     border-radius: 50%;
                     display: inline-block;
                 }
@@ -360,14 +337,9 @@ export default function ProjectsBrowser({
                     text-overflow: ellipsis;
                 }
 
-                .pb-actions {
-                    display: flex;
-                    gap: 4px;
-                }
-
+                .pb-actions { display: flex; gap: 4px; }
                 .pb-actions span {
-                    width: 4px;
-                    height: 4px;
+                    width: 4px; height: 4px;
                     border-radius: 50%;
                     background: rgba(0, 0, 0, 0.25);
                 }
@@ -375,7 +347,6 @@ export default function ProjectsBrowser({
                 .pb-screen {
                     position: relative;
                     width: 100%;
-                    /* Співвідношення сторін як у середньому ноутбуці */
                     aspect-ratio: 16 / 10;
                     background: #F2F1F6;
                     overflow: hidden;
@@ -385,12 +356,10 @@ export default function ProjectsBrowser({
                     position: absolute;
                     inset: 0;
                     opacity: 0;
-                    /* Легке масштабування неактивних слайдів — м'який Ken Burns при появі */
                     transform: scale(1.02);
                     transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
                     transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
                     pointer-events: none;
-                    /* Завантажуються паралельно, але неактивні не показуються */
                 }
 
                 .pb-slide.is-active {
@@ -401,9 +370,7 @@ export default function ProjectsBrowser({
 
                 .pb-progress-track {
                     position: absolute;
-                    left: 0;
-                    right: 0;
-                    bottom: 0;
+                    left: 0; right: 0; bottom: 0;
                     height: 2px;
                     background: rgba(0, 0, 0, 0.06);
                     z-index: 2;
@@ -422,14 +389,13 @@ export default function ProjectsBrowser({
                     display: flex;
                     justify-content: center;
                     gap: 8px;
-                    margin-top: 22px;
+                    margin-top: 18px;
                     position: relative;
                     z-index: 1;
                 }
 
                 .pb-ind {
-                    width: 8px;
-                    height: 8px;
+                    width: 8px; height: 8px;
                     padding: 0;
                     border-radius: 50%;
                     border: 0;
@@ -438,9 +404,7 @@ export default function ProjectsBrowser({
                     transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
                 }
 
-                .pb-ind:hover {
-                    background: rgba(15, 14, 26, 0.4);
-                }
+                .pb-ind:hover { background: rgba(15, 14, 26, 0.4); }
 
                 .pb-ind.is-active {
                     width: 28px;
@@ -448,9 +412,57 @@ export default function ProjectsBrowser({
                     background: linear-gradient(90deg, #6B3FF0, #0066FF);
                 }
 
-                /* Адаптив: на вузьких екранах прибираємо перспективу — на тачі вона
-                   виглядає неприродно і ускладнює тап. Перевизначаємо keyframes теж,
-                   щоб анімація не повертала transform назад. */
+                /* ── Caption ── */
+                .pb-caption-wrap {
+                    position: relative;
+                    z-index: 1;
+                    height: 44px; /* фіксована висота — щоб layout не стрибав при зміні */
+                    margin-top: 14px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+
+                .pb-caption {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    gap: 4px;
+                    text-align: center;
+                }
+
+                .pb-caption-title {
+                    font-size: 13px;
+                    font-weight: 600;
+                    color: rgba(15, 14, 26, 0.75);
+                    letter-spacing: -0.2px;
+                    line-height: 1;
+                }
+
+                .pb-caption-tags {
+                    display: flex;
+                    align-items: center;
+                    gap: 5px;
+                    flex-wrap: wrap;
+                    justify-content: center;
+                }
+
+                .pb-caption-tag {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 5px;
+                    font-size: 11px;
+                    color: rgba(15, 14, 26, 0.38);
+                    font-family: "SFMono-Regular", Menlo, Consolas, monospace;
+                    letter-spacing: 0.1px;
+                }
+
+                .pb-caption-dot {
+                    color: rgba(15, 14, 26, 0.22);
+                    font-size: 10px;
+                }
+
+                /* Адаптив */
                 @media (max-width: 860px) {
                     .pb-float {
                         transform: none;
