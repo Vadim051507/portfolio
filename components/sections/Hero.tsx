@@ -358,12 +358,14 @@ export default function Hero() {
                         </div>
                     </motion.div>
 
-                    {/* Browser mockup (раніше тут була SphereCanvas) */}
+                    {/* Browser mockup (раніше тут була SphereCanvas).
+                        ВАЖЛИВО: НЕ використовуємо scale у motion.div — він створює
+                        композитний шар, який ламає 3D-перспективу всередині. */}
                     <motion.div
                         className="hero-visual"
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ duration: 1, delay: 0.3, ease: "easeOut" }}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.9, delay: 0.3, ease: "easeOut" }}
                     >
                         <ProjectsBrowser projects={[...HERO_BROWSER_PROJECTS]} />
                     </motion.div>

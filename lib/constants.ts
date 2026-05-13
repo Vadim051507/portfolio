@@ -148,6 +148,15 @@ export const HERO_BROWSER_PROJECTS = [
         accent: "rgba(217, 119, 6, 0.4)",
         href: "/projects/bavovnastore",
     },
+
+    {
+        slug: "florist-shop",
+        domain: "florist-shop.com.ua",
+        title: "Florist Shop",
+        image: "/projects/florist-shop.png",
+        accent: "rgba(217, 119, 6, 0.4)",
+        href: "/projects/florist-shop",
+    }
     // Якщо додаси третій проєкт, наприклад адмін-панель Bavovna:
     // {
     //   slug: "bavovnastore-admin",

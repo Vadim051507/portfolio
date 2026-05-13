@@ -189,27 +189,34 @@ export default function ProjectsBrowser({
                         </div>
                     </div>
 
-                    {/* Екран браузера — слайди */}
+                    {/* Екран браузера — всі слайди в DOM одночасно.
+              Вмикаємо/гасимо через opacity замість unmount, щоб:
+              1) браузер не перерендерював <img> при кожній зміні (плавніше)
+              2) всі картинки могли завантажитись паралельно при першому візиті
+              3) повернення на попередній слайд миттєве (з кешу) */}
                     <div className="pb-screen">
-                        <AnimatePresence mode="sync">
-                            <motion.div
-                                key={current.slug}
-                                className="pb-slide"
-                                initial={{ opacity: 0, scale: 1.04 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                exit={{ opacity: 0, scale: 0.98 }}
-                                transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+                        {projects.map((p, i) => (
+                            <div
+                                key={p.slug}
+                                className={`pb-slide ${i === active ? "is-active" : ""}`}
+                                aria-hidden={i !== active}
                             >
                                 <Image
-                                    src={current.image}
-                                    alt={current.title}
+                                    src={p.image}
+                                    alt={p.title}
                                     fill
-                                    sizes="(max-width: 860px) 90vw, 540px"
+                                    sizes="(max-width: 860px) 90vw, 580px"
                                     style={{ objectFit: "cover", objectPosition: "top center" }}
-                                    priority={active === 0}
+                                    /* priority для всіх — браузер у Hero, видно одразу.
+                                       Без цього Next.js lazy-load чекає intersection, а вони ВЖЕ у viewport. */
+                                    priority
+                                    /* Quality 80 — компроміс між якістю і вагою.
+                                       За замовч. Next.js робить 75, для скріншотів сайтів цього мало,
+                                       текст починає мутніти. 80-85 = солодке місце. */
+                                    quality={82}
                                 />
-                            </motion.div>
-                        </AnimatePresence>
+                            </div>
+                        ))}
 
                         {/* Прогрес-бар автоплею */}
                         {showProgress && !prefersReducedMotion && (
@@ -242,25 +249,26 @@ export default function ProjectsBrowser({
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                    perspective: 1600px;
                 }
 
+                /* Перспектива застосована ПРЯМО до transform — не залежить від батька.
+                   Це критично: коли .pb-wrap огорнутий у motion.div з opacity/scale,
+                   Framer Motion створює композитний шар, який може зруйнувати
+                   ланцюг perspective→child. Self-contained perspective() цьому стійка. */
                 .pb-float {
                     position: relative;
                     width: 100%;
                     max-width: 580px;
-                    transform: rotateY(-9deg) rotateX(5deg);
+                    transform: perspective(1600px) rotateY(-14deg) rotateX(6deg);
                     transform-style: preserve-3d;
+                    transform-origin: 50% 50%;
                     animation: pb-float 7s ease-in-out infinite;
+                    will-change: transform;
                 }
 
                 @keyframes pb-float {
-                    0%, 100% { transform: rotateY(-9deg) rotateX(5deg) translateY(0); }
-                    50%      { transform: rotateY(-9deg) rotateX(5deg) translateY(-12px); }
-                }
-
-                @media (prefers-reduced-motion: reduce) {
-                    .pb-float { animation: none; }
+                    0%, 100% { transform: perspective(1600px) rotateY(-14deg) rotateX(6deg) translateY(0); }
+                    50%      { transform: perspective(1600px) rotateY(-14deg) rotateX(6deg) translateY(-12px); }
                 }
 
                 .pb-accent-glow {
@@ -282,10 +290,14 @@ export default function ProjectsBrowser({
                     border-radius: 14px;
                     overflow: hidden;
                     border: 0.5px solid rgba(0, 0, 0, 0.08);
+                    /* Багатошарова тінь з реальним вертикальним зміщенням —
+                       дає відчуття "браузер парить над поверхнею". Тіні зміщені вниз
+                       і трохи вправо, відповідаючи нахилу rotateY(-14deg). */
                     box-shadow:
-                            0 30px 80px -30px rgba(40, 30, 100, 0.35),
-                            0 18px 40px -20px rgba(20, 20, 50, 0.22),
-                            0 2px 4px rgba(0, 0, 0, 0.04);
+                            0 50px 100px -20px rgba(40, 30, 100, 0.45),
+                            0 30px 60px -30px rgba(20, 20, 50, 0.35),
+                            0 18px 36px -18px rgba(40, 40, 80, 0.28),
+                            0 2px 4px rgba(0, 0, 0, 0.06);
                     text-decoration: none;
                     color: inherit;
                     transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
@@ -295,9 +307,10 @@ export default function ProjectsBrowser({
                 .pb-browser:hover {
                     transform: translateY(-3px);
                     box-shadow:
-                            0 40px 100px -30px rgba(40, 30, 100, 0.45),
-                            0 25px 55px -25px rgba(20, 20, 50, 0.28),
-                            0 2px 4px rgba(0, 0, 0, 0.04);
+                            0 60px 120px -20px rgba(40, 30, 100, 0.55),
+                            0 35px 75px -25px rgba(20, 20, 50, 0.42),
+                            0 25px 55px -25px rgba(20, 20, 50, 0.32),
+                            0 2px 4px rgba(0, 0, 0, 0.06);
                 }
 
                 .pb-browser:focus-visible {
@@ -371,6 +384,19 @@ export default function ProjectsBrowser({
                 .pb-slide {
                     position: absolute;
                     inset: 0;
+                    opacity: 0;
+                    /* Легке масштабування неактивних слайдів — м'який Ken Burns при появі */
+                    transform: scale(1.02);
+                    transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+                    transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+                    pointer-events: none;
+                    /* Завантажуються паралельно, але неактивні не показуються */
+                }
+
+                .pb-slide.is-active {
+                    opacity: 1;
+                    transform: scale(1);
+                    pointer-events: auto;
                 }
 
                 .pb-progress-track {
@@ -423,17 +449,27 @@ export default function ProjectsBrowser({
                 }
 
                 /* Адаптив: на вузьких екранах прибираємо перспективу — на тачі вона
-                   виглядає неприродно і ускладнює тап */
+                   виглядає неприродно і ускладнює тап. Перевизначаємо keyframes теж,
+                   щоб анімація не повертала transform назад. */
                 @media (max-width: 860px) {
                     .pb-float {
                         transform: none;
                         animation: none;
                         max-width: 100%;
                     }
+                    .pb-browser {
+                        box-shadow:
+                                0 30px 60px -20px rgba(40, 30, 100, 0.3),
+                                0 15px 30px -15px rgba(20, 20, 50, 0.2);
+                    }
                     .pb-accent-glow {
                         inset: 30px 0 -20px 0;
                         opacity: 0.4;
                     }
+                }
+
+                @media (prefers-reduced-motion: reduce) {
+                    .pb-float { animation: none; }
                 }
             `}</style>
         </motion.div>
