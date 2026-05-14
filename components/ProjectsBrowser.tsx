@@ -20,7 +20,7 @@ type Project = {
     /** Короткий опис для підпису під браузером */
     description?: string;
     /** Теги стеку/технологій */
-    tags?: string[];
+    tags?: readonly string[];
     image: string;
     accent?: string;
     href: string;

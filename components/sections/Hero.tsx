@@ -294,7 +294,7 @@ export default function Hero() {
                                 продають
                             </span>
                             <br />
-                            ваш бізнес
+                            Ваш бізнес
                         </h1>
 
                         {/* Description */}
@@ -354,6 +354,7 @@ export default function Hero() {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.9, delay: 0.3, ease: "easeOut" }}
                     >
+
                         <ProjectsBrowser projects={[...HERO_BROWSER_PROJECTS]} />
                     </motion.div>
 
