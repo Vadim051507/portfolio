@@ -24,17 +24,18 @@ export default function TechStack() {
                             style={{
                                 fontSize: "14px",
                                 fontWeight: 500,
-                                color: "rgba(255,255,255,0.7)",
-                                background: "rgba(255,255,255,0.05)",
-                                border: "0.5px solid rgba(255,255,255,0.1)",
+                                color: "rgba(15,14,26,0.65)",
+                                background: "#FFFFFF",
+                                border: "0.5px solid rgba(15,14,26,0.1)",
                                 padding: "10px 20px",
                                 borderRadius: "8px",
+                                boxShadow: "0 1px 3px rgba(15,14,26,0.04)",
                                 transition: "border-color 0.2s, color 0.2s",
                                 cursor: "default",
                             }}
                             whileHover={{
                                 borderColor: "rgba(107,63,240,0.5)",
-                                color: "#ffffff",
+                                color: "#0F0E1A",
                             }}
                         >
                             {tech}

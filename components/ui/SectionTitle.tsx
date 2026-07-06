@@ -11,7 +11,7 @@ export default function SectionTitle({
                 style={{
                     fontSize: "clamp(28px, 4vw, 40px)",
                     fontWeight: 700,
-                    color: "#ffffff",
+                    color: "#0F0E1A",
                     letterSpacing: "-0.5px",
                     lineHeight: 1.2,
                 }}
@@ -23,7 +23,7 @@ export default function SectionTitle({
                     style={{
                         marginTop: "12px",
                         fontSize: "17px",
-                        color: "rgba(255,255,255,0.5)",
+                        color: "rgba(15,14,26,0.55)",
                         maxWidth: "560px",
                     }}
                 >

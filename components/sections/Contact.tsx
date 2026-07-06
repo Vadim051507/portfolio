@@ -44,11 +44,11 @@ export default function Contact() {
         width: "100%",
         padding: "12px 16px",
         fontSize: "14px",
-        background: "rgba(255,255,255,0.05)",
-        border: "0.5px solid rgba(255,255,255,0.1)",
+        background: "#FFFFFF",
+        border: "0.5px solid rgba(15,14,26,0.12)",
         borderRadius: "8px",
         outline: "none",
-        color: "#ffffff",
+        color: "#0F0E1A",
         fontFamily: "inherit",
         transition: "border-color 0.2s",
     };
@@ -102,7 +102,7 @@ export default function Contact() {
                                 placeholder="Ваше ім'я"
                                 style={inputStyle}
                                 onFocus={(e) => (e.currentTarget.style.borderColor = "rgba(107,63,240,0.6)")}
-                                onBlur={(e) => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)")}
+                                onBlur={(e) => (e.currentTarget.style.borderColor = "rgba(15,14,26,0.12)")}
                             />
                             {errors.name && <p style={errorStyle}>{errors.name.message}</p>}
                         </div>
@@ -114,7 +114,7 @@ export default function Contact() {
                                 placeholder="Telegram або телефон"
                                 style={inputStyle}
                                 onFocus={(e) => (e.currentTarget.style.borderColor = "rgba(107,63,240,0.6)")}
-                                onBlur={(e) => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)")}
+                                onBlur={(e) => (e.currentTarget.style.borderColor = "rgba(15,14,26,0.12)")}
                             />
                             {errors.contact && <p style={errorStyle}>{errors.contact.message}</p>}
                         </div>
@@ -126,7 +126,7 @@ export default function Contact() {
                                 rows={5}
                                 style={{ ...inputStyle, resize: "vertical" }}
                                 onFocus={(e) => (e.currentTarget.style.borderColor = "rgba(107,63,240,0.6)")}
-                                onBlur={(e) => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)")}
+                                onBlur={(e) => (e.currentTarget.style.borderColor = "rgba(15,14,26,0.12)")}
                             />
                             {errors.message && <p style={errorStyle}>{errors.message.message}</p>}
                         </div>
@@ -185,27 +185,30 @@ export default function Contact() {
                                 alignItems: "center",
                                 gap: "16px",
                                 padding: "20px 24px",
-                                background: "rgba(255,255,255,0.04)",
-                                border: "0.5px solid rgba(255,255,255,0.08)",
+                                background: "#FFFFFF",
+                                border: "0.5px solid rgba(15,14,26,0.08)",
                                 borderRadius: "12px",
                                 cursor: "pointer",
-                                transition: "border-color 0.2s, background 0.2s",
+                                boxShadow: "0 1px 3px rgba(15,14,26,0.04)",
+                                transition: "border-color 0.2s, background 0.2s, box-shadow 0.2s",
                             }}
                             onMouseEnter={(e) => {
                                 (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(107,63,240,0.4)";
-                                (e.currentTarget as HTMLDivElement).style.background = "rgba(107,63,240,0.06)";
+                                (e.currentTarget as HTMLDivElement).style.background = "rgba(107,63,240,0.03)";
+                                (e.currentTarget as HTMLDivElement).style.boxShadow = "0 8px 24px rgba(107,63,240,0.14)";
                             }}
                             onMouseLeave={(e) => {
-                                (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(255,255,255,0.08)";
-                                (e.currentTarget as HTMLDivElement).style.background = "rgba(255,255,255,0.04)";
+                                (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(15,14,26,0.08)";
+                                (e.currentTarget as HTMLDivElement).style.background = "#FFFFFF";
+                                (e.currentTarget as HTMLDivElement).style.boxShadow = "0 1px 3px rgba(15,14,26,0.04)";
                             }}
                         >
                             <span style={{ fontSize: "24px" }}>✈️</span>
                             <div style={{ minWidth: 0 }}>
-                                <div style={{ fontSize: "12px", color: "rgba(255,255,255,0.4)", marginBottom: "2px" }}>
+                                <div style={{ fontSize: "12px", color: "rgba(15,14,26,0.45)", marginBottom: "2px" }}>
                                     Telegram
                                 </div>
-                                <div style={{ fontSize: "15px", fontWeight: 500, color: "#ffffff", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                                <div style={{ fontSize: "15px", fontWeight: 500, color: "#0F0E1A", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                                     {SITE.telegramNick}
                                 </div>
                             </div>
@@ -218,33 +221,36 @@ export default function Contact() {
                                 alignItems: "center",
                                 gap: "16px",
                                 padding: "20px 24px",
-                                background: "rgba(255,255,255,0.04)",
-                                border: "0.5px solid rgba(255,255,255,0.08)",
+                                background: "#FFFFFF",
+                                border: "0.5px solid rgba(15,14,26,0.08)",
                                 borderRadius: "12px",
                                 cursor: "pointer",
-                                transition: "border-color 0.2s, background 0.2s",
+                                boxShadow: "0 1px 3px rgba(15,14,26,0.04)",
+                                transition: "border-color 0.2s, background 0.2s, box-shadow 0.2s",
                             }}
                             onMouseEnter={(e) => {
                                 (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(107,63,240,0.4)";
-                                (e.currentTarget as HTMLDivElement).style.background = "rgba(107,63,240,0.06)";
+                                (e.currentTarget as HTMLDivElement).style.background = "rgba(107,63,240,0.03)";
+                                (e.currentTarget as HTMLDivElement).style.boxShadow = "0 8px 24px rgba(107,63,240,0.14)";
                             }}
                             onMouseLeave={(e) => {
-                                (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(255,255,255,0.08)";
-                                (e.currentTarget as HTMLDivElement).style.background = "rgba(255,255,255,0.04)";
+                                (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(15,14,26,0.08)";
+                                (e.currentTarget as HTMLDivElement).style.background = "#FFFFFF";
+                                (e.currentTarget as HTMLDivElement).style.boxShadow = "0 1px 3px rgba(15,14,26,0.04)";
                             }}
                         >
                             <span style={{ fontSize: "24px" }}>✉️</span>
                             <div style={{ minWidth: 0 }}>
-                                <div style={{ fontSize: "12px", color: "rgba(255,255,255,0.4)", marginBottom: "2px" }}>
+                                <div style={{ fontSize: "12px", color: "rgba(15,14,26,0.45)", marginBottom: "2px" }}>
                                     Email
                                 </div>
-                                <div style={{ fontSize: "15px", fontWeight: 500, color: "#ffffff", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                                <div style={{ fontSize: "15px", fontWeight: 500, color: "#0F0E1A", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                                     {SITE.email}
                                 </div>
                             </div>
                         </div>
 
-                        <p style={{ fontSize: "13px", color: "rgba(255,255,255,0.3)", marginTop: "8px" }}>
+                        <p style={{ fontSize: "13px", color: "rgba(15,14,26,0.4)", marginTop: "8px" }}>
                             {"Робочі години: пн–пт, 10:00–19:00"}
                         </p>
                     </div>

@@ -12,7 +12,7 @@ function FAQItem({ question, answer }: { question: string; answer: string }) {
     return (
         <div
             style={{
-                borderBottom: "0.5px solid rgba(255,255,255,0.08)",
+                borderBottom: "0.5px solid rgba(15,14,26,0.08)",
             }}
         >
             <button
@@ -31,7 +31,7 @@ function FAQItem({ question, answer }: { question: string; answer: string }) {
                     fontFamily: "inherit",
                 }}
             >
-        <span style={{ fontSize: "15px", fontWeight: 500, color: "#ffffff" }}>
+        <span style={{ fontSize: "15px", fontWeight: 500, color: "#0F0E1A" }}>
           {question}
         </span>
                 <motion.span
@@ -60,7 +60,7 @@ function FAQItem({ question, answer }: { question: string; answer: string }) {
                         <p
                             style={{
                                 fontSize: "14px",
-                                color: "rgba(255,255,255,0.5)",
+                                color: "rgba(15,14,26,0.55)",
                                 lineHeight: 1.8,
                                 paddingBottom: "20px",
                             }}

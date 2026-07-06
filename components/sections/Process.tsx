@@ -25,12 +25,13 @@ export default function Process() {
                             viewport={{ once: true }}
                             transition={{ duration: 0.5, delay: i * 0.1 }}
                             style={{
-                                background: "rgba(255,255,255,0.03)",
-                                border: "0.5px solid rgba(255,255,255,0.07)",
+                                background: "#FFFFFF",
+                                border: "0.5px solid rgba(15,14,26,0.07)",
                                 borderRadius: "16px",
                                 padding: "32px",
                                 position: "relative",
                                 overflow: "hidden",
+                                boxShadow: "0 1px 3px rgba(15,14,26,0.04)",
                             }}
                         >
                             {/* Big number background */}
@@ -41,7 +42,7 @@ export default function Process() {
                                     right: "16px",
                                     fontSize: "80px",
                                     fontWeight: 700,
-                                    color: "rgba(107,63,240,0.08)",
+                                    color: "rgba(107,63,240,0.10)",
                                     lineHeight: 1,
                                     letterSpacing: "-3px",
                                     userSelect: "none",
@@ -55,14 +56,15 @@ export default function Process() {
                                     width: "32px",
                                     height: "32px",
                                     borderRadius: "8px",
-                                    background: "linear-gradient(135deg, rgba(107,63,240,0.3), rgba(0,100,255,0.3))",
+                                    background: "linear-gradient(135deg, #6B3FF0, #4F46E5)",
                                     display: "flex",
                                     alignItems: "center",
                                     justifyContent: "center",
                                     fontSize: "13px",
                                     fontWeight: 700,
-                                    color: "rgba(255,255,255,0.8)",
+                                    color: "#ffffff",
                                     marginBottom: "20px",
+                                    boxShadow: "0 2px 8px rgba(107,63,240,0.30)",
                                 }}
                             >
                                 {step.number}
@@ -72,7 +74,7 @@ export default function Process() {
                                 style={{
                                     fontSize: "17px",
                                     fontWeight: 600,
-                                    color: "#ffffff",
+                                    color: "#0F0E1A",
                                     marginBottom: "10px",
                                 }}
                             >
@@ -81,7 +83,7 @@ export default function Process() {
                             <p
                                 style={{
                                     fontSize: "14px",
-                                    color: "rgba(255,255,255,0.5)",
+                                    color: "rgba(15,14,26,0.55)",
                                     lineHeight: 1.7,
                                 }}
                             >

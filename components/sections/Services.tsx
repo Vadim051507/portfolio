@@ -72,11 +72,12 @@ export default function Services() {
                             whileInView="visible"
                             viewport={{ once: true, amount: 0.1 }}
                             style={{
-                                background: "rgba(255,255,255,0.04)",
-                                border: "0.5px solid rgba(255,255,255,0.08)",
+                                background: "#FFFFFF",
+                                border: "0.5px solid rgba(15,14,26,0.08)",
                                 borderRadius: "16px",
                                 padding: "32px",
-                                transition: "border-color 0.2s, background 0.2s",
+                                boxShadow: "0 1px 3px rgba(15,14,26,0.04)",
+                                transition: "border-color 0.2s, background 0.2s, box-shadow 0.2s",
                                 cursor: "default",
                             }}
                             whileHover={{
@@ -85,11 +86,13 @@ export default function Services() {
                             }}
                             onMouseEnter={(e) => {
                                 (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(107,63,240,0.4)";
-                                (e.currentTarget as HTMLDivElement).style.background = "rgba(107,63,240,0.06)";
+                                (e.currentTarget as HTMLDivElement).style.background = "rgba(107,63,240,0.04)";
+                                (e.currentTarget as HTMLDivElement).style.boxShadow = "0 8px 24px rgba(107,63,240,0.14)";
                             }}
                             onMouseLeave={(e) => {
-                                (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(255,255,255,0.08)";
-                                (e.currentTarget as HTMLDivElement).style.background = "rgba(255,255,255,0.04)";
+                                (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(15,14,26,0.08)";
+                                (e.currentTarget as HTMLDivElement).style.background = "#FFFFFF";
+                                (e.currentTarget as HTMLDivElement).style.boxShadow = "0 1px 3px rgba(15,14,26,0.04)";
                             }}
                         >
                             <div
@@ -111,7 +114,7 @@ export default function Services() {
                                 style={{
                                     fontSize: "18px",
                                     fontWeight: 600,
-                                    color: "#ffffff",
+                                    color: "#0F0E1A",
                                     marginBottom: "10px",
                                 }}
                             >
@@ -120,7 +123,7 @@ export default function Services() {
                             <p
                                 style={{
                                     fontSize: "14px",
-                                    color: "rgba(255,255,255,0.5)",
+                                    color: "rgba(15,14,26,0.55)",
                                     lineHeight: 1.7,
                                     marginBottom: "20px",
                                 }}
