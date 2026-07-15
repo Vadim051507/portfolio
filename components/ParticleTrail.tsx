@@ -14,7 +14,14 @@ export default function ParticleTrail() {
         let W = mount.offsetWidth;
         let H = mount.offsetHeight;
 
-        const renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true });
+        // Gracefully degrade when WebGL is unavailable (old devices, some
+        // headless/embedded browsers) instead of crashing the page.
+        let renderer: THREE.WebGLRenderer;
+        try {
+            renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true });
+        } catch {
+            return;
+        }
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         renderer.setSize(W, H);
         renderer.setClearColor(0x000000, 0);
@@ -120,19 +127,20 @@ export default function ParticleTrail() {
         tctx.fillRect(0, 0, 32, 32);
 
         const mat = new THREE.PointsMaterial({
-            size: 3.0,
+            size: 3.4,
             vertexColors: true,
             transparent: true,
             depthWrite: false,
             sizeAttenuation: false,
             map: new THREE.CanvasTexture(tc),
             alphaTest: 0.005,
+            blending: THREE.AdditiveBlending,
         });
         scene.add(new THREE.Points(geo, mat));
 
-        const cA = new THREE.Color("#9933FF");
-        const cB = new THREE.Color("#1144FF");
-        const cC = new THREE.Color("#0099FF");
+        const cA = new THREE.Color("#A855F7");
+        const cB = new THREE.Color("#6366F1");
+        const cC = new THREE.Color("#22D3EE");
         const getColor = (t: number) => {
             const c = new THREE.Color();
             if (t < 0.5) c.lerpColors(cA, cB, t * 2);

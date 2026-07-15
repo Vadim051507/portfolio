@@ -5,21 +5,41 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "framer-motion";
 import Container from "@/components/ui/Container";
-import SectionTitle from "@/components/ui/SectionTitle";
+import Reveal from "@/components/site/Reveal";
+import AnimatedHeading from "@/components/site/AnimatedHeading";
 import { contactSchema, ContactFormData } from "@/lib/validation";
 import { SITE } from "@/lib/constants";
 
+const inputStyle: React.CSSProperties = {
+    width: "100%",
+    padding: "14px 16px",
+    fontSize: 14.5,
+    background: "rgba(255,255,255,0.03)",
+    border: "1px solid var(--border)",
+    borderRadius: 12,
+    outline: "none",
+    color: "var(--text)",
+    fontFamily: "inherit",
+    transition: "border-color 0.25s, box-shadow 0.25s",
+};
+
+const errorStyle: React.CSSProperties = {
+    fontSize: 12,
+    color: "#FB7185",
+    marginTop: 6,
+};
+
 export default function Contact() {
-    const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+    const [status, setStatus] = useState<
+        "idle" | "loading" | "success" | "error"
+    >("idle");
 
     const {
         register,
         handleSubmit,
         reset,
         formState: { errors },
-    } = useForm<ContactFormData>({
-        resolver: zodResolver(contactSchema),
-    });
+    } = useForm<ContactFormData>({ resolver: zodResolver(contactSchema) });
 
     const onSubmit = async (data: ContactFormData) => {
         setStatus("loading");
@@ -32,230 +52,327 @@ export default function Contact() {
             if (res.ok) {
                 setStatus("success");
                 reset();
-            } else {
-                setStatus("error");
-            }
+            } else setStatus("error");
         } catch {
             setStatus("error");
         }
     };
 
-    const inputStyle = {
-        width: "100%",
-        padding: "12px 16px",
-        fontSize: "14px",
-        background: "#FFFFFF",
-        border: "0.5px solid rgba(15,14,26,0.12)",
-        borderRadius: "8px",
-        outline: "none",
-        color: "#0F0E1A",
-        fontFamily: "inherit",
-        transition: "border-color 0.2s",
+    const focus = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        e.currentTarget.style.borderColor = "rgba(139,92,246,0.6)";
+        e.currentTarget.style.boxShadow = "0 0 0 3px rgba(139,92,246,0.14)";
     };
-
-    const errorStyle = {
-        fontSize: "12px",
-        color: "#F87171",
-        marginTop: "4px",
+    const blur = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        e.currentTarget.style.borderColor = "var(--border)";
+        e.currentTarget.style.boxShadow = "none";
     };
 
     return (
-        <section id="contact" style={{ padding: "120px 0", position: "relative" }}>
+        <section id="contact" style={{ padding: "130px 0", position: "relative" }}>
             <style>{`
                 .contact-grid {
                     display: grid;
                     grid-template-columns: 1fr 1fr;
-                    gap: 64px;
-                    align-items: start;
+                    gap: 56px;
+                    align-items: stretch;
                 }
                 @media (max-width: 768px) {
-                    .contact-grid {
-                        grid-template-columns: 1fr;
-                        gap: 40px;
-                    }
+                    .contact-grid { grid-template-columns: 1fr; gap: 40px; }
                 }
             `}</style>
+
             <Container>
-                <SectionTitle
-                    title="Зв'язатись"
-                    subtitle="Розкажіть про проєкт — відповім протягом дня."
-                />
+                <div
+                    className="glass"
+                    style={{
+                        padding: "clamp(28px, 5vw, 60px)",
+                        position: "relative",
+                        overflow: "hidden",
+                    }}
+                >
+                    {/* corner glow */}
+                    <div
+                        aria-hidden
+                        style={{
+                            position: "absolute",
+                            top: "-30%",
+                            right: "-10%",
+                            width: 420,
+                            height: 420,
+                            borderRadius: "50%",
+                            background:
+                                "radial-gradient(circle, rgba(139,92,246,0.28), transparent 65%)",
+                            filter: "blur(20px)",
+                            pointerEvents: "none",
+                        }}
+                    />
 
-                <div className="contact-grid">
-                    {/* Form */}
-                    <form
-                        onSubmit={handleSubmit(onSubmit)}
-                        style={{ display: "flex", flexDirection: "column", gap: "16px" }}
-                    >
-                        <input
-                            {...register("honeypot")}
-                            type="text"
-                            style={{ display: "none" }}
-                            tabIndex={-1}
-                            autoComplete="off"
-                        />
-
-                        <div>
-                            <input
-                                {...register("name")}
-                                type="text"
-                                placeholder="Ваше ім'я"
-                                style={inputStyle}
-                                onFocus={(e) => (e.currentTarget.style.borderColor = "rgba(107,63,240,0.6)")}
-                                onBlur={(e) => (e.currentTarget.style.borderColor = "rgba(15,14,26,0.12)")}
-                            />
-                            {errors.name && <p style={errorStyle}>{errors.name.message}</p>}
-                        </div>
-
-                        <div>
-                            <input
-                                {...register("contact")}
-                                type="text"
-                                placeholder="Telegram або телефон"
-                                style={inputStyle}
-                                onFocus={(e) => (e.currentTarget.style.borderColor = "rgba(107,63,240,0.6)")}
-                                onBlur={(e) => (e.currentTarget.style.borderColor = "rgba(15,14,26,0.12)")}
-                            />
-                            {errors.contact && <p style={errorStyle}>{errors.contact.message}</p>}
-                        </div>
-
-                        <div>
-                            <textarea
-                                {...register("message")}
-                                placeholder="Опишіть проєкт"
-                                rows={5}
-                                style={{ ...inputStyle, resize: "vertical" }}
-                                onFocus={(e) => (e.currentTarget.style.borderColor = "rgba(107,63,240,0.6)")}
-                                onBlur={(e) => (e.currentTarget.style.borderColor = "rgba(15,14,26,0.12)")}
-                            />
-                            {errors.message && <p style={errorStyle}>{errors.message.message}</p>}
-                        </div>
-
-                        <button
-                            type="submit"
-                            disabled={status === "loading"}
+                    <div className="contact-grid" style={{ position: "relative" }}>
+                        {/* Left — pitch + contacts */}
+                        <div
                             style={{
-                                padding: "14px 32px",
-                                background: status === "loading"
-                                    ? "rgba(107,63,240,0.4)"
-                                    : "linear-gradient(135deg, #6B3FF0, #0066FF)",
-                                color: "#ffffff",
-                                fontWeight: 600,
-                                fontSize: "15px",
-                                borderRadius: "8px",
-                                border: "none",
-                                cursor: status === "loading" ? "not-allowed" : "pointer",
-                                fontFamily: "inherit",
-                                transition: "opacity 0.2s",
-                            }}
-                            onMouseEnter={(e) => {
-                                if (status !== "loading")
-                                    (e.currentTarget as HTMLButtonElement).style.opacity = "0.85";
-                            }}
-                            onMouseLeave={(e) => {
-                                if (status !== "loading")
-                                    (e.currentTarget as HTMLButtonElement).style.opacity = "1";
+                                display: "flex",
+                                flexDirection: "column",
                             }}
                         >
-                            {status === "loading" ? "Надсилаємо..." : "Надіслати"}
-                        </button>
-
-                        {status === "success" && (
-                            <motion.p
-                                initial={{ opacity: 0, y: 8 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                style={{ fontSize: "14px", color: "#22C55E", fontWeight: 500 }}
+                            <span
+                                className="eyebrow"
+                                style={{ marginBottom: 18 }}
                             >
-                                {"✓ Дякую! Отримав повідомлення. Відповім якнайшвидше."}
-                            </motion.p>
-                        )}
-                        {status === "error" && (
-                            <p style={{ fontSize: "14px", color: "#F87171" }}>
-                                {"Щось пішло не так. Напишіть мені напряму в Telegram."}
+                                Контакти
+                            </span>
+                            <AnimatedHeading
+                                segments={[
+                                    { text: "Давайте зробимо" },
+                                    { text: "щось круте", gradient: true },
+                                ]}
+                                style={{
+                                    fontSize: "clamp(28px, 4vw, 44px)",
+                                    fontWeight: 700,
+                                    letterSpacing: "-1.2px",
+                                    lineHeight: 1.05,
+                                    color: "var(--text)",
+                                }}
+                            />
+                            <p
+                                style={{
+                                    fontSize: 16,
+                                    color: "var(--text-2)",
+                                    lineHeight: 1.7,
+                                    marginTop: 18,
+                                    marginBottom: 32,
+                                    maxWidth: 400,
+                                }}
+                            >
+                                Розкажіть про проєкт — відповім протягом дня. Без
+                                передоплати, поки не побачите результат.
                             </p>
-                        )}
-                    </form>
 
-                    {/* Contacts */}
-                    <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-                        <div
-                            onClick={() => window.open(SITE.telegram, "_blank")}
-                            style={{
-                                display: "flex",
-                                alignItems: "center",
-                                gap: "16px",
-                                padding: "20px 24px",
-                                background: "#FFFFFF",
-                                border: "0.5px solid rgba(15,14,26,0.08)",
-                                borderRadius: "12px",
-                                cursor: "pointer",
-                                boxShadow: "0 1px 3px rgba(15,14,26,0.04)",
-                                transition: "border-color 0.2s, background 0.2s, box-shadow 0.2s",
-                            }}
-                            onMouseEnter={(e) => {
-                                (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(107,63,240,0.4)";
-                                (e.currentTarget as HTMLDivElement).style.background = "rgba(107,63,240,0.03)";
-                                (e.currentTarget as HTMLDivElement).style.boxShadow = "0 8px 24px rgba(107,63,240,0.14)";
-                            }}
-                            onMouseLeave={(e) => {
-                                (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(15,14,26,0.08)";
-                                (e.currentTarget as HTMLDivElement).style.background = "#FFFFFF";
-                                (e.currentTarget as HTMLDivElement).style.boxShadow = "0 1px 3px rgba(15,14,26,0.04)";
-                            }}
-                        >
-                            <span style={{ fontSize: "24px" }}>✈️</span>
-                            <div style={{ minWidth: 0 }}>
-                                <div style={{ fontSize: "12px", color: "rgba(15,14,26,0.45)", marginBottom: "2px" }}>
-                                    Telegram
-                                </div>
-                                <div style={{ fontSize: "15px", fontWeight: 500, color: "#0F0E1A", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                                    {SITE.telegramNick}
-                                </div>
+                            <div
+                                style={{
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    gap: 12,
+                                    marginTop: "auto",
+                                }}
+                            >
+                                <ContactCard
+                                    icon="✈️"
+                                    label="Telegram"
+                                    value={SITE.telegramNick}
+                                    onClick={() =>
+                                        window.open(SITE.telegram, "_blank")
+                                    }
+                                />
+                                <ContactCard
+                                    icon="✉️"
+                                    label="Email"
+                                    value={SITE.email}
+                                    onClick={() =>
+                                        window.open(`mailto:${SITE.email}`)
+                                    }
+                                />
+                                <p
+                                    style={{
+                                        fontSize: 13,
+                                        color: "var(--text-3)",
+                                        marginTop: 6,
+                                    }}
+                                >
+                                    Робочі години: пн–пт, 10:00–19:00
+                                </p>
                             </div>
                         </div>
 
-                        <div
-                            onClick={() => window.open(`mailto:${SITE.email}`)}
-                            style={{
-                                display: "flex",
-                                alignItems: "center",
-                                gap: "16px",
-                                padding: "20px 24px",
-                                background: "#FFFFFF",
-                                border: "0.5px solid rgba(15,14,26,0.08)",
-                                borderRadius: "12px",
-                                cursor: "pointer",
-                                boxShadow: "0 1px 3px rgba(15,14,26,0.04)",
-                                transition: "border-color 0.2s, background 0.2s, box-shadow 0.2s",
-                            }}
-                            onMouseEnter={(e) => {
-                                (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(107,63,240,0.4)";
-                                (e.currentTarget as HTMLDivElement).style.background = "rgba(107,63,240,0.03)";
-                                (e.currentTarget as HTMLDivElement).style.boxShadow = "0 8px 24px rgba(107,63,240,0.14)";
-                            }}
-                            onMouseLeave={(e) => {
-                                (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(15,14,26,0.08)";
-                                (e.currentTarget as HTMLDivElement).style.background = "#FFFFFF";
-                                (e.currentTarget as HTMLDivElement).style.boxShadow = "0 1px 3px rgba(15,14,26,0.04)";
-                            }}
-                        >
-                            <span style={{ fontSize: "24px" }}>✉️</span>
-                            <div style={{ minWidth: 0 }}>
-                                <div style={{ fontSize: "12px", color: "rgba(15,14,26,0.45)", marginBottom: "2px" }}>
-                                    Email
+                        {/* Right — form */}
+                        <Reveal delay={0.1}>
+                            <form
+                                onSubmit={handleSubmit(onSubmit)}
+                                style={{
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    gap: 16,
+                                }}
+                            >
+                                <input
+                                    {...register("honeypot")}
+                                    type="text"
+                                    style={{ display: "none" }}
+                                    tabIndex={-1}
+                                    autoComplete="off"
+                                />
+                                <div>
+                                    <input
+                                        {...register("name")}
+                                        placeholder="Ваше ім'я"
+                                        style={inputStyle}
+                                        onFocus={focus}
+                                        onBlur={blur}
+                                    />
+                                    {errors.name && (
+                                        <p style={errorStyle}>
+                                            {errors.name.message}
+                                        </p>
+                                    )}
                                 </div>
-                                <div style={{ fontSize: "15px", fontWeight: 500, color: "#0F0E1A", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                                    {SITE.email}
+                                <div>
+                                    <input
+                                        {...register("contact")}
+                                        placeholder="Telegram або телефон"
+                                        style={inputStyle}
+                                        onFocus={focus}
+                                        onBlur={blur}
+                                    />
+                                    {errors.contact && (
+                                        <p style={errorStyle}>
+                                            {errors.contact.message}
+                                        </p>
+                                    )}
                                 </div>
-                            </div>
-                        </div>
+                                <div>
+                                    <textarea
+                                        {...register("message")}
+                                        placeholder="Опишіть проєкт"
+                                        rows={5}
+                                        style={{ ...inputStyle, resize: "vertical" }}
+                                        onFocus={focus}
+                                        onBlur={blur}
+                                    />
+                                    {errors.message && (
+                                        <p style={errorStyle}>
+                                            {errors.message.message}
+                                        </p>
+                                    )}
+                                </div>
 
-                        <p style={{ fontSize: "13px", color: "rgba(15,14,26,0.4)", marginTop: "8px" }}>
-                            {"Робочі години: пн–пт, 10:00–19:00"}
-                        </p>
+                                <button
+                                    type="submit"
+                                    disabled={status === "loading"}
+                                    style={{
+                                        padding: "16px 32px",
+                                        marginTop: 4,
+                                        background:
+                                            status === "loading"
+                                                ? "rgba(139,92,246,0.4)"
+                                                : "linear-gradient(115deg,#A855F7,#6366F1 55%,#22D3EE)",
+                                        color: "#fff",
+                                        fontWeight: 600,
+                                        fontSize: 15,
+                                        fontFamily: "var(--font-display)",
+                                        borderRadius: 12,
+                                        border: "none",
+                                        cursor:
+                                            status === "loading"
+                                                ? "not-allowed"
+                                                : "pointer",
+                                        boxShadow:
+                                            "0 10px 34px rgba(139,92,246,0.4)",
+                                        transition: "opacity 0.2s, transform 0.2s",
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        if (status !== "loading")
+                                            e.currentTarget.style.transform =
+                                                "translateY(-2px)";
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.transform =
+                                            "translateY(0)";
+                                    }}
+                                >
+                                    {status === "loading"
+                                        ? "Надсилаємо..."
+                                        : "Надіслати заявку →"}
+                                </button>
+
+                                {status === "success" && (
+                                    <motion.p
+                                        initial={{ opacity: 0, y: 8 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        style={{
+                                            fontSize: 14,
+                                            color: "#4ADE80",
+                                            fontWeight: 500,
+                                        }}
+                                    >
+                                        ✓ Дякую! Отримав повідомлення. Відповім
+                                        якнайшвидше.
+                                    </motion.p>
+                                )}
+                                {status === "error" && (
+                                    <p style={{ fontSize: 14, color: "#FB7185" }}>
+                                        Щось пішло не так. Напишіть мені напряму в
+                                        Telegram.
+                                    </p>
+                                )}
+                            </form>
+                        </Reveal>
                     </div>
                 </div>
             </Container>
         </section>
+    );
+}
+
+function ContactCard({
+    icon,
+    label,
+    value,
+    onClick,
+}: {
+    icon: string;
+    label: string;
+    value: string;
+    onClick: () => void;
+}) {
+    return (
+        <div
+            onClick={onClick}
+            style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 16,
+                padding: "16px 20px",
+                background: "rgba(255,255,255,0.03)",
+                border: "1px solid var(--border)",
+                borderRadius: 14,
+                cursor: "pointer",
+                transition: "border-color 0.25s, background 0.25s, transform 0.25s",
+            }}
+            onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = "var(--border-strong)";
+                e.currentTarget.style.background = "rgba(139,92,246,0.06)";
+                e.currentTarget.style.transform = "translateX(4px)";
+            }}
+            onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = "var(--border)";
+                e.currentTarget.style.background = "rgba(255,255,255,0.03)";
+                e.currentTarget.style.transform = "translateX(0)";
+            }}
+        >
+            <span style={{ fontSize: 22 }}>{icon}</span>
+            <div style={{ minWidth: 0 }}>
+                <div
+                    style={{
+                        fontSize: 12,
+                        color: "var(--text-3)",
+                        marginBottom: 2,
+                    }}
+                >
+                    {label}
+                </div>
+                <div
+                    style={{
+                        fontSize: 15,
+                        fontWeight: 500,
+                        color: "var(--text)",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                    }}
+                >
+                    {value}
+                </div>
+            </div>
+        </div>
     );
 }

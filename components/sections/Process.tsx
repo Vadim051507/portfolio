@@ -1,98 +1,163 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { useRef } from "react";
+import { motion, useScroll, useSpring, useTransform } from "framer-motion";
 import Container from "@/components/ui/Container";
 import SectionTitle from "@/components/ui/SectionTitle";
 import { PROCESS_STEPS } from "@/lib/constants";
 
 export default function Process() {
+    const ref = useRef<HTMLDivElement>(null);
+    const { scrollYProgress } = useScroll({
+        target: ref,
+        offset: ["start 65%", "end 55%"],
+    });
+    const fill = useSpring(scrollYProgress, {
+        stiffness: 90,
+        damping: 26,
+        restDelta: 0.001,
+    });
+
     return (
-        <section id="process" style={{ padding: "120px 0", position: "relative" }}>
+        <section id="process" style={{ padding: "130px 0", position: "relative" }}>
             <Container>
-                <SectionTitle title="Як проходить робота" />
+                <SectionTitle
+                    eyebrow="Процес"
+                    title="Як проходить робота"
+                    gradientWord="робота"
+                    subtitle="Прозоро на кожному кроці. Ви завжди знаєте, що відбувається із сайтом."
+                />
+
                 <div
-                    style={{
-                        display: "grid",
-                        gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-                        gap: "2px",
-                    }}
+                    ref={ref}
+                    style={{ position: "relative", maxWidth: 820, margin: "0 auto" }}
                 >
+                    {/* rail track */}
+                    <div
+                        style={{
+                            position: "absolute",
+                            left: 27,
+                            top: 10,
+                            bottom: 10,
+                            width: 2,
+                            background: "var(--border)",
+                        }}
+                    />
+                    {/* rail fill */}
+                    <motion.div
+                        style={{
+                            position: "absolute",
+                            left: 27,
+                            top: 10,
+                            bottom: 10,
+                            width: 2,
+                            transformOrigin: "top",
+                            scaleY: fill,
+                            background:
+                                "linear-gradient(180deg, #A855F7, #6366F1, #22D3EE)",
+                            boxShadow: "0 0 14px rgba(139,92,246,0.7)",
+                        }}
+                    />
+
                     {PROCESS_STEPS.map((step, i) => (
-                        <motion.div
+                        <Step
                             key={step.number}
-                            initial={{ opacity: 0, y: 24 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ duration: 0.5, delay: i * 0.1 }}
-                            style={{
-                                background: "#FFFFFF",
-                                border: "0.5px solid rgba(15,14,26,0.07)",
-                                borderRadius: "16px",
-                                padding: "32px",
-                                position: "relative",
-                                overflow: "hidden",
-                                boxShadow: "0 1px 3px rgba(15,14,26,0.04)",
-                            }}
-                        >
-                            {/* Big number background */}
-                            <div
-                                style={{
-                                    position: "absolute",
-                                    top: "12px",
-                                    right: "16px",
-                                    fontSize: "80px",
-                                    fontWeight: 700,
-                                    color: "rgba(107,63,240,0.10)",
-                                    lineHeight: 1,
-                                    letterSpacing: "-3px",
-                                    userSelect: "none",
-                                }}
-                            >
-                                {step.number}
-                            </div>
-
-                            <div
-                                style={{
-                                    width: "32px",
-                                    height: "32px",
-                                    borderRadius: "8px",
-                                    background: "linear-gradient(135deg, #6B3FF0, #4F46E5)",
-                                    display: "flex",
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                    fontSize: "13px",
-                                    fontWeight: 700,
-                                    color: "#ffffff",
-                                    marginBottom: "20px",
-                                    boxShadow: "0 2px 8px rgba(107,63,240,0.30)",
-                                }}
-                            >
-                                {step.number}
-                            </div>
-
-                            <h3
-                                style={{
-                                    fontSize: "17px",
-                                    fontWeight: 600,
-                                    color: "#0F0E1A",
-                                    marginBottom: "10px",
-                                }}
-                            >
-                                {step.title}
-                            </h3>
-                            <p
-                                style={{
-                                    fontSize: "14px",
-                                    color: "rgba(15,14,26,0.55)",
-                                    lineHeight: 1.7,
-                                }}
-                            >
-                                {step.description}
-                            </p>
-                        </motion.div>
+                            step={step}
+                            index={i}
+                            total={PROCESS_STEPS.length}
+                            progress={fill}
+                        />
                     ))}
                 </div>
             </Container>
         </section>
+    );
+}
+
+function Step({
+    step,
+    index,
+    total,
+    progress,
+}: {
+    step: (typeof PROCESS_STEPS)[number];
+    index: number;
+    total: number;
+    progress: ReturnType<typeof useSpring>;
+}) {
+    const threshold = index / (total - 1 || 1);
+    // dot lights up once the fill passes this step
+    const dotBg = useTransform(progress, (v) =>
+        v >= threshold - 0.02 ? "#8B5CF6" : "#0B0D18"
+    );
+    const dotShadow = useTransform(progress, (v) =>
+        v >= threshold - 0.02
+            ? "0 0 22px rgba(139,92,246,0.9)"
+            : "0 0 0 rgba(0,0,0,0)"
+    );
+
+    return (
+        <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: "-15% 0px" }}
+            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+            style={{
+                position: "relative",
+                display: "flex",
+                gap: 28,
+                paddingBottom: index === total - 1 ? 0 : 56,
+            }}
+        >
+            {/* node */}
+            <motion.div
+                style={{
+                    position: "relative",
+                    zIndex: 1,
+                    width: 56,
+                    height: 56,
+                    flexShrink: 0,
+                    borderRadius: "50%",
+                    display: "grid",
+                    placeItems: "center",
+                    fontFamily: "var(--font-display)",
+                    fontWeight: 700,
+                    fontSize: 18,
+                    color: "#fff",
+                    background: dotBg,
+                    border: "1px solid var(--border-strong)",
+                    boxShadow: dotShadow,
+                }}
+            >
+                {step.number}
+            </motion.div>
+
+            {/* content */}
+            <div
+                className="glass"
+                style={{ flex: 1, padding: "22px 26px", marginTop: 2 }}
+            >
+                <h3
+                    style={{
+                        fontSize: 19,
+                        fontWeight: 600,
+                        color: "var(--text)",
+                        marginBottom: 8,
+                        letterSpacing: "-0.3px",
+                    }}
+                >
+                    {step.title}
+                </h3>
+                <p
+                    style={{
+                        fontSize: 14.5,
+                        color: "var(--text-2)",
+                        lineHeight: 1.7,
+                    }}
+                >
+                    {step.description}
+                </p>
+            </div>
+        </motion.div>
     );
 }
