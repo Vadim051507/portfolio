@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import Container from "@/components/ui/Container";
 import Reveal from "@/components/site/Reveal";
 import AnimatedHeading from "@/components/site/AnimatedHeading";
+import Icon from "@/components/site/Icons";
 import { contactSchema, ContactFormData } from "@/lib/validation";
 import { SITE } from "@/lib/constants";
 
@@ -157,7 +158,7 @@ export default function Contact() {
                                 }}
                             >
                                 <ContactCard
-                                    icon="✈️"
+                                    icon="telegram"
                                     label="Telegram"
                                     value={SITE.telegramNick}
                                     onClick={() =>
@@ -165,7 +166,7 @@ export default function Contact() {
                                     }
                                 />
                                 <ContactCard
-                                    icon="✉️"
+                                    icon="mail"
                                     label="Email"
                                     value={SITE.email}
                                     onClick={() =>
@@ -349,7 +350,21 @@ function ContactCard({
                 e.currentTarget.style.transform = "translateX(0)";
             }}
         >
-            <span style={{ fontSize: 22 }}>{icon}</span>
+            <span
+                style={{
+                    width: 42,
+                    height: 42,
+                    flexShrink: 0,
+                    borderRadius: 12,
+                    display: "grid",
+                    placeItems: "center",
+                    color: "#fff",
+                    background: "linear-gradient(135deg,#8B5CF6,#22D3EE)",
+                    boxShadow: "0 4px 16px rgba(139,92,246,0.4)",
+                }}
+            >
+                <Icon name={icon} size={20} />
+            </span>
             <div style={{ minWidth: 0 }}>
                 <div
                     style={{

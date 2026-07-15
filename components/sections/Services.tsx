@@ -4,21 +4,22 @@ import type React from "react";
 import Container from "@/components/ui/Container";
 import SectionTitle from "@/components/ui/SectionTitle";
 import Reveal from "@/components/site/Reveal";
+import Icon from "@/components/site/Icons";
 import { SERVICES } from "@/lib/constants";
 
 const META = [
     {
-        icon: "🛒",
+        icon: "cart",
         glow: "rgba(168,85,247,0.5)",
         tags: ["Каталог", "Кошик", "Оплата", "Нова Пошта"],
     },
     {
-        icon: "🏢",
+        icon: "building",
         glow: "rgba(99,102,241,0.5)",
         tags: ["Багатосторінковий", "CMS", "SEO"],
     },
     {
-        icon: "🚀",
+        icon: "rocket",
         glow: "rgba(34,211,238,0.5)",
         tags: ["Швидкий старт", "Аналітика", "A/B"],
     },
@@ -96,14 +97,14 @@ export default function Services() {
                                             borderRadius: 16,
                                             display: "grid",
                                             placeItems: "center",
-                                            fontSize: 26,
                                             marginBottom: 22,
                                             background: "rgba(255,255,255,0.04)",
                                             border: "1px solid var(--border)",
                                             boxShadow: `0 0 30px ${m.glow}`,
+                                            color: "#fff",
                                         }}
                                     >
-                                        {m.icon}
+                                        <Icon name={m.icon} size={24} />
                                     </div>
 
                                     <h3

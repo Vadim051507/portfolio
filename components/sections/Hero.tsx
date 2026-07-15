@@ -59,6 +59,7 @@ export default function Hero() {
                 }
             `}</style>
 
+            {/* Original hero S-curve trail (scoped to the hero) */}
             <ParticleTrail />
 
             <Container>

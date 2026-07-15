@@ -3,6 +3,7 @@ import "./globals.css";
 import { SITE } from "@/lib/constants";
 import Nav from "@/components/Nav";
 import AuroraBackground from "@/components/site/AuroraBackground";
+import GlobalParticles from "@/components/site/GlobalParticles";
 import ScrollProgress from "@/components/site/ScrollProgress";
 import SpotlightCursor from "@/components/site/SpotlightCursor";
 
@@ -38,11 +39,15 @@ export default function RootLayout({
             </head>
             <body>
                 <AuroraBackground />
+                <GlobalParticles />
                 <ScrollProgress />
                 <SpotlightCursor />
                 <div className="grain" />
                 <Nav />
-                {children}
+                {/* Content sits above the fixed background layers (aurora +
+                    particle wave) so the wave shows through transparent sections
+                    all the way down to the footer. */}
+                <div style={{ position: "relative", zIndex: 2 }}>{children}</div>
             </body>
         </html>
     );

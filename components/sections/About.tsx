@@ -3,25 +3,30 @@
 import Container from "@/components/ui/Container";
 import Reveal from "@/components/site/Reveal";
 import AnimatedHeading from "@/components/site/AnimatedHeading";
+import Icon from "@/components/site/Icons";
 
 const PRINCIPLES = [
     {
-        icon: "⚡",
+        icon: "zap",
+        glow: "rgba(168,85,247,0.45)",
         title: "Швидкість",
         text: "Оптимізований код і сучасний стек — сайти вантажаться за секунду.",
     },
     {
-        icon: "🎯",
+        icon: "target",
+        glow: "rgba(99,102,241,0.45)",
         title: "Результат",
         text: "Дизайн заточений під заявки та продажі, а не просто «красиво».",
     },
     {
-        icon: "🛠",
+        icon: "sliders",
+        glow: "rgba(59,130,246,0.45)",
         title: "Адмінка",
         text: "Ви самі керуєте контентом — тексти, фото, ціни без розробника.",
     },
     {
-        icon: "🤝",
+        icon: "support",
+        glow: "rgba(34,211,238,0.45)",
         title: "Підтримка",
         text: "Не зникаю після здачі — лишаюсь на зв'язку і допомагаю далі.",
     },
@@ -98,11 +103,19 @@ export default function About() {
                             >
                                 <div
                                     style={{
-                                        fontSize: 28,
-                                        marginBottom: 16,
+                                        width: 48,
+                                        height: 48,
+                                        borderRadius: 13,
+                                        display: "grid",
+                                        placeItems: "center",
+                                        marginBottom: 18,
+                                        color: "#fff",
+                                        background: "rgba(255,255,255,0.04)",
+                                        border: "1px solid var(--border)",
+                                        boxShadow: `0 0 26px ${p.glow}`,
                                     }}
                                 >
-                                    {p.icon}
+                                    <Icon name={p.icon} size={22} />
                                 </div>
                                 <h3
                                     style={{

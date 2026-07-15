@@ -58,7 +58,7 @@ export default function SpotlightCursor() {
                 background:
                     "radial-gradient(circle, rgba(139,92,246,0.10) 0%, rgba(34,211,238,0.05) 35%, transparent 70%)",
                 pointerEvents: "none",
-                zIndex: 1,
+                zIndex: 3,
                 opacity: 0,
                 transition: "opacity 0.6s ease",
                 willChange: "transform",

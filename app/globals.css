@@ -109,13 +109,11 @@ html { scrollbar-color: #6366F1 var(--bg); scrollbar-width: thin; }
   background: linear-gradient(90deg, transparent, var(--violet));
 }
 
-/* Glass card + animated glow border */
+/* Card surface — solid dark so the background wave never bleeds through */
 .glass {
-  background: var(--surface);
+  background: #0b0d17;
   border: 1px solid var(--border);
   border-radius: 20px;
-  backdrop-filter: blur(14px) saturate(140%);
-  -webkit-backdrop-filter: blur(14px) saturate(140%);
 }
 
 /* Spotlight card — reacts to --mx/--my set on hover */

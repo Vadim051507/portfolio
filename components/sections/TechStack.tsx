@@ -2,69 +2,11 @@
 
 import Container from "@/components/ui/Container";
 import SectionTitle from "@/components/ui/SectionTitle";
-import { TECH_STACK } from "@/lib/constants";
-
-// Second row of adjacent tooling for a fuller marquee.
-const ROW_B = ["Framer Motion", "Three.js", "Node.js", "Docker", "Figma", "Stripe", "REST API", "Git"];
-
-function Row({
-    items,
-    reverse,
-    duration,
-}: {
-    items: readonly string[];
-    reverse?: boolean;
-    duration: number;
-}) {
-    const doubled = [...items, ...items];
-    return (
-        <div style={{ overflow: "hidden", width: "100%" }}>
-            <div
-                data-marquee
-                style={{
-                    display: "flex",
-                    gap: 16,
-                    width: "max-content",
-                    animation: `marquee ${duration}s linear infinite`,
-                    animationDirection: reverse ? "reverse" : "normal",
-                }}
-            >
-                {doubled.map((tech, i) => (
-                    <span
-                        key={`${tech}-${i}`}
-                        style={{
-                            display: "inline-flex",
-                            alignItems: "center",
-                            gap: 10,
-                            fontFamily: "var(--font-display)",
-                            fontSize: 15,
-                            fontWeight: 500,
-                            color: "var(--text-2)",
-                            whiteSpace: "nowrap",
-                            padding: "13px 22px",
-                            borderRadius: 12,
-                            background: "var(--surface)",
-                            border: "1px solid var(--border)",
-                        }}
-                    >
-                        <span
-                            style={{
-                                width: 7,
-                                height: 7,
-                                borderRadius: "50%",
-                                background:
-                                    "linear-gradient(135deg,#A855F7,#22D3EE)",
-                            }}
-                        />
-                        {tech}
-                    </span>
-                ))}
-            </div>
-        </div>
-    );
-}
+import { TECH_LOGOS } from "@/components/site/TechLogos";
 
 export default function TechStack() {
+    const doubled = [...TECH_LOGOS, ...TECH_LOGOS];
+
     return (
         <section id="tech" style={{ padding: "90px 0", position: "relative" }}>
             <Container>
@@ -78,17 +20,60 @@ export default function TechStack() {
 
             <div
                 style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: 16,
+                    overflow: "hidden",
                     maskImage:
                         "linear-gradient(90deg, transparent, black 8%, black 92%, transparent)",
                     WebkitMaskImage:
                         "linear-gradient(90deg, transparent, black 8%, black 92%, transparent)",
                 }}
             >
-                <Row items={TECH_STACK} duration={34} />
-                <Row items={ROW_B} reverse duration={40} />
+                <div
+                    data-marquee
+                    style={{
+                        display: "flex",
+                        gap: 16,
+                        width: "max-content",
+                        animation: "marquee 38s linear infinite",
+                    }}
+                >
+                    {doubled.map((t, i) => (
+                        <div
+                            key={`${t.name}-${i}`}
+                            style={{
+                                display: "inline-flex",
+                                alignItems: "center",
+                                gap: 12,
+                                whiteSpace: "nowrap",
+                                padding: "14px 24px",
+                                borderRadius: 14,
+                                background: "#0b0d17",
+                                border: "1px solid var(--border)",
+                            }}
+                        >
+                            <span
+                                style={{
+                                    display: "grid",
+                                    placeItems: "center",
+                                    width: 26,
+                                    height: 26,
+                                    flexShrink: 0,
+                                }}
+                            >
+                                {t.node}
+                            </span>
+                            <span
+                                style={{
+                                    fontFamily: "var(--font-display)",
+                                    fontSize: 16,
+                                    fontWeight: 500,
+                                    color: "var(--text)",
+                                }}
+                            >
+                                {t.name}
+                            </span>
+                        </div>
+                    ))}
+                </div>
             </div>
         </section>
     );

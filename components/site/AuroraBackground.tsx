@@ -14,7 +14,7 @@ export default function AuroraBackground() {
             style={{
                 position: "fixed",
                 inset: 0,
-                zIndex: -2,
+                zIndex: 0,
                 overflow: "hidden",
                 pointerEvents: "none",
                 background:

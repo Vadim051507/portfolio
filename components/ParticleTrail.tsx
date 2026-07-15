@@ -14,8 +14,7 @@ export default function ParticleTrail() {
         let W = mount.offsetWidth;
         let H = mount.offsetHeight;
 
-        // Gracefully degrade when WebGL is unavailable (old devices, some
-        // headless/embedded browsers) instead of crashing the page.
+        // Gracefully degrade when WebGL is unavailable.
         let renderer: THREE.WebGLRenderer;
         try {
             renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true });
