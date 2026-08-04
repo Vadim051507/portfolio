@@ -6,16 +6,16 @@ import * as THREE from "three";
 /**
  * The CONTINUATION of the hero trail.
  *
- * Where the hero S-curve leaves the bottom of the first screen, this picks it up
- * and draws one long, hand-shaped calligraphic ribbon flowing all the way to the
- * footer. The centreline is a Catmull-Rom spline through designed control points
- * (organic meander — a sum of sines that blossoms out of the hero exit, not a
- * mechanical left-right wobble), and the particles form a real ribbon whose
- * thickness follows the curve's normal. Colour drifts violet→indigo→cyan along
- * its length for a slow, hypnotic shimmer.
+ * The hero S-curve exits the first screen heading DOWN-LEFT (around x≈0.44).
+ * This picks it up at exactly that point and direction, then flows as one long,
+ * lush calligraphic band all the way to the footer — same particle material,
+ * width and luminosity as the hero spray, so the two read as a single wave.
  *
- * It lives in document space (anchored to scroll), so it is one continuous
- * composition down the whole page rather than a shape that resets each screen.
+ * The centreline is a Catmull-Rom spline through designed control points (an
+ * organic, slow meander that first continues the hero's leftward exit, then
+ * swings in grand bends — not a fast left-right wobble). Particles form a real
+ * ribbon whose thickness follows the curve's normal, with a soft sprayed halo
+ * and a slow violet→indigo→cyan colour drift.
  */
 export default function PageFlow() {
     const mountRef = useRef<HTMLDivElement>(null);
@@ -40,12 +40,11 @@ export default function PageFlow() {
         mount.appendChild(renderer.domElement);
 
         const scene = new THREE.Scene();
-        // pixel-space camera: x∈[0,W] left→right, y∈[0,H] top→bottom
         const cam = new THREE.OrthographicCamera(0, W, 0, H, -1, 1);
         cam.position.z = 1;
 
-        const SPACING = 500; // vertical px between spline control points
-        const START_X = 0.45; // where the hero S-curve exits (fraction of width)
+        const SPACING = 660; // vertical px between control points → grand, calm bends
+        const COUNT = W < 800 ? 12000 : 24000;
 
         let heroBottom = 0;
         let docEnd = 0;
@@ -61,21 +60,22 @@ export default function PageFlow() {
             const n = Math.ceil((docEnd - heroBottom) / SPACING) + 3;
             xf = new Array(n);
             for (let i = 0; i < n; i++) {
-                const ramp = Math.min(i / 4, 1); // blossom out of the hero exit
-                const drift = 0.5 + 0.07 * Math.sin(i * 0.21 + 0.5);
-                const wob =
-                    0.25 * Math.sin(i * 0.72) +
-                    0.10 * Math.sin(i * 1.83 + 1.1) +
-                    0.05 * Math.sin(i * 3.1 + 2.0);
-                let x = START_X * (1 - ramp) + (drift + wob) * ramp;
-                x = Math.max(0.12, Math.min(0.88, x));
+                // Slow center drift + two low-frequency swings (no tight wiggle).
+                // Phase chosen so the head starts ~0.46 and first moves LEFT,
+                // continuing the hero curve's down-left exit tangent.
+                const base = 0.47 + 0.06 * Math.sin(i * 0.17 + 0.4);
+                const swing =
+                    0.29 * Math.sin(i * 0.6 + Math.PI) +
+                    0.09 * Math.sin(i * 1.35 + 0.7);
+                const ramp = Math.min(i / 2, 1); // reach full amplitude quickly
+                let x = base + swing * ramp;
+                x = Math.max(0.1, Math.min(0.9, x));
                 xf[i] = x;
             }
         };
         buildPath();
 
         const clampIdx = (i: number) => Math.max(0, Math.min(xf.length - 1, i));
-        // Catmull-Rom value + tangent (per unit index) of the x-fraction spline
         const crVal = (i: number, t: number) => {
             const p0 = xf[clampIdx(i - 1)];
             const p1 = xf[clampIdx(i)];
@@ -103,24 +103,27 @@ export default function PageFlow() {
             );
         };
 
-        const COUNT = 16000;
         type P = {
-            u: number; // position along the spline (0 .. n-1)
-            lat: number; // -0.5..0.5 across the ribbon
+            u: number;
+            lat: number; // -1..1 across the band
             speed: number;
             alpha: number;
             colorT: number;
-            tw: number; // twinkle phase
+            tw: number;
         };
         const uMax = () => xf.length - 1;
-        const makeP = (u0: number): P => ({
-            u: u0,
-            lat: (Math.random() - 0.5) * (0.4 + Math.random() * 0.6),
-            speed: 0.0006 + Math.random() * 0.0016,
-            alpha: 0.5 + Math.random() * 0.5,
-            colorT: Math.random(),
-            tw: Math.random() * Math.PI * 2,
-        });
+        const makeP = (u0: number): P => {
+            // most particles hug the core, some spray out for a soft halo
+            const halo = Math.random() < 0.72 ? 0.55 : 1.15;
+            return {
+                u: u0,
+                lat: (Math.random() * 2 - 1) * halo,
+                speed: 0.00045 + Math.random() * 0.0013,
+                alpha: 0.5 + Math.random() * 0.5,
+                colorT: Math.random(),
+                tw: Math.random() * Math.PI * 2,
+            };
+        };
         const particles: P[] = Array.from({ length: COUNT }, () =>
             makeP(Math.random() * uMax())
         );
@@ -143,7 +146,7 @@ export default function PageFlow() {
         const tex = new THREE.CanvasTexture(tc);
 
         const mat = new THREE.PointsMaterial({
-            size: 3.0,
+            size: 3.8,
             vertexColors: true,
             transparent: true,
             depthWrite: false,
@@ -171,7 +174,8 @@ export default function PageFlow() {
         };
         window.addEventListener("scroll", onScroll, { passive: true });
 
-        const ribbonW = () => Math.min(W * 0.07, 78);
+        // wide, lush band comparable to the hero spray
+        const ribbonW = () => Math.min(W * 0.16, 210);
 
         let raf = 0;
         let last = 0;
@@ -191,26 +195,22 @@ export default function PageFlow() {
                 const p = particles[i];
                 p.u += p.speed * (dt / 16);
                 if (p.u > uM) {
-                    const np = makeP(p.u - uM);
-                    particles[i] = np;
+                    particles[i] = makeP(p.u - uM);
                     continue;
                 }
 
                 const docY = heroBottom + p.u * SPACING;
                 const screenY = docY - scrollY;
-                if (screenY < -80 || screenY > H + 80) {
+                if (screenY < -120 || screenY > H + 120) {
                     col[i * 4 + 3] = 0;
                     continue;
                 }
 
                 const idx = Math.floor(p.u);
                 const t = p.u - idx;
-                const xFrac = crVal(idx, t);
-                const dxFrac = crTan(idx, t); // per unit index
-                const xPx = xFrac * W;
-                const dxPx = dxFrac * W;
+                const xPx = crVal(idx, t) * W;
+                const dxPx = crTan(idx, t) * W;
 
-                // normal to the curve (curve step in y is SPACING per unit index)
                 const len = Math.hypot(dxPx, SPACING) || 1;
                 const nx = SPACING / len;
                 const ny = -dxPx / len;
@@ -220,13 +220,13 @@ export default function PageFlow() {
                 pos[i * 3 + 1] = screenY + ny * off;
                 pos[i * 3 + 2] = 0;
 
-                // fade the ribbon in at the top (hero seam) and out near the footer
+                // fade in quickly at the hero seam, out near the footer
                 const endFade =
-                    p.u < 0.6 ? p.u / 0.6 : p.u > uM - 0.8 ? (uM - p.u) / 0.8 : 1;
-                const latFade = 1 - Math.abs(p.lat) * 0.5;
-                const twinkle = 0.7 + 0.3 * Math.sin(time * 0.004 + p.tw);
+                    p.u < 0.25 ? p.u / 0.25 : p.u > uM - 0.8 ? (uM - p.u) / 0.8 : 1;
+                const latFade = Math.max(0, 1 - Math.abs(p.lat) * 0.7);
+                const twinkle = 0.72 + 0.28 * Math.sin(time * 0.004 + p.tw);
 
-                const c = getColor(p.colorT * 0.3 + p.u * 0.05);
+                const c = getColor(p.colorT * 0.25 + p.u * 0.045);
                 col[i * 4] = c.r;
                 col[i * 4 + 1] = c.g;
                 col[i * 4 + 2] = c.b;

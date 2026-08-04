@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import "./globals.css";
 import { SITE } from "@/lib/constants";
 import Nav from "@/components/Nav";
+import IntroSplash from "@/components/site/IntroSplash";
 import AuroraBackground from "@/components/site/AuroraBackground";
 import GlobalParticles from "@/components/site/GlobalParticles";
 import ScrollProgress from "@/components/site/ScrollProgress";
@@ -24,7 +26,7 @@ export default function RootLayout({
     children: React.ReactNode;
 }) {
     return (
-        <html lang="uk">
+        <html lang="uk" suppressHydrationWarning>
             <head>
                 <link rel="preconnect" href="https://fonts.googleapis.com" />
                 <link
@@ -36,8 +38,19 @@ export default function RootLayout({
                     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap"
                     rel="stylesheet"
                 />
+                {/* Runs before hydration: flags repeat visits so the intro
+                    splash never paints (see .intro-seen in globals.css) —
+                    keeps every reload/crawl after the first one instant. */}
+                <Script
+                    id="intro-seen-check"
+                    strategy="beforeInteractive"
+                    dangerouslySetInnerHTML={{
+                        __html: `try{if(!/(?:^|[?&])intro=/.test(location.search)&&localStorage.getItem("kd-intro-seen")){document.documentElement.classList.add("intro-seen")}}catch(e){}`,
+                    }}
+                />
             </head>
             <body>
+                <IntroSplash />
                 <AuroraBackground />
                 <GlobalParticles />
                 <ScrollProgress />

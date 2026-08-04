@@ -49,6 +49,7 @@ html {
   scroll-behavior: smooth;
   overflow-x: hidden;
   background: var(--bg);
+  position: relative;
 }
 
 body {
@@ -164,6 +165,10 @@ html { scrollbar-color: #6366F1 var(--bg); scrollbar-width: thin; }
 @keyframes spin-slow {
   to { transform: rotate(360deg); }
 }
+
+/* First-visit splash: hidden instantly (before hydration) for repeat
+   visits — see the blocking script in app/layout.tsx's <head>. */
+html.intro-seen .intro-splash { display: none !important; }
 
 /* Grain overlay */
 .grain {
