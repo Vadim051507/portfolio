@@ -129,9 +129,9 @@ html { scrollbar-color: #6366F1 var(--bg); scrollbar-width: thin; }
   inset: 0;
   border-radius: inherit;
   background: radial-gradient(
-    460px circle at var(--mx, 50%) var(--my, 0%),
-    rgba(139, 92, 246, 0.16),
-    transparent 42%
+          460px circle at var(--mx, 50%) var(--my, 0%),
+          rgba(139, 92, 246, 0.16),
+          transparent 42%
   );
   opacity: 0;
   transition: opacity 0.35s var(--ease-out);
@@ -175,22 +175,27 @@ html.intro-seen .kd-intro-overlay { display: none !important; }
 /* Base fill stays flat — no gradient — per spec. The neon glow below is a
    separate lighting accent layered on top, not part of the background fill. */
 .kd-intro-overlay {
-  /* No viewport unit (vh/dvh/svh/lvh) drives this box's height — on iOS
-     Safari, ALL of them can be a frame out of sync with the real UI during
-     the address-bar collapse/expand animation, so pinning to any one of
-     them can leave a momentary gap at the bottom. Instead: overscan the
-     box 10vh past the screen on top AND bottom (`height: auto`, resolved
-     purely from top+bottom), so whatever the real viewport height is
-     mid-animation, it's covered with room to spare — the excess is just
-     clipped by the screen edge, invisible. Overscanning symmetrically
-     (10vh both sides) keeps the box's vertical midpoint equal to the
-     viewport's midpoint, so the centered logo/text group doesn't shift. */
+  /* No CSS viewport unit (vh/dvh/svh/lvh) drives this box's geometry at
+     all, anywhere — on iOS Safari, all of them can be a frame out of sync
+     with the real UI during the address-bar collapse/expand animation, so
+     pinning ANY edge (top, bottom, or height) to one of them can leave a
+     momentary gap. Two layers of defense instead:
+
+     1. Fixed-px overscan (top/bottom: -200px, height: auto) — always
+        active from the very first paint, before any JS has run. 200px is
+        comfortably larger than any realistic Safari toolbar height, so
+        even with zero JS this alone should already close the gap.
+     2. --vvh (set by IntroAnimation.tsx via the visualViewport API, which
+        reports real on-screen pixels, not a CSS-resolved unit) overrides
+        the box's min-height once the effect has run, with its own buffer
+        baked in. Falls back to 0px (a no-op) until JS sets it. */
   position: fixed;
-  top: -10vh;
+  top: -200px;
   left: 0;
   right: 0;
-  bottom: -10vh;
+  bottom: -200px;
   height: auto;
+  min-height: var(--vvh, 0px);
   z-index: 10000;
   display: flex;
   align-items: center;
@@ -219,11 +224,11 @@ html.intro-seen .kd-intro-overlay { display: none !important; }
   border-radius: 50%;
   pointer-events: none;
   background: radial-gradient(
-    circle,
-    rgba(168, 85, 247, 0.20) 0%,
-    rgba(99, 102, 241, 0.12) 40%,
-    rgba(34, 211, 238, 0.06) 62%,
-    transparent 78%
+          circle,
+          rgba(168, 85, 247, 0.20) 0%,
+          rgba(99, 102, 241, 0.12) 40%,
+          rgba(34, 211, 238, 0.06) 62%,
+          transparent 78%
   );
   filter: blur(68px);
   will-change: opacity, transform;
@@ -245,8 +250,8 @@ html.intro-seen .kd-intro-overlay { display: none !important; }
   height: 52px;
   will-change: transform, opacity;
   filter:
-    drop-shadow(0 0 18px rgba(168, 85, 247, 0.45))
-    drop-shadow(0 0 38px rgba(34, 211, 238, 0.22));
+          drop-shadow(0 0 18px rgba(168, 85, 247, 0.45))
+          drop-shadow(0 0 38px rgba(34, 211, 238, 0.22));
 }
 .kd-intro-text {
   display: inline-flex;
@@ -257,8 +262,8 @@ html.intro-seen .kd-intro-overlay { display: none !important; }
   letter-spacing: 0.02em;
   color: #F8F9FF;
   text-shadow:
-    0 0 16px rgba(168, 85, 247, 0.4),
-    0 0 32px rgba(34, 211, 238, 0.2);
+          0 0 16px rgba(168, 85, 247, 0.4),
+          0 0 32px rgba(34, 211, 238, 0.2);
   white-space: pre;
   will-change: opacity;
 }

@@ -32,6 +32,12 @@ const BIG_SCALE = 2.85;
 const EASE_IN = [0.16, 1, 0.3, 1] as const;
 const EASE_MOVE = [0.65, 0, 0.35, 1] as const;
 
+// Extra px added on top of the real, JS-measured visualViewport height —
+// covers the gap between a resize/scroll event firing and the browser
+// finishing its address-bar collapse/expand animation, so the overlay
+// stays taller than the screen even mid-transition.
+const VVH_BUFFER_PX = 400;
+
 /**
  * Typewriter reveal, isolated in its own memoized component so its ~35ms
  * setInterval ticks (14 re-renders) never re-render the parent — and thus
@@ -39,10 +45,10 @@ const EASE_MOVE = [0.65, 0, 0.35, 1] as const;
  * `start` is a one-way trigger: flips false→true once, at TYPE_START_MS.
  */
 const TypewriterText = memo(function TypewriterText({
-    text,
-    charDelay,
-    start,
-}: {
+                                                        text,
+                                                        charDelay,
+                                                        start,
+                                                    }: {
     text: string;
     charDelay: number;
     start: boolean;
@@ -95,19 +101,22 @@ export default function IntroAnimation() {
     const timers = useRef<Array<ReturnType<typeof setTimeout>>>([]);
     const overlayRef = useRef<HTMLDivElement>(null);
 
-    // Second, independent layer of defense against the iOS Safari toolbar
-    // gap (the CSS overscan below is the primary fix and should be enough
-    // on its own): mirror the real visual viewport height onto a custom
-    // property via the visualViewport API, which reports actual on-screen
-    // pixels rather than going through any vh/dvh/svh unit at all. Nothing
-    // reads --vvh today — it's here so a future style can opt into it
-    // without redoing this wiring if the CSS-only fix ever proves
-    // insufficient on some device.
+    // Primary defense against the iOS Safari toolbar gap: no CSS viewport
+    // unit (vh/dvh/svh/lvh) is trusted here at all — during the address-bar
+    // collapse/expand animation, all of them can be a frame out of sync
+    // with the real on-screen size. Instead we read the actual pixel
+    // height from the visualViewport API (which reports real geometry, not
+    // a CSS-resolved unit) and push it onto --vvh with a buffer; the CSS
+    // below uses it as `min-height`, with a fixed-px overscan as the
+    // fallback for the first paint before this effect has run once.
     useEffect(() => {
         if (!("visualViewport" in window) || !window.visualViewport) return;
         const vv = window.visualViewport;
         const syncHeight = () => {
-            overlayRef.current?.style.setProperty("--vvh", `${vv.height}px`);
+            overlayRef.current?.style.setProperty(
+                "--vvh",
+                `${Math.ceil(vv.height) + VVH_BUFFER_PX}px`
+            );
         };
         syncHeight();
         vv.addEventListener("resize", syncHeight);
