@@ -3,7 +3,7 @@ import Script from "next/script";
 import "./globals.css";
 import { SITE } from "@/lib/constants";
 import Nav from "@/components/Nav";
-import IntroSplash from "@/components/site/IntroSplash";
+import IntroAnimation from "@/components/site/IntroAnimation";
 import AuroraBackground from "@/components/site/AuroraBackground";
 import GlobalParticles from "@/components/site/GlobalParticles";
 import ScrollProgress from "@/components/site/ScrollProgress";
@@ -38,19 +38,20 @@ export default function RootLayout({
                     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap"
                     rel="stylesheet"
                 />
-                {/* Runs before hydration: flags repeat visits so the intro
-                    splash never paints (see .intro-seen in globals.css) —
-                    keeps every reload/crawl after the first one instant. */}
+                {/* Runs before hydration: flags repeat visits within the same
+                    session (or reduced-motion prefs) so the intro splash never
+                    paints (see .intro-seen in globals.css) — keeps every
+                    reload/crawl after the first one in a session instant. */}
                 <Script
                     id="intro-seen-check"
                     strategy="beforeInteractive"
                     dangerouslySetInnerHTML={{
-                        __html: `try{if(!/(?:^|[?&])intro=/.test(location.search)&&localStorage.getItem("kd-intro-seen")){document.documentElement.classList.add("intro-seen")}}catch(e){}`,
+                        __html: `try{var f=/(?:^|[?&])intro=/.test(location.search);var s=sessionStorage.getItem("intro-shown");var r=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;if(!f&&(s||r)){document.documentElement.classList.add("intro-seen")}}catch(e){}`,
                     }}
                 />
             </head>
             <body>
-                <IntroSplash />
+                <IntroAnimation />
                 <AuroraBackground />
                 <GlobalParticles />
                 <ScrollProgress />
