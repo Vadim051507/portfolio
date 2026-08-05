@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import Script from "next/script";
 import "./globals.css";
 import { SITE } from "@/lib/constants";
@@ -18,6 +18,16 @@ export const metadata: Metadata = {
         type: "website",
         locale: "uk_UA",
     },
+};
+
+// viewport-fit=cover lets the page draw under the iOS home-indicator /
+// notch safe areas instead of Safari reserving that strip — without it,
+// fixed full-screen elements like the intro overlay can leave a gap right
+// around the safe area at the bottom of the screen.
+export const viewport: Viewport = {
+    width: "device-width",
+    initialScale: 1,
+    viewportFit: "cover",
 };
 
 export default function RootLayout({

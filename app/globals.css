@@ -175,16 +175,17 @@ html.intro-seen .kd-intro-overlay { display: none !important; }
 /* Base fill stays flat — no gradient — per spec. The neon glow below is a
    separate lighting accent layered on top, not part of the background fill. */
 .kd-intro-overlay {
+  /* Deliberately NO explicit width/height/min-height here. inset:0 alone
+     (top/right/bottom/left all 0) lets the browser stretch the box to the
+     real viewport on every layout pass. An explicit `height` — even a
+     dvh one — is an over-constraint: with top+bottom+height all set,
+     `bottom` gets dropped and the box is pinned to `height` instead. On
+     iOS Safari, dvh can lag a frame behind the actual toolbar animation,
+     so that pinned height briefly falls short of the true bottom edge —
+     exactly the gap this was meant to fix. inset-only has no such gap:
+     there's no intermediate unit to fall out of sync with. */
   position: fixed;
   inset: 0;
-  /* inset:0 alone can under-cover the visible area while a mobile browser's
-     address bar is animating in/out; pin an explicit height too, with a
-     dvh override so it tracks the real visual viewport (dvh-unsupporting
-     browsers just keep the vh line above). */
-  width: 100%;
-  height: 100vh;
-  height: 100dvh;
-  min-height: 100dvh;
   z-index: 10000;
   display: flex;
   align-items: center;

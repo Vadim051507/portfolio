@@ -82,6 +82,8 @@
 
 **Перевірено:** `CSS.supports('height','100dvh')` → `true`; обчислена `getComputedStyle(overlay).height` точно дорівнює `window.innerHeight` (861px = 861px) у тестовому вікні. **Не вдалося перевірити:** справжню поведінку адресного рядка iOS Safari — `resize_window` у цьому remote-Chrome середовищі не змінює реальний розмір OS-вікна (перевірено двічі, viewport лишався 1920×861 незалежно від запитаних 390×700/390×844), а десктопний Chrome не має мобільного toolbar, тому `vh`/`dvh` в ньому завжди ідентичні. Рекомендація: фінальну перевірку зробити на реальному iOS-пристрої або через Chrome DevTools device toolbar (де dvh симулюється коректно).
 
+> **Update — цей фікс не допоміг, справжня причина знайдена й виправлена нижче.**
+
 ### Баг 2 — анімація недостатньо плавна
 
 - **Тільки transform/opacity:** перевірено всі `animate`-пропси Framer Motion (`opacity`, `scale`) — жодних `width`/`top`/`left`/`font-size`. Знайдено один реальний відхил від правила: `.kd-intro-group[data-active="true"] { gap: 14px }` з `transition: gap 0.3s` — `gap` є layout-властивістю (викликає reflow), тож приберано разом з даним фіксом: тепер `gap: 14px` — константа від самого початку (без transition), а сам текстовий `<span>` монтується/розмонтовується через React (`TypewriterText` повертає `null`, поки друк не почався), тож "стрибка" gap не видно — текст просто з'являється з уже готовим відступом.
@@ -112,3 +114,41 @@
 - `npm run build` — production build проходить успішно.
 - Повний прогін через `npm run start` (продакшн-режим, не dev) — послідовність фаз 1–4 відтворюється коректно, повторний захід без `?intro=1` пропускає інтро миттєво, без миготіння.
 - Обмеження тестового середовища (чесно, щоб не видавати непідтверджене за перевірене): справжній мобільний viewport (адресний рядок Safari) і DevTools Performance/`rAF`-FPS трейс **не вдалося** відтворити в цій remote-Chrome сесії (вкладка automation — прихована/невидима вкладка на рівні ОС, що блокує `requestAnimationFrame`, а `resize_window` не змінює реальний розмір вікна). Рекомендовано дозняти обидва пункти на реальному пристрої/у звичайному вікні Chrome перед фінальним sign-off.
+
+## Update 2: справжня причина бага з висотою на iOS Safari
+
+Попередній фікс Бага 1 (додавання `height: 100vh; height: 100dvh; min-height: 100dvh;` поряд з `inset: 0`) не лише не вирішив проблему, а й міг бути її частиною — саме так, як описано в задачі: коли на `position: fixed` елементі одночасно стоять `inset: 0` (тобто `top/right/bottom/left: 0`) і явний `height`, це over-constrained case — браузер рахує геометрію за `top + height`, а `bottom: 0` для розрахунку висоти просто ігнорується. Якщо `100dvh` на iOS Safari порахований на кадр раніше/пізніше за реальну анімацію згортання адресного рядка, зафіксована `height` не дотягує до справжнього низу екрана — і виникає саме та щілина, що видно на скріншоті.
+
+Перевірив по черзі всі вказані причини:
+
+1. **`height`/`min-height` на `.kd-intro-overlay` — прибрано повністю.** Лишилось тільки:
+   ```css
+   .kd-intro-overlay {
+     position: fixed;
+     inset: 0;
+     /* без width/height/min-height — чотири constraint'и (top/right/bottom/left)
+        перераховуються браузером на кожен layout-пас самостійно, без
+        проміжної одиниці (dvh), яка може відстати від реальної анімації
+        toolbar. */
+     ...
+   }
+   ```
+   Компільований CSS-бандл (`npm run start` → fetch реального `.css`-чанка) підтверджує: `.kd-intro-overlay{z-index:10000;will-change:opacity;background:#050514;justify-content:center;align-items:center;display:flex;position:fixed;inset:0;overflow:hidden}` — жодного `height` немає.
+
+2. **`<meta name="viewport">` — реальна, підтверджена знахідка.** У проєкті взагалі не було власного viewport-тега — Next.js App Router підставляв свій дефолтний `<meta name="viewport" content="width=device-width, initial-scale=1">` **без** `viewport-fit=cover`. Без нього Safari не дозволяє контенту (і фіксованим елементам) лізти в safe-area під home-indicator знизу — саме та зона, де на скріншоті видно щілину. Виправлено через офіційний Next.js App Router API — `export const viewport: Viewport` у `app/layout.tsx` (а не руками вписаний `<meta>` тег, щоб не дублювати те, чим Next і так керує):
+   ```ts
+   export const viewport: Viewport = {
+     width: "device-width",
+     initialScale: 1,
+     viewportFit: "cover",
+   };
+   ```
+   Перевірено в свіжому SSR HTML (після `pkill` старого `next start`-процесу, який задавав stale-відповідь на порту 3000 — важливий нюанс, інакше можна протестувати старий білд і не помітити): `<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>`.
+
+3. **`height: 100%`/власний scroll-контейнер на `html`/`body` — перевірено, немає.** У `app/globals.css` `html`/`body` не мають `height: 100%`; `overflow-x: hidden` є, але тільки горизонтальний і не створює новий containing block для `position: fixed` (це роблять лише `transform`/`filter`/`perspective`/`contain`/`will-change` з відповідними значеннями — жодного з них немає на `html`/`body` чи будь-якому предку `.kd-intro-overlay`). Компонент виставляє `document.body.style.overflow = "hidden"` лише на час інтро й знімає одразу по завершенню — це теж не впливає на containing block фіксованих нащадків.
+
+4. **Інлайновий JS-розрахунок висоти (`style.height = window.innerHeight + 'px'`) — перевірено, немає.** У `components/site/IntroAnimation.tsx` висота оверлея ніде не задається через JS; єдині місця в проєкті, що читають `window.innerHeight` (`SpotlightCursor.tsx`, `PageFlow.tsx`, `SphereCanvas.tsx`), не мають жодного стосунку до `.kd-intro-overlay` — це декоративні canvas-компоненти в інших частинах сторінки.
+
+5. **Реальний iPhone Safari — не вдалося перевірити з цієї сесії** (той самий, вже озвучений раніше ліміт: remote-Chrome-вкладка тут не є справжнім мобільним браузером, а `resize_window` не змінює реальний розмір вікна ОС — десктопний Chrome взагалі не має toolbar, що згортається, тож навіть при вдалому resize тест не відтворив би саме collapsing-toolbar поведінку). Це залишається пунктом для ручної перевірки на реальному пристрої.
+
+**Перевірено:** `tsc --noEmit` і `npm run build` — чисто; свіжий `npm run start` (з явним вбиванням попереднього процесу на порту 3000, щоб виключити тестування застарілого білда) — overlay CSS і viewport meta в реальному SSR HTML відповідають очікуваному; повний прогін інтро (`?intro=1`) на десктопному Chrome — оверлей і далі коректно перекриває всю область вьюпорта, без регресій у логіці фаз.
