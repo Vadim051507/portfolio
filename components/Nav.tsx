@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import NavMobile from "./NavMobile";
+import { useSmoothScroll } from "./SmoothScrollProvider";
 
 const NAV_LINKS = [
     { label: "Головна",    href: "#hero" },
@@ -183,9 +184,10 @@ export default function Nav() {
 }
 
 function NavLink({ href, children }: { href: string; children: React.ReactNode }) {
+    const { scrollTo } = useSmoothScroll();
     const handleClick = (e: React.MouseEvent) => {
         e.preventDefault();
-        document.querySelector(href)?.scrollIntoView({ behavior: "smooth" });
+        scrollTo(href);
     };
     return (
         <a

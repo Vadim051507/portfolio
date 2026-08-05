@@ -3,6 +3,7 @@ import Script from "next/script";
 import "./globals.css";
 import { SITE } from "@/lib/constants";
 import Nav from "@/components/Nav";
+import SmoothScrollProvider from "@/components/SmoothScrollProvider";
 import IntroAnimation from "@/components/site/IntroAnimation";
 import AuroraBackground from "@/components/site/AuroraBackground";
 import ScrollProgress from "@/components/site/ScrollProgress";
@@ -65,13 +66,20 @@ export default function RootLayout({
                 <ScrollProgress />
                 <SpotlightCursor />
                 <div className="grain" />
-                <Nav />
-                {/* Content sits above the fixed aurora background. Hero keeps
-                    its own local particle trail (ParticleTrail, mounted inside
-                    Hero.tsx) — the site-wide "wave" that used to continue that
-                    trail down through every section below Hero has been
-                    removed (GlobalParticles/PageFlow), so it's Hero-only now. */}
-                <div style={{ position: "relative", zIndex: 2 }}>{children}</div>
+                {/* Nav lives inside the provider too (not just {children}) —
+                    its anchor links need useSmoothScroll() same as anything
+                    in the page content. Content sits above the fixed aurora
+                    background. Hero keeps its own local particle trail
+                    (ParticleTrail, mounted inside Hero.tsx) — the site-wide
+                    "wave" that used to continue that trail down through every
+                    section below Hero has been removed (GlobalParticles/
+                    PageFlow), so it's Hero-only now. */}
+                <SmoothScrollProvider>
+                    <Nav />
+                    <div style={{ position: "relative", zIndex: 2 }}>
+                        {children}
+                    </div>
+                </SmoothScrollProvider>
             </body>
         </html>
     );

@@ -6,6 +6,7 @@ import dynamic from "next/dynamic";
 import Container from "@/components/ui/Container";
 import MagneticButton from "@/components/site/MagneticButton";
 import Counter from "@/components/site/Counter";
+import { useSmoothScroll } from "@/components/SmoothScrollProvider";
 
 const HeroShowcase = dynamic(() => import("@/components/site/HeroShowcase"), {
     ssr: false,
@@ -29,8 +30,7 @@ const STATS = [
 ];
 
 export default function Hero() {
-    const scrollTo = (href: string) =>
-        document.querySelector(href)?.scrollIntoView({ behavior: "smooth" });
+    const { scrollTo } = useSmoothScroll();
 
     return (
         <section

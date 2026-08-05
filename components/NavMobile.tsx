@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { useSmoothScroll } from "./SmoothScrollProvider";
 
 type Link = { label: string; href: string };
 type Social = { label: string; href: string; icon: React.ReactNode };
@@ -13,6 +14,8 @@ interface NavMobileProps {
 }
 
 export default function NavMobile({ open, onClose, links, social }: NavMobileProps) {
+    const { scrollTo } = useSmoothScroll();
+
     // Close on Escape
     useEffect(() => {
         const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
@@ -22,10 +25,7 @@ export default function NavMobile({ open, onClose, links, social }: NavMobilePro
 
     const handleLinkClick = (href: string) => {
         onClose();
-        setTimeout(() => {
-            const el = document.querySelector(href);
-            el?.scrollIntoView({ behavior: "smooth" });
-        }, 300);
+        setTimeout(() => scrollTo(href), 300);
     };
 
     return (

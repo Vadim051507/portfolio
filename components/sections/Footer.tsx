@@ -2,12 +2,13 @@
 
 import Container from "@/components/ui/Container";
 import { SITE } from "@/lib/constants";
+import { useSmoothScroll } from "@/components/SmoothScrollProvider";
 
 export default function Footer() {
     const year = new Date().getFullYear();
+    const { scrollTo } = useSmoothScroll();
 
-    const scrollTop = () =>
-        window.scrollTo({ top: 0, behavior: "smooth" });
+    const scrollTop = () => scrollTo(0);
 
     return (
         <footer
@@ -195,9 +196,10 @@ function FooterCol({
     title: string;
     links: { label: string; href: string; ext?: boolean }[];
 }) {
+    const { scrollTo } = useSmoothScroll();
     const go = (href: string, ext?: boolean) => {
         if (ext) window.open(href, "_blank");
-        else document.querySelector(href)?.scrollIntoView({ behavior: "smooth" });
+        else scrollTo(href);
     };
     return (
         <div>
