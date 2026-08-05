@@ -177,12 +177,21 @@ html.intro-seen .kd-intro-overlay { display: none !important; }
 .kd-intro-overlay {
   position: fixed;
   inset: 0;
+  /* inset:0 alone can under-cover the visible area while a mobile browser's
+     address bar is animating in/out; pin an explicit height too, with a
+     dvh override so it tracks the real visual viewport (dvh-unsupporting
+     browsers just keep the vh line above). */
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  min-height: 100dvh;
   z-index: 10000;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
   background: #050514;
+  will-change: opacity;
 }
 .kd-intro-overlay::before {
   content: "";
@@ -211,16 +220,17 @@ html.intro-seen .kd-intro-overlay { display: none !important; }
     transparent 78%
   );
   filter: blur(68px);
+  will-change: opacity, transform;
 }
 .kd-intro-group {
+  /* Fixed gap from the start (not transitioned): the text span is empty
+     until typing starts, so there's nothing to visually "jump" — and it
+     keeps `gap` off the list of animated properties (layout, not
+     transform/opacity, so it's never a good fit for a running transition). */
   position: relative;
   z-index: 2;
   display: flex;
   align-items: center;
-  gap: 0px;
-  transition: gap 0.3s var(--ease-out);
-}
-.kd-intro-group[data-active="true"] {
   gap: 14px;
 }
 .kd-intro-logo {
@@ -244,6 +254,7 @@ html.intro-seen .kd-intro-overlay { display: none !important; }
     0 0 16px rgba(168, 85, 247, 0.4),
     0 0 32px rgba(34, 211, 238, 0.2);
   white-space: pre;
+  will-change: opacity;
 }
 .kd-intro-caret {
   display: inline-block;
@@ -266,7 +277,7 @@ html.intro-seen .kd-intro-overlay { display: none !important; }
   .kd-intro-glow { width: 500px; height: 500px; filter: blur(52px); }
   .kd-intro-logo { width: 44px; height: 44px; }
   .kd-intro-text { font-size: 22px; }
-  .kd-intro-group[data-active="true"] { gap: 10px; }
+  .kd-intro-group { gap: 10px; }
 }
 
 /* Grain overlay */

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import logoSrc from "@/app/logo/logo(1).svg";
 
@@ -33,18 +33,63 @@ const EASE_IN = [0.16, 1, 0.3, 1] as const;
 const EASE_MOVE = [0.65, 0, 0.35, 1] as const;
 
 /**
- * First-visit-per-session splash: logo pops in centered, shrinks into a
- * left-aligned mark, "Kindratyak.dev" types out beside it, then the whole
- * thing fades to reveal the site. Runs once per sessionStorage flag; the
- * blocking script in app/layout.tsx's <head> + `.intro-seen` in
- * globals.css hide this before first paint on repeat visits within the
- * same session. Append `?intro=1` to force a replay while designing.
+ * Typewriter reveal, isolated in its own memoized component so its ~35ms
+ * setInterval ticks (14 re-renders) never re-render the parent — and thus
+ * never touch the logo/glow/overlay motion elements animating alongside it.
+ * `start` is a one-way trigger: flips false→true once, at TYPE_START_MS.
  */
-export default function IntroAnimation() {
-    const [shouldRender, setShouldRender] = useState(false);
-    const [shrink, setShrink] = useState(false);
+const TypewriterText = memo(function TypewriterText({
+    text,
+    charDelay,
+    start,
+}: {
+    text: string;
+    charDelay: number;
+    start: boolean;
+}) {
     const [typedCount, setTypedCount] = useState(0);
     const [typing, setTyping] = useState(false);
+
+    useEffect(() => {
+        if (!start) return;
+        setTyping(true);
+        let i = 0;
+        const interval = setInterval(() => {
+            i += 1;
+            setTypedCount(i);
+            if (i >= text.length) {
+                clearInterval(interval);
+                setTyping(false);
+            }
+        }, charDelay);
+        return () => clearInterval(interval);
+    }, [start, text, charDelay]);
+
+    if (typedCount === 0 && !typing) return null;
+
+    return (
+        <span className="kd-intro-text">
+            {text.slice(0, typedCount)}
+            <span className="kd-intro-caret" data-blink={typing} />
+        </span>
+    );
+});
+
+/**
+ * First-visit-per-session splash: logo pops in centered, shrinks into a
+ * left-aligned mark, "Kindratyak.dev" types out beside it, then the whole
+ * thing fades to reveal the site.
+ *
+ * Renders unconditionally (gated only by `gone`, which starts false) so the
+ * overlay is part of the server-rendered HTML and the very first paint —
+ * no gap where the site underneath could flash through while waiting on a
+ * post-mount effect. Runs once per sessionStorage flag; the blocking script
+ * in app/layout.tsx's <head> + `.intro-seen` in globals.css hide it before
+ * first paint on repeat visits within the same session (or reduced-motion).
+ * Append `?intro=1` to force a replay while designing.
+ */
+export default function IntroAnimation() {
+    const [shrink, setShrink] = useState(false);
     const [exiting, setExiting] = useState(false);
     const [gone, setGone] = useState(false);
     const timers = useRef<Array<ReturnType<typeof setTimeout>>>([]);
@@ -79,7 +124,6 @@ export default function IntroAnimation() {
             return;
         }
 
-        setShouldRender(true);
         document.body.style.overflow = "hidden";
 
         const after = (fn: () => void, ms: number) => {
@@ -87,23 +131,7 @@ export default function IntroAnimation() {
         };
 
         after(() => setShrink(true), TYPE_START_MS);
-
-        after(() => {
-            setTyping(true);
-            let i = 0;
-            const interval = setInterval(() => {
-                i += 1;
-                setTypedCount(i);
-                if (i >= TEXT.length) {
-                    clearInterval(interval);
-                    setTyping(false);
-                }
-            }, CHAR_DELAY);
-            timers.current.push(interval);
-        }, TYPE_START_MS);
-
         after(() => setExiting(true), EXIT_START_MS);
-
         after(() => {
             setGone(true);
             document.body.style.overflow = "";
@@ -116,10 +144,7 @@ export default function IntroAnimation() {
         };
     }, []);
 
-    if (gone || !shouldRender) return null;
-
-    const typedText = TEXT.slice(0, typedCount);
-    const groupActive = typing || typedCount > 0;
+    if (gone) return null;
 
     return (
         <motion.div
@@ -143,7 +168,7 @@ export default function IntroAnimation() {
                 }
                 style={{ x: "-50%", y: "-50%" }}
             />
-            <div className="kd-intro-group" data-active={groupActive}>
+            <div className="kd-intro-group">
                 <motion.img
                     src={logoSrc.src}
                     alt="Kindratyak.dev"
@@ -156,12 +181,11 @@ export default function IntroAnimation() {
                             : { duration: PHASE1_DURATION, ease: EASE_IN }
                     }
                 />
-                {groupActive && (
-                    <span className="kd-intro-text">
-                        {typedText}
-                        <span className="kd-intro-caret" data-blink={typing} />
-                    </span>
-                )}
+                <TypewriterText
+                    text={TEXT}
+                    charDelay={CHAR_DELAY}
+                    start={shrink}
+                />
             </div>
         </motion.div>
     );
