@@ -93,6 +93,30 @@ export default function IntroAnimation() {
     const [exiting, setExiting] = useState(false);
     const [gone, setGone] = useState(false);
     const timers = useRef<Array<ReturnType<typeof setTimeout>>>([]);
+    const overlayRef = useRef<HTMLDivElement>(null);
+
+    // Second, independent layer of defense against the iOS Safari toolbar
+    // gap (the CSS overscan below is the primary fix and should be enough
+    // on its own): mirror the real visual viewport height onto a custom
+    // property via the visualViewport API, which reports actual on-screen
+    // pixels rather than going through any vh/dvh/svh unit at all. Nothing
+    // reads --vvh today — it's here so a future style can opt into it
+    // without redoing this wiring if the CSS-only fix ever proves
+    // insufficient on some device.
+    useEffect(() => {
+        if (!("visualViewport" in window) || !window.visualViewport) return;
+        const vv = window.visualViewport;
+        const syncHeight = () => {
+            overlayRef.current?.style.setProperty("--vvh", `${vv.height}px`);
+        };
+        syncHeight();
+        vv.addEventListener("resize", syncHeight);
+        vv.addEventListener("scroll", syncHeight);
+        return () => {
+            vv.removeEventListener("resize", syncHeight);
+            vv.removeEventListener("scroll", syncHeight);
+        };
+    }, []);
 
     useEffect(() => {
         const forced = new URLSearchParams(window.location.search).has(
@@ -148,6 +172,7 @@ export default function IntroAnimation() {
 
     return (
         <motion.div
+            ref={overlayRef}
             className="kd-intro-overlay"
             aria-hidden
             animate={{ opacity: exiting ? 0 : 1 }}

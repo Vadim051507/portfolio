@@ -175,17 +175,22 @@ html.intro-seen .kd-intro-overlay { display: none !important; }
 /* Base fill stays flat — no gradient — per spec. The neon glow below is a
    separate lighting accent layered on top, not part of the background fill. */
 .kd-intro-overlay {
-  /* Deliberately NO explicit width/height/min-height here. inset:0 alone
-     (top/right/bottom/left all 0) lets the browser stretch the box to the
-     real viewport on every layout pass. An explicit `height` — even a
-     dvh one — is an over-constraint: with top+bottom+height all set,
-     `bottom` gets dropped and the box is pinned to `height` instead. On
-     iOS Safari, dvh can lag a frame behind the actual toolbar animation,
-     so that pinned height briefly falls short of the true bottom edge —
-     exactly the gap this was meant to fix. inset-only has no such gap:
-     there's no intermediate unit to fall out of sync with. */
+  /* No viewport unit (vh/dvh/svh/lvh) drives this box's height — on iOS
+     Safari, ALL of them can be a frame out of sync with the real UI during
+     the address-bar collapse/expand animation, so pinning to any one of
+     them can leave a momentary gap at the bottom. Instead: overscan the
+     box 10vh past the screen on top AND bottom (`height: auto`, resolved
+     purely from top+bottom), so whatever the real viewport height is
+     mid-animation, it's covered with room to spare — the excess is just
+     clipped by the screen edge, invisible. Overscanning symmetrically
+     (10vh both sides) keeps the box's vertical midpoint equal to the
+     viewport's midpoint, so the centered logo/text group doesn't shift. */
   position: fixed;
-  inset: 0;
+  top: -10vh;
+  left: 0;
+  right: 0;
+  bottom: -10vh;
+  height: auto;
   z-index: 10000;
   display: flex;
   align-items: center;
