@@ -60,7 +60,11 @@ body {
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  overflow-x: hidden;
+  /* `clip`, not `hidden`: `hidden` would turn <body> into a scroll
+     container, which breaks `position: sticky` for its descendants (the
+     pinned About stage) and makes scroll-progress measurement read 0.
+     `clip` blocks horizontal scrolling just the same, without that. */
+  overflow-x: clip;
   max-width: 100vw;
   position: relative;
 }
