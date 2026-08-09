@@ -30,25 +30,6 @@ const SCREEN = { left: 5.263, top: 2.381, width: 89.035, height: 95.238 };
 const LIST_FROM = 0.3;
 const LIST_TO = 0.96;
 
-/**
- * The shared entrance window. Phone and band sweep in from the lower left on
- * the same stretch of scroll; the band lands a touch earlier
- * (ENTER_BAND < ENTER_PHONE) so it reads as the band arriving first and the
- * phone riding in on top of it. Synchronised (identical end points) was the
- * other option — it looked flat, the two moved as one rigid block with no
- * sense of cause.
- */
-const ENTER_BAND = 0.28;
-const ENTER_PHONE = 0.34;
-
-/** Where each element starts relative to its resting place, in px.
- *  Negative x = off to the left, positive y = below. Both travel along
- *  roughly the band's own diagonal, so they read as one movement. */
-const ENTER_BAND_X = -680;
-const ENTER_BAND_Y = 190;
-const ENTER_PHONE_X = -240;
-const ENTER_PHONE_Y = 140;
-
 const EASE = [0.16, 1, 0.3, 1] as const;
 
 const PILLARS = [
@@ -77,58 +58,6 @@ const PILLARS = [
         color: "#22D3EE",
     },
 ];
-
-/**
- * Band palette.
- *
- * The pillar accents are poster-bright by design — right for a 2px rule or a
- * number, far too loud for a band the size of the whole list, which ended up
- * reading as a foreign rectangle pasted over the scene. So the band gets its
- * own harmonised set: each accent is mixed toward BAND_BASE (a desaturated
- * indigo sitting between --bg and --bg-2), which drops both saturation and
- * lightness while keeping the hue recognisable. The band then paints with
- * `mix-blend-mode: screen`, so those darkened tones *add* light to the
- * backdrop instead of covering it.
- *
- * Two mix strengths per accent: the ends of the band are pulled much further
- * toward the background than the centre, so the stripe dissolves into the
- * scene rather than stopping at an edge.
- */
-const BAND_BASE = [30, 29, 56] as const;
-const BAND_MIX_CORE = 0.2;
-const BAND_MIX_EDGE = 0.68;
-
-function harmonize(hex: string, mix: number) {
-    const n = parseInt(hex.slice(1), 16);
-    const rgb = [(n >> 16) & 255, (n >> 8) & 255, n & 255];
-    return rgb
-        .map((c, i) => Math.round(c * (1 - mix) + BAND_BASE[i] * mix))
-        .join(", ");
-}
-
-/** Full band fill for one accent: saturated core fading to background at both ends.
- *  Stops are tight because the element is 200vw wide — only its middle half is
- *  ever on screen, so the falloff has to happen well inside that. */
-function bandFill(hex: string) {
-    const core = harmonize(hex, BAND_MIX_CORE);
-    const edge = harmonize(hex, BAND_MIX_EDGE);
-    return `linear-gradient(90deg,
-        rgba(${edge}, 0) 18%,
-        rgba(${edge}, 0.5) 31%,
-        rgba(${core}, 0.95) 50%,
-        rgba(${edge}, 0.45) 70%,
-        rgba(${edge}, 0) 82%)`;
-}
-
-/** The thin core line that keeps the band reading as a stripe, same treatment. */
-function bandCore(hex: string) {
-    const core = harmonize(hex, BAND_MIX_CORE * 0.6);
-    return `linear-gradient(90deg,
-        transparent 0%,
-        rgba(${core}, 0.85) 45%,
-        rgba(${core}, 0.55) 70%,
-        transparent 100%)`;
-}
 
 /**
  * Environment flags for the scroll-linked choreography.
@@ -194,28 +123,19 @@ export default function MobileShowcase() {
         restDelta: 0.001,
     });
 
-    /* Phone: rides in from the right on the band, settles flat, then keeps a
-       lazy counter-drift. Every one of these is derived from `eased` (a
-       spring) rather than straight off scrollYProgress — a pure
-       scroll→property chain is eligible for Motion's native ScrollTimeline
-       hand-off, whose range does not agree with this pinned section, and the
-       animated element drifts out of sync (it cost the phone its opacity
-       once already). */
-    /* rotateY is negative on entry so the phone is angled the way it travels —
-       leading edge toward the viewer as it swings in from the left. */
-    const rotateY = useTransform(eased, [0, ENTER_PHONE, 1], [-24, 0, -7]);
-    const rotateX = useTransform(eased, [0, ENTER_PHONE, 1], [13, 0, 2]);
-    const phoneX = useTransform(eased, [0, ENTER_PHONE], [ENTER_PHONE_X, 0]);
-    const phoneY = useTransform(eased, [0, ENTER_PHONE], [ENTER_PHONE_Y, 0]);
-    const phoneScale = useTransform(eased, [0, ENTER_PHONE], [0.9, 1]);
+    /* Phone: flies in tilted, settles flat, then keeps a lazy counter-drift.
+       Every one of these is derived from `eased` (a spring) rather than
+       straight off scrollYProgress — a pure scroll→property chain is eligible
+       for Motion's native ScrollTimeline hand-off, whose range does not agree
+       with this pinned section, and the animated element drifts out of sync
+       (it cost the phone its opacity once already). */
+    const rotateY = useTransform(eased, [0, 0.34, 1], [26, 0, -7]);
+    const rotateX = useTransform(eased, [0, 0.34, 1], [13, 0, 2]);
+    const phoneY = useTransform(eased, [0, 0.34], [90, 0]);
+    const phoneScale = useTransform(eased, [0, 0.34], [0.9, 1]);
     const phoneOpacity = useTransform(eased, [0, 0.14], [0, 1]);
 
-    /* Band, three stacked layers so no two drivers fight over one property:
-       …the entrance slide, off the same section progress as the phone… */
-    const bandEnterX = useTransform(eased, [0, ENTER_BAND], [ENTER_BAND_X, 0]);
-    const bandEnterY = useTransform(eased, [0, ENTER_BAND], [ENTER_BAND_Y, 0]);
-    const bandEnterOpacity = useTransform(eased, [0, 0.12, ENTER_BAND], [0, 0.5, 1]);
-    // …a slow parallax off the whole page's progress…
+    // Diagonal band: slow page-wide parallax on the outer layer…
     const bandX = useSpring(useTransform(pageProgress, [0, 1], [-46, 46]), {
         stiffness: 40,
         damping: 22,
@@ -224,7 +144,7 @@ export default function MobileShowcase() {
         stiffness: 40,
         damping: 22,
     });
-    // …and an imperative kick on the innermost whenever the pillar changes.
+    // …and an imperative kick on the inner one whenever the pillar changes.
     const band = useAnimationControls();
 
     // Measure row centres so the band can snap to whichever row is live.
@@ -329,7 +249,6 @@ export default function MobileShowcase() {
                                                 ? {
                                                       rotateX,
                                                       rotateY,
-                                                      x: phoneX,
                                                       y: phoneY,
                                                       scale: phoneScale,
                                                       opacity: phoneOpacity,
@@ -440,60 +359,17 @@ export default function MobileShowcase() {
                                     </Reveal>
 
                                     <div className="ms-list-wrap">
-                                        {/* Diagonal accent band, behind the list.
-                                            One layer per driver: entrance slide →
-                                            page parallax → per-pillar kick → tint. */}
+                                        {/* diagonal accent band, behind the list */}
                                         <motion.div
                                             aria-hidden
-                                            className="ms-band-enter"
-                                            style={
-                                                linked
-                                                    ? {
-                                                          x: bandEnterX,
-                                                          y: bandEnterY,
-                                                          opacity: bandEnterOpacity,
-                                                      }
-                                                    : undefined
-                                            }
+                                            className="ms-band-outer"
+                                            style={{ x: bandX, rotate: bandRotate }}
                                         >
                                             <motion.div
-                                                className="ms-band-outer"
-                                                style={{
-                                                    x: bandX,
-                                                    rotate: bandRotate,
-                                                }}
-                                            >
-                                                <motion.div
-                                                    className="ms-band"
-                                                    animate={band}
-                                                    initial={false}
-                                                >
-                                                    <motion.div
-                                                        className="ms-band-fill"
-                                                        animate={{
-                                                            background: bandFill(
-                                                                accent
-                                                            ),
-                                                        }}
-                                                        transition={{
-                                                            duration: 0.8,
-                                                            ease: EASE,
-                                                        }}
-                                                    />
-                                                    <motion.div
-                                                        className="ms-band-core"
-                                                        animate={{
-                                                            background: bandCore(
-                                                                accent
-                                                            ),
-                                                        }}
-                                                        transition={{
-                                                            duration: 0.8,
-                                                            ease: EASE,
-                                                        }}
-                                                    />
-                                                </motion.div>
-                                            </motion.div>
+                                                className="ms-band"
+                                                animate={band}
+                                                initial={false}
+                                            />
                                         </motion.div>
 
                                         <ul ref={listRef} className="ms-list">
@@ -775,16 +651,12 @@ const styles = `
 
 /* ── Pillars ───────────────────────────────────────────── */
 .ms-list-wrap { position: relative; margin-top: 40px; }
-.ms-band-enter,
 .ms-band-outer {
     position: absolute;
     inset: 0;
     z-index: 0;
     pointer-events: none;
 }
-.ms-band-enter { will-change: transform, opacity; }
-/* Base = the mobile band: the modest stripe behind the list, unchanged.
-   The full-stage version is a desktop-only override further down. */
 .ms-band {
     position: absolute;
     top: 0;
@@ -792,33 +664,30 @@ const styles = `
     width: 116%;
     height: 88px;
     margin-top: -44px;
-    /* screen over the near-black canvas: the harmonised (i.e. darkened)
-       fills add light to the backdrop instead of covering it, which is what
-       stops the band reading as a pasted-on rectangle. soft-light was the
-       other candidate - on a #05060C canvas it darkens far more than it
-       lifts, and the band all but disappears. */
-    mix-blend-mode: screen;
-}
-.ms-band-fill {
-    position: absolute;
-    inset: 0;
     border-radius: 999px;
-    opacity: 0.9;
-    filter: blur(20px);
+    background: linear-gradient(
+        90deg,
+        rgba(168, 85, 247, 0) 0%,
+        rgba(168, 85, 247, 0.85) 18%,
+        rgba(99, 102, 241, 0.85) 52%,
+        rgba(34, 211, 238, 0.55) 82%,
+        rgba(34, 211, 238, 0) 100%
+    );
+    opacity: 0.26;
+    filter: blur(17px);
 }
-/* Core line, so the band reads as a stripe and not just a haze. Kept faint
-   and well inside the fill's span — any brighter and it stops being the
-   band's spine and starts looking like a stray scratch across the copy. */
-.ms-band-core {
+/* crisp core line, so the band reads as a stripe and not just a haze */
+.ms-band::after {
+    content: "";
     position: absolute;
-    left: 20%;
-    right: 20%;
+    left: 12%;
+    right: 12%;
     top: 50%;
     height: 2px;
     margin-top: -1px;
     border-radius: 2px;
-    opacity: 0.2;
-    filter: blur(1.2px);
+    background: linear-gradient(90deg, transparent, #C084FC, #22D3EE, transparent);
+    opacity: 0.5;
 }
 .ms-list {
     position: relative;
@@ -912,24 +781,6 @@ const styles = `
         line-height: 1.5;
     }
     .ms-list-wrap { margin-top: clamp(14px, 3vh, 40px); }
-
-    /* The band goes full-stage here: it has to run well past the phone on the
-       left and off the screen on the right, at roughly a third of the pin's
-       height. Sized in vw/vh so the proportions hold at any viewport;
-       .ms-pin's overflow:hidden does the clipping. The -46% nudge pulls the
-       bright middle of the gradient off the copy column and over toward the
-       phone, so the band reads as passing under it, not starting at it. */
-    .ms-band {
-        left: 50%;
-        width: 200vw;
-        margin-left: calc(-100vw - 46%);
-        height: 30vh;
-        margin-top: -15vh;
-    }
-    /* Far lower intensity than the mobile stripe — this one covers ~30vh, so
-       the same per-pixel brightness would flood the whole stage. */
-    .ms-band-fill { opacity: 0.62; filter: blur(30px); }
-    .ms-band-core { left: 34%; right: 34%; opacity: 0.16; filter: blur(1.4px); }
 }
 
 /* Short laptop viewports: the pinned column has no room for the lede as
@@ -959,12 +810,7 @@ const styles = `
     .ms-desc { opacity: 1 !important; }
     .ms-bar { transform: none !important; }
     .ms-sweep, .ms-dot { animation: none !important; }
-    .ms-band-enter,
-    .ms-band-outer,
-    .ms-band {
-        transform: none !important;
-        opacity: 1 !important;
-    }
+    .ms-band-outer, .ms-band { transform: none !important; }
     .ms-band { top: 50%; }
 }
 `;
