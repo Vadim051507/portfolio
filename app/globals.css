@@ -14,6 +14,13 @@
   --border:        rgba(33, 241, 168, 0.14);
   --border-strong: rgba(33, 241, 168, 0.32);
 
+  /* Neutral white: its own role next to the mint, not just the text colour.
+     Static borders in dark sections are white-ish; mint borders are kept
+     for interactive elements and active states. */
+  --white:              #F4FFFB;
+  --border-soft:        rgba(244, 255, 251, 0.12);
+  --border-soft-strong: rgba(244, 255, 251, 0.28);
+
   --text:           #F4FFFB;
   --text-muted:     #8FA8A0;
   --text-on-accent: #04120D;
@@ -28,8 +35,12 @@
   --accent-text:    var(--accent);
 
   /* Component tokens that differ between dark and light sections. */
+  --card-border:       var(--border-soft);
   --tile-bg:           var(--surface-2);
   --tile-border:       var(--border-strong);
+  --ghost-border:       var(--border-soft-strong);
+  --ghost-border-hover: rgba(244, 255, 251, 0.6);
+  --ghost-bg-hover:     rgba(244, 255, 251, 0.06);
   --card-hover-shadow: 0 0 34px rgba(33, 241, 168, 0.07);
   --spot-color:        rgba(33, 241, 168, 0.07);
   --node-glow:         0 0 18px rgba(33, 241, 168, 0.35);
@@ -57,6 +68,10 @@
   --radius-card: 28px;
   --radius-md:   12px;
   --radius-sm:   8px;
+  /* The light sheet and the Contact card share one corner and one shadow,
+     so the two white surfaces read as the same material. */
+  --radius-sheet: 40px;
+  --sheet-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
 
   --font-display: "Space Grotesk", "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
   --font-body:    "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -65,17 +80,20 @@
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* ── Light sections ───────────────────────────────
-   A section opts in with data-theme="light" on its root <section>. The
-   tokens are re-declared here, so every component inside follows without
-   being touched. Snow White canvas, white cards, neutral shadows instead
-   of mint glow. */
+/* ── Light surfaces ───────────────────────────────
+   The page is dark. Exactly two things are light: the .light-sheet that
+   holds Services + Portfolio, and the Contact card. Both opt in with
+   data-theme="light"; the tokens are re-declared here, so every component
+   inside follows without being touched. What belongs to the sheet alone
+   (shape, grid, glow, card look) lives in the .light-sheet block below. */
 [data-theme="light"] {
   --bg:            #F4FFFB;
   --surface:       #FFFFFF;
   --surface-2:     #E4F4EE;
   --border:        rgba(7, 17, 14, 0.12);
   --border-strong: rgba(7, 17, 14, 0.28);
+  --border-soft:        var(--border);
+  --border-soft-strong: var(--border-strong);
 
   --text:           #07110E;
   --text-muted:     #4A635C;
@@ -85,21 +103,104 @@
   --accent:         #21F1A8;
   --accent-glow:    rgba(0, 105, 92, 0.18);
 
+  /* #FB7185 is only 2.7:1 on white; this red passes AA on every light
+     surface. */
+  --danger: #BE123C;
+
+  --card-border:       var(--border);
   --tile-bg:           rgba(0, 105, 92, 0.08);
   --tile-border:       var(--border);
   --card-hover-shadow: 0 8px 24px rgba(7, 17, 14, 0.08);
   --spot-color:        transparent;
   --node-glow:         none;
+  --ghost-border:       var(--border-strong);
+  --ghost-border-hover: var(--text);
+  --ghost-bg-hover:     var(--surface-2);
 
-  /* Opaque, so the fixed aurora and grid behind the page never show. The
-     section draws its own faint dark 64px grid instead. */
-  background-color: var(--bg);
-  background-image:
-          linear-gradient(rgba(7, 17, 14, 0.04) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(7, 17, 14, 0.04) 1px, transparent 1px);
-  background-size: 64px 64px;
   color: var(--text);
 }
+
+/* ── The light sheet ───────────────────────────────
+   One sheet of paper lying on the dark page: Services (02) and Portfolio
+   (03) side by side — "what I do" and "the proof". Rounded corners show
+   because the dark page is visible around it. */
+.light-sheet {
+  position: relative;
+  isolation: isolate;
+  /* `clip`, not `hidden`: keeps position: sticky working inside. */
+  overflow: clip;
+  margin: 24px clamp(12px, 2vw, 28px);
+  border-radius: var(--radius-sheet);
+  /* Opaque: the fixed aurora and grid behind the page never show through. */
+  background: var(--bg);
+  box-shadow: var(--sheet-shadow);
+
+  --tile-bg:     var(--accent);
+  --tile-border: transparent;
+  --spot-color:  rgba(33, 241, 168, 0.1);
+}
+/* Its own 64px grid, plus a "light aurora": two faint mint glows in
+   opposite corners, so the sheet keeps the brand's light. Static. */
+.light-sheet::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+          radial-gradient(circle min(50vw, 760px) at 100% 0%, rgba(33, 241, 168, 0.16), transparent 100%),
+          radial-gradient(circle min(46vw, 700px) at 0% 100%, rgba(77, 182, 172, 0.12), transparent 100%),
+          linear-gradient(rgba(7, 17, 14, 0.045) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(7, 17, 14, 0.045) 1px, transparent 1px);
+  background-size: auto, auto, 64px 64px, 64px 64px;
+}
+/* Hairline along the contour. */
+.light-sheet::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 1px solid rgba(7, 17, 14, 0.06);
+  border-radius: inherit;
+  pointer-events: none;
+}
+/* Between the two sections: a rule the width of the container, opening
+   with a short mint stroke. */
+.light-sheet > section + section::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: max(24px, calc((100% - 1200px) / 2 + 24px));
+  right: max(24px, calc((100% - 1200px) / 2 + 24px));
+  height: 2px;
+  background:
+          linear-gradient(var(--accent), var(--accent)) left top / 72px 2px no-repeat,
+          linear-gradient(var(--border), var(--border)) left top / 100% 1px no-repeat;
+}
+
+.light-sheet .eyebrow { color: var(--accent-text); }
+
+.light-sheet .card {
+  border-radius: 20px;
+  box-shadow: 0 1px 2px rgba(7, 17, 14, 0.04), 0 12px 32px rgba(7, 17, 14, 0.05);
+  transition:
+          border-color 0.22s ease,
+          box-shadow 0.22s ease,
+          transform 0.22s var(--ease-out);
+}
+.light-sheet .card-hover:hover {
+  border-color: rgba(33, 241, 168, 0.7);
+  box-shadow: 0 18px 44px rgba(7, 17, 14, 0.1);
+}
+.light-sheet .tile { color: var(--text-on-accent); }
+
+@media (max-width: 1024px) {
+  :root { --radius-sheet: 28px; }
+}
+@media (max-width: 640px) {
+  :root { --radius-sheet: 22px; }
+  .light-sheet { margin: 16px 8px; }
+}
+
 [data-theme="light"] ::selection {
   background: rgba(0, 105, 92, 0.25);
   color: var(--text);
@@ -190,12 +291,10 @@ h1, h2, h3, h4 { font-family: var(--font-display); }
 html { scrollbar-color: var(--teal-700) var(--bg); scrollbar-width: thin; }
 
 /* ── Section rhythm ─────────────────────────────── */
-/* A hairline between every two sections of the landing — except where a
-   dark and a light section meet: there the change of background is the
-   boundary, hard-edged on purpose. */
+/* A hairline between every two dark sections of the landing. The light
+   sheet is not a <section>, so nothing is drawn against it: its own edge
+   and margin are the boundary. */
 main > section + section { border-top: 1px solid var(--border); }
-main > section[data-theme="light"],
-main > section[data-theme="light"] + section { border-top: 0; }
 
 /* ── Reusable helpers ─────────────────────────────── */
 /* Used once, on the hero headline's key word. Everything else that wants
@@ -237,12 +336,40 @@ main > section[data-theme="light"] + section { border-top: 0; }
 }
 .eyebrow-num { color: var(--accent-text); }
 
+/* Accent word of a heading — the brand's signature. Mint text on dark.
+   On a light surface mint text is unreadable, so the word is set like a
+   highlighter mark instead: dark text on a mint fill that is drawn in
+   from the left once the heading scrolls into view (AnimatedHeading sets
+   data-inview on the <h2>, and --mk-* per word). */
+.accent-word { color: var(--accent-text); }
+[data-theme="light"] .accent-word {
+  display: inline-block;
+  color: var(--text-on-accent);
+  padding-bottom: 0.06em;
+  margin-bottom: -0.06em;
+  background: linear-gradient(var(--accent), var(--accent)) left center / 0% 100% no-repeat;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  transition: background-size var(--mk-dur, 700ms) var(--mk-ease, ease-out) var(--mk-delay, 0ms);
+}
+[data-theme="light"] .accent-word[data-first] {
+  padding-left: 0.14em;
+  border-top-left-radius: 0.22em;
+  border-bottom-left-radius: 0.22em;
+}
+[data-theme="light"] .accent-word[data-last] {
+  padding-right: 0.14em;
+  border-top-right-radius: 0.22em;
+  border-bottom-right-radius: 0.22em;
+}
+[data-theme="light"] [data-inview="true"] .accent-word { background-size: 100% 100%; }
+
 /* Card: flat surface with a hairline border. Solid on purpose, so the
    hero particles never bleed through. */
 .card {
   position: relative;
   background: var(--surface);
-  border: 1px solid var(--border);
+  border: 1px solid var(--card-border);
   border-radius: var(--radius-card);
   transition:
           border-color 0.35s var(--ease-out),
@@ -284,9 +411,33 @@ main > section[data-theme="light"] + section { border-top: 0; }
   color: var(--text-muted);
   padding: 5px 12px;
   background: var(--surface-2);
-  border: 1px solid var(--border);
+  border: 1px solid var(--card-border);
   border-radius: var(--radius-pill);
 }
+/* On a light surface the tag is where the mint lives: a mint tint. */
+[data-theme="light"] .tag {
+  color: var(--accent-text);
+  background: rgba(33, 241, 168, 0.14);
+  border-color: rgba(0, 105, 92, 0.22);
+}
+
+/* Small glass controls: the burger, the menu's close button. */
+.glass-chip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  cursor: pointer;
+  border-radius: 50%;
+  color: var(--accent);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  -webkit-backdrop-filter: blur(12px) saturate(1.6);
+  backdrop-filter: blur(12px) saturate(1.6);
+  transition: background 0.2s, color 0.25s, border-color 0.25s;
+}
+.glass-chip:hover { background: rgba(255, 255, 255, 0.18); }
 
 .back-link { transition: color 0.2s; }
 .back-link:hover { color: var(--accent-text); }
@@ -355,9 +506,12 @@ main > section[data-theme="light"] + section { border-top: 0; }
 
 .btn-ghost .btn-face {
   background: transparent;
-  border-color: var(--border-strong);
+  border-color: var(--ghost-border);
 }
-.btn-ghost:hover .btn-face { background: var(--surface-2); }
+.btn-ghost:hover .btn-face {
+  background: var(--ghost-bg-hover);
+  border-color: var(--ghost-border-hover);
+}
 
 /* On a light section a mint button has a weak outline and reads pale, so
    the primary button turns ink-dark and only goes mint on hover. */
@@ -376,6 +530,10 @@ main > section[data-theme="light"] + section { border-top: 0; }
 .btn:disabled .btn-face {
   transform: none;
   background: var(--teal-800);
+  color: var(--text-muted);
+}
+[data-theme="light"] .btn:disabled .btn-face {
+  background: var(--surface-2);
   color: var(--text-muted);
 }
 
@@ -535,6 +693,9 @@ html.intro-seen .kd-intro-overlay { display: none !important; }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .btn, .btn-face, .card { transition: none; }
+  .light-sheet .card { transition: border-color 0.22s ease; }
   .btn:hover .btn-face, .card-hover:hover { transform: none; }
+  .light-sheet .card-hover:hover { box-shadow: 0 1px 2px rgba(7, 17, 14, 0.04), 0 12px 32px rgba(7, 17, 14, 0.05); }
+  [data-theme="light"] .accent-word { transition: none; background-size: 100% 100%; }
   .grain, [data-marquee] { animation: none !important; }
 }

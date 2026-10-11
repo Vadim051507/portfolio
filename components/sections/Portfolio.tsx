@@ -20,8 +20,55 @@ export default function Portfolio() {
                     grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
                     gap: 24px;
                 }
-                .pf-card:hover .pf-img { transform: scale(1.06); }
-                .pf-card:hover .pf-arrow { transform: translate(4px,-4px); }
+                .pf-card[data-live="true"]:hover .pf-img { transform: scale(1.06); }
+                .pf-card[data-live="false"] .pf-img { opacity: 0.92; }
+                /* Sits on the screenshot, so it is dark glass on any theme. */
+                .pf-domain {
+                    position: absolute;
+                    top: 14px;
+                    left: 14px;
+                    padding: 5px 11px;
+                    font-family: var(--font-mono);
+                    font-size: 11px;
+                    color: var(--white);
+                    background: rgba(7, 12, 11, 0.62);
+                    border: 1px solid rgba(244, 255, 251, 0.24);
+                    border-radius: 100px;
+                    -webkit-backdrop-filter: blur(10px) saturate(1.4);
+                    backdrop-filter: blur(10px) saturate(1.4);
+                }
+                .pf-soon {
+                    position: absolute;
+                    top: 14px;
+                    right: 14px;
+                    padding: 5px 11px;
+                    font-family: var(--font-mono);
+                    font-size: 11px;
+                    font-weight: 500;
+                    letter-spacing: 0.1em;
+                    text-transform: uppercase;
+                    color: var(--text-on-accent);
+                    background: var(--accent);
+                    border-radius: 100px;
+                }
+                .pf-arrow {
+                    display: grid;
+                    place-items: center;
+                    flex-shrink: 0;
+                    width: 32px;
+                    height: 32px;
+                    margin-top: -3px;
+                    border-radius: 50%;
+                    border: 1px solid var(--border-strong);
+                    color: var(--text);
+                    transition: background-color 0.22s, border-color 0.22s, color 0.22s;
+                }
+                .pf-card:hover .pf-arrow,
+                .pf-card:focus-visible .pf-arrow {
+                    background: var(--accent);
+                    border-color: var(--accent);
+                    color: var(--text-on-accent);
+                }
                 @media (max-width: 720px) { .pf-grid { grid-template-columns: 1fr; } }
             `}</style>
 
@@ -40,9 +87,22 @@ export default function Portfolio() {
                         return (
                             <Reveal key={p.slug} delay={i * 0.1} y={44}>
                                 <div
-                                    className="pf-card card card-clip card-hover"
+                                    className={`pf-card card card-clip${live ? " card-hover" : ""}`}
+                                    data-live={live}
                                     onClick={() => live && router.push(p.href)}
-                                    style={{ cursor: live ? "pointer" : "default" }}
+                                    {...(live
+                                        ? {
+                                              role: "link",
+                                              tabIndex: 0,
+                                              onKeyDown: (e: React.KeyboardEvent) => {
+                                                  if (e.key === "Enter") router.push(p.href);
+                                              },
+                                          }
+                                        : {})}
+                                    style={{
+                                        cursor: live ? "pointer" : "default",
+                                        height: "100%",
+                                    }}
                                 >
                                     {/* image */}
                                     <div
@@ -76,43 +136,8 @@ export default function Portfolio() {
                                             }}
                                         />
                                         {/* domain chip */}
-                                        <span
-                                            style={{
-                                                position: "absolute",
-                                                top: 14,
-                                                left: 14,
-                                                fontSize: 11,
-                                                color: "var(--text)",
-                                                padding: "5px 11px",
-                                                borderRadius: 100,
-                                                background: "var(--bg)",
-                                                border: "1px solid var(--border-strong)",
-                                                fontFamily: "var(--font-mono)",
-                                            }}
-                                        >
-                                            {p.domain}
-                                        </span>
-                                        {!live && (
-                                            <span
-                                                style={{
-                                                    position: "absolute",
-                                                    top: 14,
-                                                    right: 14,
-                                                    fontFamily: "var(--font-mono)",
-                                                    fontSize: 11,
-                                                    fontWeight: 500,
-                                                    letterSpacing: "0.1em",
-                                                    textTransform: "uppercase",
-                                                    color: "var(--accent)",
-                                                    padding: "5px 11px",
-                                                    borderRadius: 100,
-                                                    background: "var(--bg)",
-                                                    border: "1px solid var(--border-strong)",
-                                                }}
-                                            >
-                                                Скоро
-                                            </span>
-                                        )}
+                                        <span className="pf-domain">{p.domain}</span>
+                                        {!live && <span className="pf-soon">Скоро</span>}
                                     </div>
 
                                     {/* body */}
@@ -137,25 +162,14 @@ export default function Portfolio() {
                                                 {p.title}
                                             </h3>
                                             {live && (
-                                                <span
-                                                    className="pf-arrow"
-                                                    style={{
-                                                        display: "grid",
-                                                        placeItems: "center",
-                                                        marginTop: 3,
-                                                        color: "var(--accent)",
-                                                        transition:
-                                                            "transform 0.3s var(--ease-out)",
-                                                        flexShrink: 0,
-                                                    }}
-                                                >
+                                                <span className="pf-arrow">
                                                     {/* drawn, not typed: the ↗
                                                         character falls back to a
                                                         colour emoji on some systems */}
                                                     <svg
                                                         aria-hidden
-                                                        width="18"
-                                                        height="18"
+                                                        width="15"
+                                                        height="15"
                                                         viewBox="0 0 24 24"
                                                         fill="none"
                                                         stroke="currentColor"

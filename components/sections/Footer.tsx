@@ -159,6 +159,7 @@ export default function Footer() {
                             в Україні.
                         </span>
                         <button
+                            type="button"
                             onClick={scrollTop}
                             className="mono-label"
                             style={{
@@ -199,10 +200,7 @@ function FooterCol({
     links: { label: string; href: string; ext?: boolean }[];
 }) {
     const { scrollTo } = useSmoothScroll();
-    const go = (href: string, ext?: boolean) => {
-        if (ext) window.open(href, "_blank");
-        else scrollTo(href);
-    };
+
     return (
         <div>
             <div className="mono-label" style={{ marginBottom: 16 }}>
@@ -210,12 +208,23 @@ function FooterCol({
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                 {links.map((l) => (
-                    <span
+                    <a
                         key={l.label}
-                        onClick={() => go(l.href, l.ext)}
+                        href={l.href}
+                        {...(l.ext
+                            ? { target: "_blank", rel: "noopener noreferrer" }
+                            : {
+                                  // in-page anchors go through Lenis, like
+                                  // every other scroll on the site
+                                  onClick: (e: React.MouseEvent) => {
+                                      e.preventDefault();
+                                      scrollTo(l.href);
+                                  },
+                              })}
                         style={{
                             fontSize: 14,
                             color: "var(--text-muted)",
+                            textDecoration: "none",
                             cursor: "pointer",
                             transition: "color 0.2s",
                             width: "fit-content",
@@ -228,7 +237,7 @@ function FooterCol({
                         }
                     >
                         {l.label}
-                    </span>
+                    </a>
                 ))}
             </div>
         </div>

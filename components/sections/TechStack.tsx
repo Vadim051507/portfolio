@@ -17,7 +17,7 @@ export default function TechStack() {
                     white-space: nowrap;
                     padding: 14px 24px;
                     background: var(--surface);
-                    border: 1px solid var(--border);
+                    border: 1px solid var(--border-soft);
                     border-radius: 100px;
                     color: var(--text-muted);
                     transition: color 0.25s, border-color 0.25s;

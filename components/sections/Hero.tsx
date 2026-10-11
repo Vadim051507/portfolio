@@ -57,7 +57,7 @@ export default function Hero() {
                     .hero-visual { order: -1; }
                     .hero-stats { justify-content: flex-start !important; }
                 }
-                .hero-stat { padding-left: 16px; border-left: 1px solid var(--border-strong); }
+                .hero-stat { padding-left: 16px; border-left: 1px solid var(--border-soft-strong); }
             `}</style>
 
             {/* Original hero S-curve trail (scoped to the hero) */}
@@ -77,7 +77,7 @@ export default function Hero() {
                                 alignItems: "center",
                                 gap: 9,
                                 background: "var(--surface)",
-                                border: "1px solid var(--border-strong)",
+                                border: "1px solid var(--border-soft-strong)",
                                 borderRadius: 100,
                                 padding: "7px 16px",
                                 marginBottom: 30,

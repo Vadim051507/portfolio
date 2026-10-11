@@ -14,7 +14,8 @@ export default function SectionTitle({
     eyebrow?: string;
     /** section number shown in mono before the eyebrow, e.g. "02" */
     index?: string;
-    /** substring inside `title` to paint with the accent colour */
+    /** substring inside `title` set as the accent word: mint text on dark,
+     *  a mint marker on a light surface (.accent-word in globals.css) */
     accentWord?: string;
     align?: "left" | "center";
 }) {

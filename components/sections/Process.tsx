@@ -19,7 +19,7 @@ export default function Process() {
     });
 
     return (
-        <section id="process" data-theme="light" style={{ padding: "130px 0", position: "relative" }}>
+        <section id="process" style={{ padding: "130px 0", position: "relative" }}>
             <Container>
                 <SectionTitle
                     index="04"

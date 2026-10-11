@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useSmoothScroll } from "./SmoothScrollProvider";
 
 type Link = { label: string; href: string };
@@ -23,6 +23,20 @@ export default function NavMobile({ open, onClose, links, social }: NavMobilePro
         return () => window.removeEventListener("keydown", onKey);
     }, [onClose]);
 
+    // Focus management: on open, remember what had focus (the burger) and
+    // move focus into the panel; on close, hand it back.
+    const closeRef = useRef<HTMLButtonElement>(null);
+    const returnTo = useRef<HTMLElement | null>(null);
+    useEffect(() => {
+        if (open) {
+            returnTo.current = document.activeElement as HTMLElement | null;
+            closeRef.current?.focus();
+        } else if (returnTo.current) {
+            returnTo.current.focus();
+            returnTo.current = null;
+        }
+    }, [open]);
+
     const handleLinkClick = (href: string) => {
         onClose();
         setTimeout(() => scrollTo(href), 300);
@@ -30,6 +44,18 @@ export default function NavMobile({ open, onClose, links, social }: NavMobilePro
 
     return (
         <>
+            <style>{`
+                /* Dark glass over whatever the page shows underneath. */
+                .nav-sheet {
+                    background: rgba(7, 12, 11, 0.55);
+                    -webkit-backdrop-filter: blur(24px) saturate(1.6);
+                    backdrop-filter: blur(24px) saturate(1.6);
+                }
+                @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+                    .nav-sheet { background: rgba(7, 12, 11, 0.97); }
+                }
+            `}</style>
+
             {/* Overlay */}
             <div
                 onClick={onClose}
@@ -44,15 +70,17 @@ export default function NavMobile({ open, onClose, links, social }: NavMobilePro
                 }}
             />
 
-            {/* Full-screen panel */}
+            {/* Full-screen panel. `inert` while closed: the panel is only
+                moved off-screen, so without it Tab would walk through its
+                invisible links. */}
             <div
+                className="nav-sheet"
+                inert={!open}
+                aria-hidden={!open}
                 style={{
                     position: "fixed",
                     inset: 0,
                     zIndex: 199,
-                    background: "rgba(7, 12, 11, 0.97)",
-                    backdropFilter: "blur(24px)",
-                    WebkitBackdropFilter: "blur(24px)",
                     display: "flex",
                     flexDirection: "column",
                     padding: "0 28px 40px",
@@ -87,23 +115,12 @@ export default function NavMobile({ open, onClose, links, social }: NavMobilePro
 
                     {/* Close button */}
                     <button
+                        ref={closeRef}
+                        type="button"
                         onClick={onClose}
                         aria-label="Закрити меню"
-                        style={{
-                            background: "transparent",
-                            border: "1px solid var(--border-strong)",
-                            borderRadius: "50%",
-                            width: "38px",
-                            height: "38px",
-                            cursor: "pointer",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            color: "var(--accent)",
-                            transition: "background 0.2s",
-                        }}
-                        onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "var(--surface-2)"; }}
-                        onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "transparent"; }}
+                        className="glass-chip"
+                        style={{ width: "38px", height: "38px" }}
                     >
                         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
                             <line x1="2" y1="2" x2="14" y2="14"/>
@@ -207,8 +224,9 @@ export default function NavMobile({ open, onClose, links, social }: NavMobilePro
                             <button
                                 key={l}
                                 style={{
-                                    background: "transparent",
-                                    border: l === "UA" ? "1px solid var(--border-strong)" : "1px solid transparent",
+                                    background: l === "UA" ? "rgba(255, 255, 255, 0.12)" : "transparent",
+                                    border: l === "UA" ? "1px solid rgba(255, 255, 255, 0.2)" : "1px solid transparent",
+                                    boxShadow: l === "UA" ? "inset 0 1px 0 rgba(255, 255, 255, 0.28)" : "none",
                                     borderRadius: "100px",
                                     color: l === "UA" ? "var(--accent)" : "var(--text-muted)",
                                     cursor: "pointer",

@@ -92,15 +92,18 @@ export default function ParticleTrail() {
             r: number; g: number; b: number;
         };
 
-        // ~92% of the mass sits between teal-400 and teal-500, ~8% are bright
-        // mint sparks. Colour is fixed per particle, so it is resolved once
+        // ~89% of the mass sits between teal-400 and teal-500, ~8% are bright
+        // mint sparks and ~3% are white ones (taken out of the teal share). Colour is fixed per particle, so it is resolved once
         // here instead of allocating a THREE.Color per particle per frame.
         const cTealA = new THREE.Color(COLORS.teal400);
         const cTealB = new THREE.Color(COLORS.teal500);
         const cMint  = new THREE.Color(COLORS.accent);
+        const cWhite = new THREE.Color(COLORS.text);
         const tmp = new THREE.Color();
         const pickColor = () => {
-            if (Math.random() < 0.08) return { r: cMint.r, g: cMint.g, b: cMint.b };
+            const roll = Math.random();
+            if (roll < 0.08) return { r: cMint.r, g: cMint.g, b: cMint.b };
+            if (roll < 0.11) return { r: cWhite.r, g: cWhite.g, b: cWhite.b };
             tmp.lerpColors(cTealA, cTealB, Math.random());
             return { r: tmp.r, g: tmp.g, b: tmp.b };
         };

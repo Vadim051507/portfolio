@@ -65,40 +65,48 @@ export default function Contact() {
                     font-family: inherit;
                     color: var(--text);
                     background: var(--bg);
-                    border: 1px solid var(--border);
+                    border: 1px solid var(--border-strong);
                     border-radius: 20px;
                     outline: none;
                     transition: border-color 0.25s, box-shadow 0.25s;
                 }
                 .field::placeholder { color: var(--text-muted); opacity: 1; }
-                .field:hover { border-color: var(--border-strong); }
+                .field:hover { border-color: var(--text-muted); }
                 /* Focus: accent border plus an inner ring, for pointer and keyboard alike. */
                 .field:focus {
-                    border-color: var(--accent);
-                    box-shadow: inset 0 0 0 1px var(--accent), 0 0 18px rgba(33, 241, 168, 0.12);
+                    border-color: var(--accent-text);
+                    box-shadow: inset 0 0 0 3px rgba(0, 105, 92, 0.2);
                 }
                 .contact-card {
                     display: flex;
                     align-items: center;
                     gap: 16px;
                     padding: 16px 20px;
-                    background: var(--bg);
+                    background: var(--surface-2);
                     border: 1px solid var(--border);
                     border-radius: 20px;
+                    color: inherit;
+                    text-decoration: none;
                     cursor: pointer;
                     transition: border-color 0.25s, background 0.25s, transform 0.25s;
                 }
                 .contact-card:hover {
                     border-color: var(--border-strong);
-                    background: var(--surface-2);
                     transform: translateX(4px);
                 }
             `}</style>
 
             <Container>
+                {/* The section stays dark; only this card is light — a white
+                    anchor at the end of the page. */}
                 <div
                     className="card"
-                    style={{ padding: "clamp(28px, 5vw, 60px)" }}
+                    data-theme="light"
+                    style={{
+                        padding: "clamp(28px, 5vw, 60px)",
+                        borderRadius: "var(--radius-sheet)",
+                        boxShadow: "var(--sheet-shadow)",
+                    }}
                 >
 
                     <div className="contact-grid" style={{ position: "relative" }}>
@@ -155,17 +163,14 @@ export default function Contact() {
                                     icon="telegram"
                                     label="Telegram"
                                     value={SITE.telegramNick}
-                                    onClick={() =>
-                                        window.open(SITE.telegram, "_blank")
-                                    }
+                                    href={SITE.telegram}
+                                    external
                                 />
                                 <ContactCard
                                     icon="mail"
                                     label="Email"
                                     value={SITE.email}
-                                    onClick={() =>
-                                        window.open(`mailto:${SITE.email}`)
-                                    }
+                                    href={`mailto:${SITE.email}`}
                                 />
                                 <p
                                     className="mono-label"
@@ -251,11 +256,24 @@ export default function Contact() {
                                         animate={{ opacity: 1, y: 0 }}
                                         style={{
                                             fontSize: 14,
-                                            color: "var(--accent)",
+                                            color: "var(--accent-text)",
                                             fontWeight: 500,
                                         }}
                                     >
-                                        ✓ Дякую! Отримав повідомлення. Відповім
+                                        {/* drawn, not typed: the ✓ character
+                                            falls back to a colour emoji on
+                                            some systems */}
+                                        <span
+                                            aria-hidden
+                                            style={{
+                                                display: "inline-block",
+                                                verticalAlign: "-3px",
+                                                marginRight: 6,
+                                            }}
+                                        >
+                                            <Icon name="check" size={16} />
+                                        </span>
+                                        Дякую! Отримав повідомлення. Відповім
                                         якнайшвидше.
                                     </motion.p>
                                 )}
@@ -278,15 +296,23 @@ function ContactCard({
     icon,
     label,
     value,
-    onClick,
+    href,
+    external,
 }: {
     icon: string;
     label: string;
     value: string;
-    onClick: () => void;
+    href: string;
+    external?: boolean;
 }) {
     return (
-        <div onClick={onClick} className="contact-card">
+        <a
+            href={href}
+            className="contact-card"
+            {...(external
+                ? { target: "_blank", rel: "noopener noreferrer" }
+                : {})}
+        >
             <span
                 className="tile"
                 style={{ width: 42, height: 42, borderRadius: 14 }}
@@ -310,6 +336,6 @@ function ContactCard({
                     {value}
                 </div>
             </div>
-        </div>
+        </a>
     );
 }

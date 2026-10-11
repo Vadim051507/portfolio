@@ -31,7 +31,7 @@ function spotlight(e: React.MouseEvent<HTMLDivElement>) {
 
 export default function Services() {
     return (
-        <section id="services" data-theme="light" style={{ padding: "130px 0", position: "relative" }}>
+        <section id="services" style={{ padding: "130px 0", position: "relative" }}>
             <Container>
                 <SectionTitle
                     index="02"
@@ -70,7 +70,7 @@ export default function Services() {
                                     >
                                         <span
                                             className="mono-label"
-                                            style={{ fontSize: 13, color: "var(--accent-text)" }}
+                                            style={{ fontSize: 13 }}
                                         >
                                             0{i + 1}
                                         </span>
@@ -79,7 +79,7 @@ export default function Services() {
                                             style={{
                                                 width: 48,
                                                 height: 48,
-                                                borderRadius: 18,
+                                                borderRadius: 14,
                                             }}
                                         >
                                             <Icon name={m.icon} size={22} />
@@ -138,7 +138,11 @@ export default function Services() {
                                                 fontFamily: "var(--font-display)",
                                                 fontSize: 18,
                                                 fontWeight: 700,
-                                                color: "var(--accent-text)",
+                                                color: "var(--text)",
+                                                textDecoration: "underline",
+                                                textDecorationColor: "var(--accent)",
+                                                textDecorationThickness: 3,
+                                                textUnderlineOffset: 6,
                                             }}
                                         >
                                             {service.price}

@@ -118,7 +118,7 @@ function FAQItem({
 
 export default function FAQSection() {
     return (
-        <section id="faq" data-theme="light" style={{ padding: "130px 0", position: "relative" }}>
+        <section id="faq" style={{ padding: "130px 0", position: "relative" }}>
             <style>{`
                 .faq-grid {
                     display: grid;
