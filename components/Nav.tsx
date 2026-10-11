@@ -62,16 +62,12 @@ export default function Nav() {
     return (
         <>
             <style>{`
-                .nav-pill {
-                    background: rgba(12, 10, 22, 0.72);
-                    backdrop-filter: blur(24px) saturate(160%);
-                    -webkit-backdrop-filter: blur(24px) saturate(160%);
+                .nav-bar {
+                    background: rgba(7, 12, 11, 0.72);
+                    backdrop-filter: blur(20px);
+                    -webkit-backdrop-filter: blur(20px);
+                    border: 1px solid var(--border);
                     border-radius: 100px;
-                    border: 1px solid rgba(255,255,255,0.08);
-                    box-shadow:
-                        inset 0 1px 0 rgba(255,255,255,0.06),
-                        0 4px 24px rgba(0,0,0,0.25),
-                        0 1px 4px rgba(0,0,0,0.15);
                     position: relative;
                     pointer-events: auto;
                     display: flex;
@@ -81,21 +77,58 @@ export default function Nav() {
                     width: 100%;
                     min-width: 0;
                     overflow: hidden;
-                    transition: background 0.3s ease, box-shadow 0.3s ease;
+                    transition: background 0.3s ease, border-color 0.3s ease;
                 }
-                .nav-pill.scrolled {
-                    background: rgba(12, 10, 22, 0.88);
-                    box-shadow:
-                        inset 0 1px 0 rgba(255,255,255,0.07),
-                        0 8px 40px rgba(0,0,0,0.35),
-                        0 2px 8px rgba(0,0,0,0.2);
+                .nav-bar.scrolled {
+                    background: rgba(7, 12, 11, 0.92);
+                    border-color: var(--border-strong);
                 }
                 .nav-divider {
                     width: 1px;
                     height: 20px;
-                    background: rgba(255,255,255,0.10);
+                    background: var(--border-strong);
                     margin: 0 16px;
                     flex-shrink: 0;
+                }
+                .nav-link {
+                    color: var(--text-muted);
+                    text-decoration: none;
+                    font-size: 13.5px;
+                    font-weight: 500;
+                    padding: 6px 13px;
+                    border-radius: 100px;
+                    white-space: nowrap;
+                    transition: color 0.2s, background 0.2s;
+                }
+                .nav-link:hover { color: var(--text); background: var(--surface-2); }
+                .nav-social {
+                    color: var(--text-muted);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    width: 32px;
+                    height: 32px;
+                    border-radius: 50%;
+                    transition: color 0.2s, background 0.2s;
+                }
+                .nav-social:hover { color: var(--accent); background: var(--surface-2); }
+                .nav-lang {
+                    background: transparent;
+                    border: 1px solid transparent;
+                    cursor: pointer;
+                    font-family: var(--font-mono);
+                    font-size: 11.5px;
+                    font-weight: 500;
+                    letter-spacing: 0.08em;
+                    padding: 4px 8px;
+                    border-radius: 100px;
+                    color: var(--text-muted);
+                    transition: color 0.2s, border-color 0.2s;
+                }
+                .nav-lang:hover { color: var(--text); }
+                .nav-lang[aria-pressed="true"] {
+                    color: var(--accent);
+                    border-color: var(--border-strong);
                 }
                 @media (max-width: 768px) {
                     .nav-links-desktop { display: none !important; }
@@ -111,25 +144,20 @@ export default function Nav() {
                 zIndex: 100, display: "flex", justifyContent: "center",
                 padding: "16px 20px", pointerEvents: "none", boxSizing: "border-box",
             }}>
-                <nav className={`nav-pill${scrolled ? " scrolled" : ""}`}>
+                <nav className={`nav-bar${scrolled ? " scrolled" : ""}`}>
 
                     {/* Logo */}
                     <div style={{ display: "flex", alignItems: "center", gap: "10px", flexShrink: 0 }}>
-                        <div style={{
-                            width: "32px", height: "32px", borderRadius: "9px",
-                            background: "linear-gradient(135deg, #6B3FF0, #0066FF)",
-                            display: "flex", alignItems: "center", justifyContent: "center",
-                            boxShadow: "0 2px 8px rgba(107,63,240,0.4)", flexShrink: 0,
-                        }}>
-                            <svg width="15" height="15" viewBox="0 0 16 16" fill="white">
-                                <path d="M3 2h4v6H3V2zm6 0h4v10H9V2zM3 10h4v4H3v-4z" opacity="0.9"/>
+                        <div className="logo-mark" style={{ width: "32px", height: "32px", borderRadius: "9px" }}>
+                            <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor">
+                                <path d="M3 2h4v6H3V2zm6 0h4v10H9V2zM3 10h4v4H3v-4z"/>
                             </svg>
                         </div>
                         <div style={{ lineHeight: 1.2 }}>
-                            <div style={{ color: "#fff", fontWeight: 700, fontSize: "13px", letterSpacing: "-0.3px" }}>
+                            <div style={{ color: "var(--text)", fontWeight: 700, fontSize: "13px", letterSpacing: "-0.3px" }}>
                                 YOUR NAME
                             </div>
-                            <div style={{ color: "rgba(255,255,255,0.35)", fontSize: "10px" }}>
+                            <div style={{ color: "var(--text-muted)", fontSize: "10px" }}>
                                 Fullstack Dev
                             </div>
                         </div>
@@ -151,7 +179,7 @@ export default function Nav() {
                                 <SocialIcon key={s.label} href={s.href} label={s.label}>{s.icon}</SocialIcon>
                             ))}
                         </div>
-                        <div style={{ width: "1px", height: "16px", background: "rgba(255,255,255,0.10)", margin: "0 8px" }} className="nav-socials-desktop" />
+                        <div style={{ width: "1px", height: "16px", background: "var(--border-strong)", margin: "0 8px" }} className="nav-socials-desktop" />
                         <div className="nav-lang-desktop">
                             <LangSwitcher />
                         </div>
@@ -161,17 +189,18 @@ export default function Nav() {
                             aria-label="Відкрити меню"
                             style={{
                                 display: "none",
-                                background: "linear-gradient(135deg, #6B3FF0, #0066FF)",
-                                border: "none", borderRadius: "50%",
+                                background: "transparent",
+                                border: "1px solid var(--border-strong)",
+                                borderRadius: "50%",
+                                color: "var(--accent)",
                                 width: "34px", height: "34px", cursor: "pointer",
                                 alignItems: "center", justifyContent: "center", flexShrink: 0,
-                                boxShadow: "0 2px 8px rgba(107,63,240,0.4)",
                             }}
                         >
                             <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
-                                <rect x="2" y="4.5" width="12" height="1.5" rx="0.75" fill="white"/>
-                                <rect x="2" y="7.25" width="12" height="1.5" rx="0.75" fill="white"/>
-                                <rect x="2" y="10" width="12" height="1.5" rx="0.75" fill="white"/>
+                                <rect x="2" y="4.5" width="12" height="1.5" rx="0.75" fill="currentColor"/>
+                                <rect x="2" y="7.25" width="12" height="1.5" rx="0.75" fill="currentColor"/>
+                                <rect x="2" y="10" width="12" height="1.5" rx="0.75" fill="currentColor"/>
                             </svg>
                         </button>
                     </div>
@@ -190,22 +219,7 @@ function NavLink({ href, children }: { href: string; children: React.ReactNode }
         scrollTo(href);
     };
     return (
-        <a
-            href={href} onClick={handleClick}
-            style={{
-                color: "rgba(255,255,255,0.6)", textDecoration: "none",
-                fontSize: "13.5px", fontWeight: 500, padding: "6px 13px",
-                borderRadius: "100px", transition: "color 0.2s, background 0.2s", whiteSpace: "nowrap",
-            }}
-            onMouseEnter={(e) => {
-                (e.currentTarget as HTMLElement).style.color = "#fff";
-                (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.08)";
-            }}
-            onMouseLeave={(e) => {
-                (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.6)";
-                (e.currentTarget as HTMLElement).style.background = "transparent";
-            }}
-        >
+        <a href={href} onClick={handleClick} className="nav-link">
             {children}
         </a>
     );
@@ -215,20 +229,7 @@ function SocialIcon({ href, label, children }: { href: string; label: string; ch
     return (
         <a
             href={href} target="_blank" rel="noopener noreferrer" aria-label={label}
-            style={{
-                color: "rgba(255,255,255,0.45)", display: "flex",
-                alignItems: "center", justifyContent: "center",
-                width: "32px", height: "32px", borderRadius: "50%",
-                transition: "color 0.2s, background 0.2s",
-            }}
-            onMouseEnter={(e) => {
-                (e.currentTarget as HTMLElement).style.color = "#fff";
-                (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.08)";
-            }}
-            onMouseLeave={(e) => {
-                (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.45)";
-                (e.currentTarget as HTMLElement).style.background = "transparent";
-            }}
+            className="nav-social"
         >
             {children}
         </a>
@@ -238,15 +239,14 @@ function SocialIcon({ href, label, children }: { href: string; label: string; ch
 function LangSwitcher() {
     const [lang, setLang] = useState<"UA" | "EN">("UA");
     return (
-        <div style={{ display: "flex", alignItems: "center", gap: "1px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "2px" }}>
             {(["EN", "UA"] as const).map((l) => (
-                <button key={l} onClick={() => setLang(l)} style={{
-                    background: lang === l ? "rgba(107,63,240,0.25)" : "transparent",
-                    border: "none", cursor: "pointer", fontSize: "12px", fontWeight: 600,
-                    padding: "4px 8px", borderRadius: "100px",
-                    color: lang === l ? "#a78bfa" : "rgba(255,255,255,0.35)",
-                    transition: "color 0.2s, background 0.2s", letterSpacing: "0.4px",
-                }}>
+                <button
+                    key={l}
+                    onClick={() => setLang(l)}
+                    aria-pressed={lang === l}
+                    className="nav-lang"
+                >
                     {l}
                 </button>
             ))}

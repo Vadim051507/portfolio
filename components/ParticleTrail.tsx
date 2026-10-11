@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
+import { COLORS } from "@/lib/colors";
 
 export default function ParticleTrail() {
     const mountRef = useRef<HTMLDivElement>(null);
@@ -73,6 +74,12 @@ export default function ParticleTrail() {
         ];
 
         const COUNT = 14000;
+        // Most particles are small round dots; a small share are short
+        // round-ended capsules. Capsules live in the tail of the particle
+        // array and are drawn by a second Points object, since a point
+        // sprite's shape is per-material, not per-vertex.
+        const DASH_COUNT = Math.round(COUNT * 0.1);
+        const DOT_COUNT = COUNT - DASH_COUNT;
 
         type P = {
             p0x: number; p0y: number;
@@ -82,7 +89,20 @@ export default function ParticleTrail() {
             t: number;
             speed: number;
             alpha: number;
-            colorT: number;
+            r: number; g: number; b: number;
+        };
+
+        // ~92% of the mass sits between teal-400 and teal-500, ~8% are bright
+        // mint sparks. Colour is fixed per particle, so it is resolved once
+        // here instead of allocating a THREE.Color per particle per frame.
+        const cTealA = new THREE.Color(COLORS.teal400);
+        const cTealB = new THREE.Color(COLORS.teal500);
+        const cMint  = new THREE.Color(COLORS.accent);
+        const tmp = new THREE.Color();
+        const pickColor = () => {
+            if (Math.random() < 0.08) return { r: cMint.r, g: cMint.g, b: cMint.b };
+            tmp.lerpColors(cTealA, cTealB, Math.random());
+            return { r: tmp.r, g: tmp.g, b: tmp.b };
         };
 
         const makeP = (t0: number): P => {
@@ -95,6 +115,7 @@ export default function ParticleTrail() {
             const p2 = toWorld(s.p2.x + jx * 1.6,  s.p2.y + jy * 2.0);
             const p3 = toWorld(s.p3.x + jx * 0.5,  s.p3.y - Math.random() * 0.06);
 
+            const c = pickColor();
             return {
                 p0x: p0.x, p0y: p0.y,
                 p1x: p1.x, p1y: p1.y,
@@ -103,49 +124,63 @@ export default function ParticleTrail() {
                 t: t0,
                 speed: 0.00025 + Math.random() * 0.00075,
                 alpha: 0.55 + Math.random() * 0.45,
-                colorT: Math.random(),
+                r: c.r, g: c.g, b: c.b,
             };
         };
 
         const particles: P[] = Array.from({ length: COUNT }, () => makeP(Math.random()));
 
-        const positions = new Float32Array(COUNT * 3);
-        const colors    = new Float32Array(COUNT * 4);
-        const geo = new THREE.BufferGeometry();
-        geo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
-        geo.setAttribute("color",    new THREE.BufferAttribute(colors,    4));
+        const makeLayer = (count: number) => {
+            const geo = new THREE.BufferGeometry();
+            geo.setAttribute("position", new THREE.BufferAttribute(new Float32Array(count * 3), 3));
+            geo.setAttribute("color",    new THREE.BufferAttribute(new Float32Array(count * 4), 4));
+            return geo;
+        };
+        const geoDot = makeLayer(DOT_COUNT);
+        const geoDash   = makeLayer(DASH_COUNT);
 
-        const tc = document.createElement("canvas");
-        tc.width = tc.height = 32;
-        const tctx = tc.getContext("2d")!;
-        const tg = tctx.createRadialGradient(16, 16, 0, 16, 16, 16);
-        tg.addColorStop(0,   "rgba(255,255,255,1)");
-        tg.addColorStop(0.3, "rgba(255,255,255,0.9)");
-        tg.addColorStop(1,   "rgba(255,255,255,0)");
-        tctx.fillStyle = tg;
-        tctx.fillRect(0, 0, 32, 32);
+        // Both sprites are solid shapes with a thin antialiased edge (not the
+        // old soft radial falloff), so each one puts more light on screen.
+        // With additive blending that is compensated by a lower opacity —
+        // otherwise the pinch points of the S-curve blow out.
+        const OPACITY = 0.42;
+        const makeSprite = (draw: (ctx: CanvasRenderingContext2D, s: number) => void) => {
+            const size = 32;
+            const c = document.createElement("canvas");
+            c.width = c.height = size;
+            const ctx = c.getContext("2d")!;
+            ctx.fillStyle = COLORS.text;
+            draw(ctx, size);
+            return new THREE.CanvasTexture(c);
+        };
 
-        const mat = new THREE.PointsMaterial({
-            size: 3.4,
+        const dotTex = makeSprite((ctx, s) => {
+            ctx.beginPath();
+            ctx.arc(s / 2, s / 2, s / 2 - 1, 0, Math.PI * 2);
+            ctx.fill();
+        });
+        // Vertical capsule, about a third as wide as it is tall.
+        const dashTex = makeSprite((ctx, s) => {
+            const w = s * 0.34;
+            ctx.beginPath();
+            ctx.roundRect((s - w) / 2, 1, w, s - 2, w / 2);
+            ctx.fill();
+        });
+
+        const baseMaterial = {
             vertexColors: true,
             transparent: true,
+            opacity: OPACITY,
             depthWrite: false,
             sizeAttenuation: false,
-            map: new THREE.CanvasTexture(tc),
-            alphaTest: 0.005,
+            alphaTest: 0.02,
             blending: THREE.AdditiveBlending,
-        });
-        scene.add(new THREE.Points(geo, mat));
-
-        const cA = new THREE.Color("#A855F7");
-        const cB = new THREE.Color("#6366F1");
-        const cC = new THREE.Color("#22D3EE");
-        const getColor = (t: number) => {
-            const c = new THREE.Color();
-            if (t < 0.5) c.lerpColors(cA, cB, t * 2);
-            else         c.lerpColors(cB, cC, (t - 0.5) * 2);
-            return c;
         };
+        const matDot = new THREE.PointsMaterial({ ...baseMaterial, size: 3, map: dotTex });
+        const matDash   = new THREE.PointsMaterial({ ...baseMaterial, size: 7, map: dashTex });
+
+        scene.add(new THREE.Points(geoDot, matDot));
+        scene.add(new THREE.Points(geoDash, matDash));
 
         const bz = (p0: number, p1: number, p2: number, p3: number, t: number) =>
             (1-t)**3*p0 + 3*(1-t)**2*t*p1 + 3*(1-t)*t**2*p2 + t**3*p3;
@@ -158,13 +193,20 @@ export default function ParticleTrail() {
             const dt = Math.min(now - last, 33);
             last = now;
 
-            const pos = geo.attributes.position.array as Float32Array;
-            const col = geo.attributes.color.array    as Float32Array;
+            const posP = geoDot.attributes.position.array as Float32Array;
+            const colP = geoDot.attributes.color.array    as Float32Array;
+            const posD = geoDash.attributes.position.array   as Float32Array;
+            const colD = geoDash.attributes.color.array      as Float32Array;
 
-            for (let i = 0; i < COUNT; i++) {
-                const p = particles[i];
+            for (let n = 0; n < COUNT; n++) {
+                const p = particles[n];
                 p.t += p.speed * (dt / 16);
-                if (p.t > 1) { particles[i] = makeP(0); continue; }
+                if (p.t > 1) { particles[n] = makeP(0); continue; }
+
+                const dash = n >= DOT_COUNT;
+                const pos = dash ? posD : posP;
+                const col = dash ? colD : colP;
+                const i = dash ? n - DOT_COUNT : n;
 
                 const x = bz(p.p0x, p.p1x, p.p2x, p.p3x, p.t);
                 const y = bz(p.p0y, p.p1y, p.p2y, p.p3y, p.t);
@@ -177,15 +219,16 @@ export default function ParticleTrail() {
                     : p.t > 0.90 ? (1 - p.t) / 0.10
                         : 1;
 
-                const c = getColor(p.colorT + p.t * 0.3);
-                col[i*4]   = c.r;
-                col[i*4+1] = c.g;
-                col[i*4+2] = c.b;
+                col[i*4]   = p.r;
+                col[i*4+1] = p.g;
+                col[i*4+2] = p.b;
                 col[i*4+3] = p.alpha * fade;
             }
 
-            geo.attributes.position.needsUpdate = true;
-            geo.attributes.color.needsUpdate    = true;
+            geoDot.attributes.position.needsUpdate = true;
+            geoDot.attributes.color.needsUpdate    = true;
+            geoDash.attributes.position.needsUpdate   = true;
+            geoDash.attributes.color.needsUpdate      = true;
             renderer.render(scene, cam);
         };
 
@@ -205,8 +248,12 @@ export default function ParticleTrail() {
             cancelAnimationFrame(raf);
             ro.disconnect();
             renderer.dispose();
-            geo.dispose();
-            mat.dispose();
+            geoDot.dispose();
+            geoDash.dispose();
+            matDot.dispose();
+            matDash.dispose();
+            dotTex.dispose();
+            dashTex.dispose();
             if (mount.contains(renderer.domElement)) mount.removeChild(renderer.domElement);
         };
     }, []);

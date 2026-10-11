@@ -24,9 +24,9 @@ const HEADLINE: { w: string; grad?: boolean; br?: boolean }[] = [
 ];
 
 const STATS = [
-    { value: 0, suffix: "", label: "передоплата", accent: "#A855F7" },
-    { value: 30, suffix: " днів", label: "підтримки безкоштовно", accent: "#6366F1" },
-    { value: 100, suffix: "%", label: "проєктів з адмінкою", accent: "#22D3EE" },
+    { value: 0, suffix: "", label: "передоплата" },
+    { value: 30, suffix: " днів", label: "підтримки безкоштовно" },
+    { value: 100, suffix: "%", label: "проєктів з адмінкою" },
 ];
 
 export default function Hero() {
@@ -57,6 +57,7 @@ export default function Hero() {
                     .hero-visual { order: -1; }
                     .hero-stats { justify-content: flex-start !important; }
                 }
+                .hero-stat { padding-left: 16px; border-left: 1px solid var(--border-strong); }
             `}</style>
 
             {/* Original hero S-curve trail (scoped to the hero) */}
@@ -75,12 +76,11 @@ export default function Hero() {
                                 display: "inline-flex",
                                 alignItems: "center",
                                 gap: 9,
-                                background: "rgba(255,255,255,0.04)",
+                                background: "var(--surface)",
                                 border: "1px solid var(--border-strong)",
                                 borderRadius: 100,
                                 padding: "7px 16px",
                                 marginBottom: 30,
-                                backdropFilter: "blur(8px)",
                             }}
                         >
                             <span
@@ -88,11 +88,11 @@ export default function Hero() {
                                     width: 8,
                                     height: 8,
                                     borderRadius: "50%",
-                                    background: "#22C55E",
+                                    background: "var(--accent)",
                                     animation: "pulse-dot 2s infinite",
                                 }}
                             />
-                            <span style={{ fontSize: 13, color: "var(--text-2)" }}>
+                            <span className="mono-label">
                                 Доступний для нових проєктів
                             </span>
                         </motion.div>
@@ -149,7 +149,7 @@ export default function Hero() {
                             transition={{ duration: 0.7, delay: 0.6 }}
                             style={{
                                 fontSize: 18,
-                                color: "var(--text-2)",
+                                color: "var(--text-muted)",
                                 lineHeight: 1.7,
                                 maxWidth: 490,
                                 marginBottom: 36,
@@ -191,19 +191,19 @@ export default function Hero() {
                             transition={{ duration: 0.8, delay: 1 }}
                             style={{
                                 display: "flex",
-                                gap: 40,
+                                gap: 32,
                                 marginTop: 52,
                                 flexWrap: "wrap",
                             }}
                         >
                             {STATS.map((s) => (
-                                <div key={s.label}>
+                                <div key={s.label} className="hero-stat">
                                     <div
                                         style={{
                                             fontFamily: "var(--font-display)",
                                             fontSize: 34,
                                             fontWeight: 700,
-                                            color: s.accent,
+                                            color: "var(--text)",
                                             lineHeight: 1,
                                             marginBottom: 6,
                                         }}
@@ -211,11 +211,8 @@ export default function Hero() {
                                         <Counter value={s.value} suffix={s.suffix} />
                                     </div>
                                     <div
-                                        style={{
-                                            fontSize: 13,
-                                            color: "var(--text-3)",
-                                            maxWidth: 130,
-                                        }}
+                                        className="mono-label"
+                                        style={{ maxWidth: 150, lineHeight: 1.5 }}
                                     >
                                         {s.label}
                                     </div>
@@ -251,12 +248,8 @@ export default function Hero() {
                     flexDirection: "column",
                     alignItems: "center",
                     gap: 8,
-                    color: "var(--text-3)",
-                    fontSize: 11,
-                    letterSpacing: 2,
-                    textTransform: "uppercase",
-                    fontFamily: "var(--font-display)",
                 }}
+                className="mono-label"
             >
                 Гортайте
                 <motion.div
@@ -277,7 +270,7 @@ export default function Hero() {
                             width: 3,
                             height: 7,
                             borderRadius: 3,
-                            background: "var(--violet)",
+                            background: "var(--accent)",
                         }}
                     />
                 </motion.div>

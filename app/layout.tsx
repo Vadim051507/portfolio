@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { JetBrains_Mono } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 import { SITE } from "@/lib/constants";
@@ -7,7 +8,16 @@ import SmoothScrollProvider from "@/components/SmoothScrollProvider";
 import IntroAnimation from "@/components/site/IntroAnimation";
 import AuroraBackground from "@/components/site/AuroraBackground";
 import ScrollProgress from "@/components/site/ScrollProgress";
-import SpotlightCursor from "@/components/site/SpotlightCursor";
+
+// Mono face for service labels only (section numbers, captions) — exposed as
+// --font-jetbrains-mono and consumed through --font-mono in globals.css.
+// Inter / Space Grotesk keep loading via the <link> below.
+const jetbrainsMono = JetBrains_Mono({
+    subsets: ["latin", "cyrillic"],
+    weight: ["400", "500"],
+    variable: "--font-jetbrains-mono",
+    display: "swap",
+});
 
 export const metadata: Metadata = {
     title: SITE.title,
@@ -28,6 +38,7 @@ export const viewport: Viewport = {
     width: "device-width",
     initialScale: 1,
     viewportFit: "cover",
+    themeColor: "#070C0B",
 };
 
 export default function RootLayout({
@@ -36,7 +47,11 @@ export default function RootLayout({
     children: React.ReactNode;
 }) {
     return (
-        <html lang="uk" suppressHydrationWarning>
+        <html
+            lang="uk"
+            className={jetbrainsMono.variable}
+            suppressHydrationWarning
+        >
             <head>
                 <link rel="preconnect" href="https://fonts.googleapis.com" />
                 <link
@@ -64,7 +79,6 @@ export default function RootLayout({
                 <IntroAnimation />
                 <AuroraBackground />
                 <ScrollProgress />
-                <SpotlightCursor />
                 <div className="grain" />
                 {/* Nav lives inside the provider too (not just {children}) —
                     its anchor links need useSmoothScroll() same as anything

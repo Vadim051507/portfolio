@@ -1,14 +1,14 @@
 "use client";
 
 import { motion, useInView } from "framer-motion";
-import { useRef, ReactNode } from "react";
+import { useRef } from "react";
 
 /**
  * Kinetic heading: each word rises out of an overflow mask on scroll-in.
- * Pass plain string lines; wrap accent words with the `accent` markup by
- * splitting into an array of {text, gradient} segments via `segments`.
+ * Pass an array of {text, accent} segments; accent segments are painted in
+ * the flat mint accent.
  */
-type Segment = { text: string; gradient?: boolean };
+type Segment = { text: string; accent?: boolean };
 
 export default function AnimatedHeading({
     segments,
@@ -49,15 +49,8 @@ export default function AnimatedHeading({
                                 style={{
                                     display: "inline-block",
                                     paddingRight: "0.26em",
-                                    ...(seg.gradient
-                                        ? {
-                                              background:
-                                                  "linear-gradient(115deg, #A855F7, #6366F1, #22D3EE)",
-                                              WebkitBackgroundClip: "text",
-                                              backgroundClip: "text",
-                                              WebkitTextFillColor: "transparent",
-                                              color: "transparent",
-                                          }
+                                    ...(seg.accent
+                                        ? { color: "var(--accent)" }
                                         : {}),
                                 }}
                                 initial={{ y: "110%", opacity: 0 }}
@@ -76,8 +69,4 @@ export default function AnimatedHeading({
             })}
         </h2>
     );
-}
-
-export function GradientWord({ children }: { children: ReactNode }) {
-    return <span className="gradient-text">{children}</span>;
 }

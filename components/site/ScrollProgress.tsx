@@ -2,7 +2,7 @@
 
 import { motion, useScroll, useSpring } from "framer-motion";
 
-/** Thin neon rail at the very top that fills as you scroll the page. */
+/** Thin mint rail at the very top that fills as you scroll the page. */
 export default function ScrollProgress() {
     const { scrollYProgress } = useScroll();
     const scaleX = useSpring(scrollYProgress, {
@@ -19,11 +19,10 @@ export default function ScrollProgress() {
                 top: 0,
                 left: 0,
                 right: 0,
-                height: "2.5px",
+                height: "2px",
                 transformOrigin: "0% 50%",
                 scaleX,
-                background: "linear-gradient(90deg, #A855F7, #6366F1, #22D3EE)",
-                boxShadow: "0 0 12px rgba(139,92,246,0.7)",
+                background: "var(--accent)",
                 zIndex: 9999,
             }}
         />

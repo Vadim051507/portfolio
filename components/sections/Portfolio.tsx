@@ -27,9 +27,10 @@ export default function Portfolio() {
 
             <Container>
                 <SectionTitle
+                    index="03"
                     eyebrow="Портфоліо"
                     title="Обрані роботи"
-                    gradientWord="роботи"
+                    accentWord="роботи"
                     subtitle="Кожен проєкт — від дизайну до запуску. Наведіть, щоб роздивитись."
                 />
 
@@ -39,28 +40,9 @@ export default function Portfolio() {
                         return (
                             <Reveal key={p.slug} delay={i * 0.1} y={44}>
                                 <div
-                                    className="pf-card glass"
+                                    className="pf-card card card-clip card-hover"
                                     onClick={() => live && router.push(p.href)}
-                                    style={{
-                                        overflow: "hidden",
-                                        cursor: live ? "pointer" : "default",
-                                        transition:
-                                            "transform 0.4s var(--ease-out), border-color 0.4s, box-shadow 0.4s",
-                                    }}
-                                    onMouseEnter={(e) => {
-                                        e.currentTarget.style.transform =
-                                            "translateY(-6px)";
-                                        e.currentTarget.style.borderColor =
-                                            "var(--border-strong)";
-                                        e.currentTarget.style.boxShadow = `0 30px 80px rgba(0,0,0,0.5), 0 0 60px ${p.accent}`;
-                                    }}
-                                    onMouseLeave={(e) => {
-                                        e.currentTarget.style.transform =
-                                            "translateY(0)";
-                                        e.currentTarget.style.borderColor =
-                                            "var(--border)";
-                                        e.currentTarget.style.boxShadow = "none";
-                                    }}
+                                    style={{ cursor: live ? "pointer" : "default" }}
                                 >
                                     {/* image */}
                                     <div
@@ -90,7 +72,7 @@ export default function Portfolio() {
                                             style={{
                                                 position: "absolute",
                                                 inset: 0,
-                                                background: `linear-gradient(180deg, transparent 40%, rgba(5,6,12,0.55))`,
+                                                background: `linear-gradient(180deg, transparent 40%, rgba(7,12,11,0.6))`,
                                             }}
                                         />
                                         {/* domain chip */}
@@ -99,14 +81,13 @@ export default function Portfolio() {
                                                 position: "absolute",
                                                 top: 14,
                                                 left: 14,
-                                                fontSize: 11.5,
-                                                color: "var(--text-2)",
+                                                fontSize: 11,
+                                                color: "var(--text)",
                                                 padding: "5px 11px",
                                                 borderRadius: 100,
-                                                background: "rgba(5,6,12,0.6)",
-                                                border: "1px solid var(--border)",
-                                                backdropFilter: "blur(8px)",
-                                                fontFamily: "var(--font-body)",
+                                                background: "var(--bg)",
+                                                border: "1px solid var(--border-strong)",
+                                                fontFamily: "var(--font-mono)",
                                             }}
                                         >
                                             {p.domain}
@@ -117,15 +98,16 @@ export default function Portfolio() {
                                                     position: "absolute",
                                                     top: 14,
                                                     right: 14,
+                                                    fontFamily: "var(--font-mono)",
                                                     fontSize: 11,
-                                                    fontWeight: 600,
-                                                    color: "#fff",
+                                                    fontWeight: 500,
+                                                    letterSpacing: "0.1em",
+                                                    textTransform: "uppercase",
+                                                    color: "var(--accent)",
                                                     padding: "5px 11px",
                                                     borderRadius: 100,
-                                                    background:
-                                                        "rgba(139,92,246,0.35)",
-                                                    border: "1px solid rgba(139,92,246,0.5)",
-                                                    backdropFilter: "blur(8px)",
+                                                    background: "var(--bg)",
+                                                    border: "1px solid var(--border-strong)",
                                                 }}
                                             >
                                                 Скоро
@@ -158,21 +140,38 @@ export default function Portfolio() {
                                                 <span
                                                     className="pf-arrow"
                                                     style={{
-                                                        fontSize: 20,
-                                                        color: "var(--violet-bright)",
+                                                        display: "grid",
+                                                        placeItems: "center",
+                                                        marginTop: 3,
+                                                        color: "var(--accent)",
                                                         transition:
                                                             "transform 0.3s var(--ease-out)",
                                                         flexShrink: 0,
                                                     }}
                                                 >
-                                                    ↗
+                                                    {/* drawn, not typed: the ↗
+                                                        character falls back to a
+                                                        colour emoji on some systems */}
+                                                    <svg
+                                                        aria-hidden
+                                                        width="18"
+                                                        height="18"
+                                                        viewBox="0 0 24 24"
+                                                        fill="none"
+                                                        stroke="currentColor"
+                                                        strokeWidth="2"
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                    >
+                                                        <path d="M7 17 17 7M8 7h9v9" />
+                                                    </svg>
                                                 </span>
                                             )}
                                         </div>
                                         <p
                                             style={{
                                                 fontSize: 14.5,
-                                                color: "var(--text-2)",
+                                                color: "var(--text-muted)",
                                                 lineHeight: 1.6,
                                                 marginBottom: 18,
                                             }}
@@ -187,18 +186,7 @@ export default function Portfolio() {
                                             }}
                                         >
                                             {p.tags.map((t) => (
-                                                <span
-                                                    key={t}
-                                                    style={{
-                                                        fontSize: 12,
-                                                        color: "var(--text-2)",
-                                                        padding: "4px 10px",
-                                                        borderRadius: 7,
-                                                        background:
-                                                            "rgba(255,255,255,0.04)",
-                                                        border: "1px solid var(--border)",
-                                                    }}
-                                                >
+                                                <span key={t} className="tag">
                                                     {t}
                                                 </span>
                                             ))}

@@ -9,11 +9,17 @@ export const metadata: Metadata = {
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
     return (
-        <div style={{ marginBottom: "40px" }}>
-            <h2 style={{ fontSize: "22px", fontWeight: 700, color: "#0A0A0A", marginBottom: "12px" }}>
+        <div
+            style={{
+                marginBottom: "40px",
+                paddingTop: "28px",
+                borderTop: "1px solid var(--border)",
+            }}
+        >
+            <h2 style={{ fontSize: "22px", fontWeight: 700, color: "var(--text)", marginBottom: "12px" }}>
                 {title}
             </h2>
-            <div style={{ fontSize: "16px", color: "#666666", lineHeight: 1.7 }}>
+            <div style={{ fontSize: "16px", color: "var(--text-muted)", lineHeight: 1.7 }}>
                 {children}
             </div>
         </div>
@@ -22,7 +28,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 
 export default function TokarchukDentalPage() {
     return (
-        <div style={{ padding: "120px 0 80px", backgroundColor: "#ffffff" }}>
+        <div style={{ padding: "120px 0 80px" }}>
             <Container>
                 <BackButton />
 
@@ -30,7 +36,7 @@ export default function TokarchukDentalPage() {
                     style={{
                         fontSize: "clamp(32px, 5vw, 52px)",
                         fontWeight: 700,
-                        color: "#0A0A0A",
+                        color: "var(--text)",
                         letterSpacing: "-0.5px",
                         marginBottom: "16px",
                     }}
@@ -38,23 +44,13 @@ export default function TokarchukDentalPage() {
                     Tokarchuk Dental Clinic
                 </h1>
 
-                <p style={{ fontSize: "18px", color: "#666666", marginBottom: "48px" }}>
+                <p style={{ fontSize: "18px", color: "var(--text-muted)", marginBottom: "32px" }}>
                     Корпоративний сайт стоматологічної клініки
                 </p>
 
-                <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", marginBottom: "64px" }}>
+                <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginBottom: "64px" }}>
                     {["Next.js", "TypeScript", "Tailwind CSS v4", "Framer Motion", "NextAuth v5", "Vercel"].map((tag) => (
-                        <span
-                            key={tag}
-                            style={{
-                                fontSize: "13px",
-                                fontWeight: 500,
-                                color: "#0066FF",
-                                backgroundColor: "#EEF4FF",
-                                padding: "6px 14px",
-                                borderRadius: "6px",
-                            }}
-                        >
+                        <span key={tag} className="tag">
                             {tag}
                         </span>
                     ))}
@@ -97,16 +93,13 @@ export default function TokarchukDentalPage() {
                     {[1, 2, 3].map((i) => (
                         <div
                             key={i}
+                            className="card mono-label"
                             style={{
                                 aspectRatio: "16/9",
-                                backgroundColor: "#F5F7FA",
-                                borderRadius: "10px",
-                                border: "1px solid #EEEEEE",
+                                borderRadius: 20,
                                 display: "flex",
                                 alignItems: "center",
                                 justifyContent: "center",
-                                fontSize: "14px",
-                                color: "#666666",
                             }}
                         >
                             {`Screenshot ${i}`}

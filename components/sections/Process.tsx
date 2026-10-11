@@ -5,6 +5,7 @@ import { motion, useScroll, useSpring, useTransform } from "framer-motion";
 import Container from "@/components/ui/Container";
 import SectionTitle from "@/components/ui/SectionTitle";
 import { PROCESS_STEPS } from "@/lib/constants";
+import { COLORS, accentAlpha } from "@/lib/colors";
 
 export default function Process() {
     const ref = useRef<HTMLDivElement>(null);
@@ -22,9 +23,10 @@ export default function Process() {
         <section id="process" style={{ padding: "130px 0", position: "relative" }}>
             <Container>
                 <SectionTitle
+                    index="04"
                     eyebrow="Процес"
                     title="Як проходить робота"
-                    gradientWord="робота"
+                    accentWord="робота"
                     subtitle="Прозоро на кожному кроці. Ви завжди знаєте, що відбувається із сайтом."
                 />
 
@@ -36,26 +38,24 @@ export default function Process() {
                     <div
                         style={{
                             position: "absolute",
-                            left: 27,
+                            left: 27.5,
                             top: 10,
                             bottom: 10,
-                            width: 2,
-                            background: "var(--border)",
+                            width: 1,
+                            background: "var(--border-strong)",
                         }}
                     />
                     {/* rail fill */}
                     <motion.div
                         style={{
                             position: "absolute",
-                            left: 27,
+                            left: 27.5,
                             top: 10,
                             bottom: 10,
-                            width: 2,
+                            width: 1,
                             transformOrigin: "top",
                             scaleY: fill,
-                            background:
-                                "linear-gradient(180deg, #A855F7, #6366F1, #22D3EE)",
-                            boxShadow: "0 0 14px rgba(139,92,246,0.7)",
+                            background: "var(--accent)",
                         }}
                     />
 
@@ -86,14 +86,17 @@ function Step({
     progress: ReturnType<typeof useSpring>;
 }) {
     const threshold = index / (total - 1 || 1);
-    // dot lights up once the fill passes this step
-    const dotBg = useTransform(progress, (v) =>
-        v >= threshold - 0.02 ? "#8B5CF6" : "#0B0D18"
+    // node lights up once the fill passes this step
+    const nodeBg = useTransform(progress, (v) =>
+        v >= threshold - 0.02 ? COLORS.accent : COLORS.surface
     );
-    const dotShadow = useTransform(progress, (v) =>
+    const nodeColor = useTransform(progress, (v) =>
+        v >= threshold - 0.02 ? COLORS.textOnAccent : COLORS.textMuted
+    );
+    const nodeShadow = useTransform(progress, (v) =>
         v >= threshold - 0.02
-            ? "0 0 22px rgba(139,92,246,0.9)"
-            : "0 0 0 rgba(0,0,0,0)"
+            ? `0 0 18px ${accentAlpha(0.35)}`
+            : `0 0 0px ${accentAlpha(0)}`
     );
 
     return (
@@ -120,13 +123,13 @@ function Step({
                     borderRadius: "50%",
                     display: "grid",
                     placeItems: "center",
-                    fontFamily: "var(--font-display)",
-                    fontWeight: 700,
-                    fontSize: 18,
-                    color: "#fff",
-                    background: dotBg,
+                    fontFamily: "var(--font-mono)",
+                    fontWeight: 500,
+                    fontSize: 16,
+                    color: nodeColor,
+                    background: nodeBg,
                     border: "1px solid var(--border-strong)",
-                    boxShadow: dotShadow,
+                    boxShadow: nodeShadow,
                 }}
             >
                 {step.number}
@@ -134,7 +137,7 @@ function Step({
 
             {/* content */}
             <div
-                className="glass"
+                className="card"
                 style={{ flex: 1, padding: "22px 26px", marginTop: 2 }}
             >
                 <h3
@@ -151,7 +154,7 @@ function Step({
                 <p
                     style={{
                         fontSize: 14.5,
-                        color: "var(--text-2)",
+                        color: "var(--text-muted)",
                         lineHeight: 1.7,
                     }}
                 >
