@@ -22,15 +22,14 @@ function FAQItem({
     return (
         <Reveal delay={index * 0.05} y={20}>
             <div
-                className="glass"
+                className="card card-clip"
                 style={{
                     borderColor: open ? "var(--border-strong)" : "var(--border)",
-                    transition: "border-color 0.3s",
-                    overflow: "hidden",
                 }}
             >
                 <button
                     onClick={() => setOpen(!open)}
+                    aria-expanded={open}
                     style={{
                         width: "100%",
                         display: "flex",
@@ -43,16 +42,27 @@ function FAQItem({
                         textAlign: "left",
                         gap: 16,
                         fontFamily: "inherit",
+                        borderRadius: "inherit",
+                        outlineOffset: -4,
                     }}
                 >
                     <span
                         style={{
+                            display: "flex",
+                            alignItems: "baseline",
+                            gap: 16,
                             fontSize: 16,
                             fontWeight: 600,
                             color: "var(--text)",
                             fontFamily: "var(--font-display)",
                         }}
                     >
+                        <span
+                            className="mono-label"
+                            style={{ color: "var(--accent-text)", flexShrink: 0 }}
+                        >
+                            {String(index + 1).padStart(2, "0")}
+                        </span>
                         {question}
                     </span>
                     <motion.span
@@ -64,14 +74,15 @@ function FAQItem({
                             flexShrink: 0,
                             display: "grid",
                             placeItems: "center",
-                            borderRadius: 9,
-                            background: open
-                                ? "linear-gradient(135deg,#A855F7,#22D3EE)"
-                                : "rgba(255,255,255,0.05)",
-                            color: open ? "#fff" : "var(--violet-bright)",
+                            borderRadius: "50%",
+                            border: "1px solid var(--border-strong)",
+                            background: open ? "var(--accent)" : "transparent",
+                            color: open
+                                ? "var(--text-on-accent)"
+                                : "var(--accent-text)",
                             fontSize: 20,
                             lineHeight: 1,
-                            transition: "background 0.3s",
+                            transition: "background 0.3s, color 0.3s",
                         }}
                     >
                         +
@@ -90,9 +101,9 @@ function FAQItem({
                             <p
                                 style={{
                                     fontSize: 14.5,
-                                    color: "var(--text-2)",
+                                    color: "var(--text-muted)",
                                     lineHeight: 1.8,
-                                    padding: "0 26px 24px",
+                                    padding: "0 26px 24px 61px",
                                 }}
                             >
                                 {answer}
@@ -123,9 +134,10 @@ export default function FAQSection() {
             `}</style>
             <Container>
                 <SectionTitle
+                    index="06"
                     eyebrow="FAQ"
                     title="Часті питання"
-                    gradientWord="питання"
+                    accentWord="питання"
                 />
 
                 <div className="faq-grid">
@@ -148,42 +160,14 @@ export default function FAQSection() {
 
                     {/* Side card — fills the empty space with a CTA */}
                     <Reveal delay={0.1} className="faq-aside">
-                        <div
-                            className="glass"
-                            style={{
-                                padding: 30,
-                                position: "relative",
-                                overflow: "hidden",
-                            }}
-                        >
-                            <div
-                                aria-hidden
-                                style={{
-                                    position: "absolute",
-                                    top: "-40%",
-                                    right: "-20%",
-                                    width: 260,
-                                    height: 260,
-                                    borderRadius: "50%",
-                                    background:
-                                        "radial-gradient(circle, rgba(139,92,246,0.3), transparent 65%)",
-                                    filter: "blur(24px)",
-                                    pointerEvents: "none",
-                                }}
-                            />
+                        <div className="card" style={{ padding: 30 }}>
                             <div style={{ position: "relative" }}>
                                 <div
+                                    className="tile"
                                     style={{
                                         width: 52,
                                         height: 52,
-                                        borderRadius: 14,
-                                        display: "grid",
-                                        placeItems: "center",
-                                        color: "#fff",
-                                        background:
-                                            "linear-gradient(135deg,#8B5CF6,#22D3EE)",
-                                        boxShadow:
-                                            "0 6px 22px rgba(139,92,246,0.45)",
+                                        borderRadius: 18,
                                         marginBottom: 20,
                                     }}
                                 >
@@ -203,7 +187,7 @@ export default function FAQSection() {
                                 <p
                                     style={{
                                         fontSize: 14.5,
-                                        color: "var(--text-2)",
+                                        color: "var(--text-muted)",
                                         lineHeight: 1.7,
                                         marginBottom: 22,
                                     }}
@@ -216,27 +200,16 @@ export default function FAQSection() {
                                     href={SITE.telegram}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    style={{
-                                        display: "inline-flex",
-                                        alignItems: "center",
-                                        gap: 10,
-                                        width: "100%",
-                                        justifyContent: "center",
-                                        padding: "14px 20px",
-                                        borderRadius: 12,
-                                        textDecoration: "none",
-                                        color: "#fff",
-                                        fontFamily: "var(--font-display)",
-                                        fontWeight: 600,
-                                        fontSize: 15,
-                                        background:
-                                            "linear-gradient(115deg,#A855F7,#6366F1 55%,#22D3EE)",
-                                        boxShadow:
-                                            "0 8px 26px rgba(139,92,246,0.4)",
-                                    }}
+                                    className="btn btn-primary"
+                                    style={{ display: "flex" }}
                                 >
-                                    <Icon name="telegram" size={18} />
-                                    Написати в Telegram
+                                    <span
+                                        className="btn-face"
+                                        style={{ padding: "14px 20px" }}
+                                    >
+                                        <Icon name="telegram" size={18} />
+                                        Написати в Telegram
+                                    </span>
                                 </a>
 
                                 <div
@@ -264,7 +237,7 @@ export default function FAQSection() {
                                         >
                                             <span
                                                 style={{
-                                                    color: "var(--cyan)",
+                                                    color: "var(--accent-text)",
                                                     display: "grid",
                                                     placeItems: "center",
                                                     flexShrink: 0,
@@ -275,7 +248,7 @@ export default function FAQSection() {
                                             <span
                                                 style={{
                                                     fontSize: 14,
-                                                    color: "var(--text-2)",
+                                                    color: "var(--text-muted)",
                                                 }}
                                             >
                                                 {r.t}

@@ -16,6 +16,7 @@ import Container from "@/components/ui/Container";
 import Reveal from "@/components/site/Reveal";
 import AnimatedHeading from "@/components/site/AnimatedHeading";
 import phoneFrame from "@/public/phone/iphone-frame.png";
+import { COLORS, PILLAR_COLORS } from "@/lib/colors";
 
 /**
  * Geometry of the supplied iPhone render (public/phone/iphone-frame.png).
@@ -37,25 +38,25 @@ const PILLARS = [
         num: "01",
         title: "Швидкість",
         text: "Легкий код і сучасний стек: сторінка встигає відкритись, поки палець ще тягнеться до кнопки «назад».",
-        color: "#A855F7",
+        color: PILLAR_COLORS[0],
     },
     {
         num: "02",
         title: "Результат",
         text: "Кнопка, форма й оффер — у зоні великого пальця. Дизайн заточений під заявки, а не під «просто красиво».",
-        color: "#6366F1",
+        color: PILLAR_COLORS[1],
     },
     {
         num: "03",
         title: "Адмінка",
         text: "Тексти, фото й ціни змінюєте самі — з ноутбука або з того ж телефона, без розробника.",
-        color: "#3B82F6",
+        color: PILLAR_COLORS[2],
     },
     {
         num: "04",
         title: "Підтримка",
         text: "Не зникаю після здачі: лишаюсь на зв'язку, оновлюю й підстраховую далі.",
-        color: "#22D3EE",
+        color: PILLAR_COLORS[3],
     },
 ];
 
@@ -261,7 +262,7 @@ export default function MobileShowcase() {
                                             aria-hidden
                                             className="ms-halo"
                                             animate={{
-                                                background: `radial-gradient(closest-side, ${accent}55, ${accent}12 55%, transparent 78%)`,
+                                                background: `radial-gradient(closest-side, ${accent}3D, ${accent}0F 55%, transparent 78%)`,
                                             }}
                                             transition={{ duration: 0.8, ease: EASE }}
                                         />
@@ -287,7 +288,7 @@ export default function MobileShowcase() {
                                                     aria-hidden
                                                     className="ms-screen-glow"
                                                     animate={{
-                                                        background: `radial-gradient(120% 60% at 50% 8%, ${accent}4D, transparent 70%)`,
+                                                        background: `radial-gradient(120% 60% at 50% 8%, ${accent}40, transparent 70%)`,
                                                     }}
                                                     transition={{
                                                         duration: 0.8,
@@ -317,19 +318,21 @@ export default function MobileShowcase() {
                                     </motion.div>
                                     </motion.div>
 
-                                    <div aria-hidden className="ms-reflection" />
                                 </div>
 
                                 {/* ── RIGHT: the copy ─────────────────────────── */}
                                 <div className="ms-copy">
                                     <Reveal style={{ marginBottom: 18 }}>
-                                        <span className="eyebrow">Про мене</span>
+                                        <span className="eyebrow">
+                                            <span className="eyebrow-num">01</span>
+                                            Про мене
+                                        </span>
                                     </Reveal>
 
                                     <Reveal delay={0.05} style={{ marginBottom: 18 }}>
                                         <p className="ms-accent-line">
                                             Ваш сайт спершу відкривають{" "}
-                                            <span className="gradient-text">
+                                            <span className="ms-key">
                                                 з телефона
                                             </span>{" "}
                                             — і саме там вирішують, лишатися чи
@@ -343,7 +346,7 @@ export default function MobileShowcase() {
                                             { text: "Роблю сайти, які" },
                                             {
                                                 text: "працюють на бізнес,",
-                                                gradient: true,
+                                                accent: true,
                                             },
                                             { text: "а не просто існують" },
                                         ]}
@@ -420,10 +423,10 @@ export default function MobileShowcase() {
                                                                 scaleY: on ? 1 : 0.2,
                                                                 background: on
                                                                     ? p.color
-                                                                    : "rgba(255,255,255,0.22)",
+                                                                    : "rgba(244,255,251,0.22)",
                                                                 boxShadow: on
-                                                                    ? `0 0 18px ${p.color}`
-                                                                    : "0 0 0px rgba(0,0,0,0)",
+                                                                    ? `0 0 14px ${p.color}`
+                                                                    : `0 0 0px ${p.color}00`,
                                                             }}
                                                             transition={{
                                                                 duration: 0.55,
@@ -437,7 +440,7 @@ export default function MobileShowcase() {
                                                                 animate={{
                                                                     color: on
                                                                         ? p.color
-                                                                        : "rgba(233,235,255,0.4)",
+                                                                        : COLORS.textMuted,
                                                                 }}
                                                                 transition={{
                                                                     duration: 0.5,
@@ -452,8 +455,8 @@ export default function MobileShowcase() {
                                                                 animate={{
                                                                     scale: on ? 1 : 0.9,
                                                                     textShadow: on
-                                                                        ? `0 0 36px ${p.color}66`
-                                                                        : "0 0 0px rgba(0,0,0,0)",
+                                                                        ? `0 0 32px ${p.color}4D`
+                                                                        : `0 0 0px ${p.color}00`,
                                                                 }}
                                                                 transition={{
                                                                     duration: 0.55,
@@ -537,7 +540,7 @@ const styles = `
     position: relative;
     z-index: 1;
     width: var(--phone-w);
-    filter: drop-shadow(0 40px 60px rgba(0, 0, 0, 0.55));
+    filter: drop-shadow(0 40px 60px rgba(4, 18, 13, 0.7));
 }
 .ms-frame {
     position: relative;
@@ -559,7 +562,7 @@ const styles = `
     overflow: hidden;
     border-radius: calc(var(--phone-w) * 0.09);
     background:
-        linear-gradient(168deg, #0A0B16 0%, #12142C 48%, #080A16 100%);
+        linear-gradient(168deg, var(--bg) 0%, var(--surface-2) 48%, var(--bg) 100%);
     display: grid;
     place-items: center;
 }
@@ -571,8 +574,8 @@ const styles = `
     background: linear-gradient(
         104deg,
         transparent 38%,
-        rgba(255, 255, 255, 0.055) 48%,
-        rgba(255, 255, 255, 0.11) 51%,
+        rgba(244, 255, 251, 0.05) 48%,
+        rgba(244, 255, 251, 0.10) 51%,
         transparent 62%
     );
     animation: ms-sweep 5.5s var(--ease-out) infinite;
@@ -587,18 +590,18 @@ const styles = `
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    font-family: var(--font-display);
-    font-size: 11px;
+    font-family: var(--font-mono);
+    font-size: 10.5px;
     font-weight: 500;
-    letter-spacing: 2px;
+    letter-spacing: 0.16em;
     text-transform: uppercase;
-    color: rgba(233, 235, 255, 0.34);
+    color: var(--text-muted);
 }
 .ms-dot {
     width: 6px;
     height: 6px;
     border-radius: 50%;
-    background: #22C55E;
+    background: var(--accent);
     animation: pulse-dot 2.4s ease-in-out infinite;
 }
 /* Glass glare — stays above whatever ends up in the slot. */
@@ -612,19 +615,11 @@ const styles = `
     border-radius: calc(var(--phone-w) * 0.09);
     background: linear-gradient(
         118deg,
-        rgba(255, 255, 255, 0.10) 0%,
-        rgba(255, 255, 255, 0.02) 26%,
+        rgba(244, 255, 251, 0.10) 0%,
+        rgba(244, 255, 251, 0.02) 26%,
         transparent 46%
     );
     pointer-events: none;
-}
-.ms-reflection {
-    width: min(62vw, 230px);
-    height: 46px;
-    margin-top: 10px;
-    border-radius: 50%;
-    background: radial-gradient(closest-side, rgba(139, 92, 246, 0.22), transparent 72%);
-    filter: blur(10px);
 }
 
 /* ── Copy ──────────────────────────────────────────────── */
@@ -632,9 +627,10 @@ const styles = `
 .ms-accent-line {
     font-size: clamp(14px, 1.1vw, 16px);
     line-height: 1.65;
-    color: var(--text-2);
+    color: var(--text-muted);
     max-width: 560px;
 }
+.ms-key { color: var(--accent); }
 .ms-heading {
     font-size: clamp(27px, 3.6vw, 44px);
     font-weight: 700;
@@ -645,7 +641,7 @@ const styles = `
 .ms-lede {
     font-size: clamp(15px, 1.15vw, 17px);
     line-height: 1.7;
-    color: var(--text-2);
+    color: var(--text-muted);
     max-width: 560px;
 }
 
@@ -667,13 +663,13 @@ const styles = `
     border-radius: 999px;
     background: linear-gradient(
         90deg,
-        rgba(168, 85, 247, 0) 0%,
-        rgba(168, 85, 247, 0.85) 18%,
-        rgba(99, 102, 241, 0.85) 52%,
-        rgba(34, 211, 238, 0.55) 82%,
-        rgba(34, 211, 238, 0) 100%
+        rgba(33, 241, 168, 0) 0%,
+        rgba(33, 241, 168, 0.85) 18%,
+        rgba(38, 166, 154, 0.85) 52%,
+        rgba(0, 150, 136, 0.55) 82%,
+        rgba(0, 150, 136, 0) 100%
     );
-    opacity: 0.26;
+    opacity: 0.2;
     filter: blur(17px);
 }
 /* crisp core line, so the band reads as a stripe and not just a haze */
@@ -686,7 +682,7 @@ const styles = `
     height: 2px;
     margin-top: -1px;
     border-radius: 2px;
-    background: linear-gradient(90deg, transparent, #C084FC, #22D3EE, transparent);
+    background: linear-gradient(90deg, transparent, var(--accent), var(--teal-500), transparent);
     opacity: 0.5;
 }
 .ms-list {
@@ -707,16 +703,16 @@ const styles = `
     flex: 0 0 2px;
     width: 2px;
     border-radius: 2px;
-    background: rgba(255, 255, 255, 0.22);
+    background: rgba(244, 255, 251, 0.22);
     transform-origin: center;
 }
 .ms-row-body { min-width: 0; }
 .ms-num {
     display: block;
-    font-family: var(--font-display);
+    font-family: var(--font-mono);
     font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 3px;
+    font-weight: 500;
+    letter-spacing: 0.16em;
     line-height: 1;
     margin-bottom: 7px;
 }
@@ -733,7 +729,7 @@ const styles = `
     margin-top: 7px;
     font-size: clamp(13.5px, 1vw, 15px);
     line-height: 1.6;
-    color: var(--text-2);
+    color: var(--text-muted);
     max-width: 460px;
 }
 
@@ -758,7 +754,6 @@ const styles = `
         gap: clamp(32px, 4vw, 76px);
     }
     .ms-phone { --phone-w: min(280px, 34vh); }
-    .ms-reflection { width: min(220px, 26vh); height: 34px; }
     .ms-accent-line {
         font-size: clamp(13px, 1.7vh, 15.5px);
         line-height: 1.55;

@@ -1,42 +1,238 @@
 @import "tailwindcss";
 
 /* ═══════════════════════════════════════════════════════════
-   CINEMATIC DARK DESIGN SYSTEM
-   deep near-black canvas · violet→indigo→cyan neon · glass · glow
+   KINDRATYAK DESIGN SYSTEM
+   green-black canvas · one mint accent · monochrome teal depth
+   rounded geometry · 1px rules · mono service labels
    ═══════════════════════════════════════════════════════════ */
 
 :root {
-  /* Base surfaces */
-  --bg:            #05060C;
-  --bg-2:          #080A14;
-  --surface:       rgba(255, 255, 255, 0.026);
-  --surface-2:     rgba(255, 255, 255, 0.05);
-  --border:        rgba(255, 255, 255, 0.08);
-  --border-strong: rgba(255, 255, 255, 0.14);
+  /* Single source of truth. JS/WebGL mirrors live in lib/colors.ts. */
+  --bg:            #070C0B;
+  --surface:       #0F1715;
+  --surface-2:     #16211E;
+  --border:        rgba(33, 241, 168, 0.14);
+  --border-strong: rgba(33, 241, 168, 0.32);
 
-  /* Text */
-  --text:          #F4F5FF;
-  --text-2:        rgba(233, 235, 255, 0.62);
-  --text-3:        rgba(233, 235, 255, 0.40);
+  /* Neutral white: its own role next to the mint, not just the text colour.
+     Static borders in dark sections are white-ish; mint borders are kept
+     for interactive elements and active states. */
+  --white:              #F4FFFB;
+  --border-soft:        rgba(244, 255, 251, 0.12);
+  --border-soft-strong: rgba(244, 255, 251, 0.28);
 
-  /* Neon accents */
-  --violet:        #8B5CF6;
-  --violet-bright: #A855F7;
-  --indigo:        #6366F1;
-  --blue:          #3B82F6;
-  --cyan:          #22D3EE;
+  --text:           #F4FFFB;
+  --text-muted:     #8FA8A0;
+  --text-on-accent: #04120D;
 
-  /* Signature gradient */
-  --grad:          linear-gradient(115deg, #A855F7 0%, #6366F1 45%, #22D3EE 100%);
-  --grad-soft:     linear-gradient(115deg, rgba(168,85,247,0.9), rgba(99,102,241,0.9), rgba(34,211,238,0.9));
+  /* The only accent. Main button, active states, key words, hairlines,
+     one glow per screen — never large fills. */
+  --accent:         #21F1A8;
+  --accent-glow:    rgba(33, 241, 168, 0.35);
+  /* The accent when it is TEXT, a thin icon or a hairline. Same mint on
+     dark; light sections swap it for a deep teal, because mint on white
+     has a contrast of about 1.3. Fills keep using --accent. */
+  --accent-text:    var(--accent);
 
-  --glow-violet:   rgba(139, 92, 246, 0.45);
-  --glow-cyan:     rgba(34, 211, 238, 0.35);
+  /* Component tokens that differ between dark and light sections. */
+  --card-border:       var(--border-soft);
+  --tile-bg:           var(--surface-2);
+  --tile-border:       var(--border-strong);
+  --ghost-border:       var(--border-soft-strong);
+  --ghost-border-hover: rgba(244, 255, 251, 0.6);
+  --ghost-bg-hover:     rgba(244, 255, 251, 0.06);
+  --card-hover-shadow: 0 0 34px rgba(33, 241, 168, 0.07);
+  --spot-color:        rgba(33, 241, 168, 0.07);
+  --node-glow:         0 0 18px rgba(33, 241, 168, 0.35);
+
+  /* Depth scale. 700–900 fail text contrast on --bg: fills and lines only. */
+  --teal-300: #4DB6AC;
+  --teal-400: #26A69A;
+  --teal-500: #009688;
+  --teal-700: #00796B;
+  --teal-800: #00695C;
+  --teal-900: #004D40;
+
+  /* Form-error red: the one semantic colour outside the scale. */
+  --danger: #FB7185;
+
+  --gradient-accent: linear-gradient(135deg, #21F1A8 0%, #26A69A 55%, #00796B 100%);
+  --gradient-aurora:
+    radial-gradient(60% 50% at 20% 10%, rgba(0, 105, 92, 0.45), transparent 70%),
+    radial-gradient(50% 40% at 85% 30%, rgba(0, 77, 64, 0.5), transparent 70%),
+    radial-gradient(30% 25% at 50% 0%, rgba(33, 241, 168, 0.12), transparent 70%);
+
+  /* Corner radii — the shapes the site had before the recolour. Buttons
+     are always fully round. */
+  --radius-pill: 100px;
+  --radius-card: 28px;
+  --radius-md:   12px;
+  --radius-sm:   8px;
+  /* The light sheet and the Contact card share one corner and one shadow,
+     so the two white surfaces read as the same material. */
+  --radius-sheet: 40px;
+  --sheet-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
 
   --font-display: "Space Grotesk", "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
   --font-body:    "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono:    var(--font-jetbrains-mono), ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
 
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ── Light surfaces ───────────────────────────────
+   The page is dark. Exactly two things are light: the .light-sheet that
+   holds Services + Portfolio, and the Contact card. Both opt in with
+   data-theme="light"; the tokens are re-declared here, so every component
+   inside follows without being touched. What belongs to the sheet alone
+   (shape, grid, glow, card look) lives in the .light-sheet block below. */
+[data-theme="light"] {
+  --bg:            #F4FFFB;
+  --surface:       #FFFFFF;
+  --surface-2:     #E4F4EE;
+  --border:        rgba(7, 17, 14, 0.12);
+  --border-strong: rgba(7, 17, 14, 0.28);
+  --border-soft:        var(--border);
+  --border-soft-strong: var(--border-strong);
+
+  --text:           #07110E;
+  --text-muted:     #4A635C;
+  --text-on-accent: #04120D;
+
+  --accent-text:    #00695C;
+  --accent:         #21F1A8;
+  --accent-glow:    rgba(0, 105, 92, 0.18);
+
+  /* #FB7185 is only 2.7:1 on white; this red passes AA on every light
+     surface. */
+  --danger: #BE123C;
+
+  --card-border:       var(--border);
+  --tile-bg:           rgba(0, 105, 92, 0.08);
+  --tile-border:       var(--border);
+  --card-hover-shadow: 0 8px 24px rgba(7, 17, 14, 0.08);
+  --spot-color:        transparent;
+  --node-glow:         none;
+  --ghost-border:       var(--border-strong);
+  --ghost-border-hover: var(--text);
+  --ghost-bg-hover:     var(--surface-2);
+
+  color: var(--text);
+}
+
+/* ── The light sheet ───────────────────────────────
+   One sheet of paper lying on the dark page: Services (02) and Portfolio
+   (03) side by side — "what I do" and "the proof". Rounded corners show
+   because the dark page is visible around it. */
+.light-sheet {
+  position: relative;
+  isolation: isolate;
+  /* `clip`, not `hidden`: keeps position: sticky working inside. */
+  overflow: clip;
+  margin: 24px clamp(12px, 2vw, 28px);
+  border-radius: var(--radius-sheet);
+  /* Opaque: the fixed aurora and grid behind the page never show through. */
+  background: var(--bg);
+  box-shadow: var(--sheet-shadow);
+
+  --tile-bg:     var(--accent);
+  --tile-border: transparent;
+  --spot-color:  rgba(33, 241, 168, 0.1);
+}
+/* Its own 64px grid, plus a "light aurora": two faint mint glows in
+   opposite corners, so the sheet keeps the brand's light. Static. */
+.light-sheet::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+          radial-gradient(circle min(50vw, 760px) at 100% 0%, rgba(33, 241, 168, 0.16), transparent 100%),
+          radial-gradient(circle min(46vw, 700px) at 0% 100%, rgba(77, 182, 172, 0.12), transparent 100%),
+          linear-gradient(rgba(7, 17, 14, 0.045) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(7, 17, 14, 0.045) 1px, transparent 1px);
+  background-size: auto, auto, 64px 64px, 64px 64px;
+}
+/* Hairline along the contour. */
+.light-sheet::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 1px solid rgba(7, 17, 14, 0.06);
+  border-radius: inherit;
+  pointer-events: none;
+}
+/* Between the two sections: a rule the width of the container, opening
+   with a short mint stroke. */
+.light-sheet > section + section::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: max(24px, calc((100% - 1200px) / 2 + 24px));
+  right: max(24px, calc((100% - 1200px) / 2 + 24px));
+  height: 2px;
+  background:
+          linear-gradient(var(--accent), var(--accent)) left top / 72px 2px no-repeat,
+          linear-gradient(var(--border), var(--border)) left top / 100% 1px no-repeat;
+}
+
+.light-sheet .eyebrow { color: var(--accent-text); }
+
+.light-sheet .card {
+  border-radius: 20px;
+  box-shadow: 0 1px 2px rgba(7, 17, 14, 0.04), 0 12px 32px rgba(7, 17, 14, 0.05);
+  transition:
+          border-color 0.22s ease,
+          box-shadow 0.22s ease,
+          transform 0.22s var(--ease-out);
+}
+.light-sheet .card-hover:hover {
+  border-color: rgba(33, 241, 168, 0.7);
+  box-shadow: 0 18px 44px rgba(7, 17, 14, 0.1);
+}
+.light-sheet .tile { color: var(--text-on-accent); }
+
+@media (max-width: 1024px) {
+  :root { --radius-sheet: 28px; }
+}
+@media (max-width: 640px) {
+  :root { --radius-sheet: 22px; }
+  .light-sheet { margin: 16px 8px; }
+}
+
+[data-theme="light"] ::selection {
+  background: rgba(0, 105, 92, 0.25);
+  color: var(--text);
+}
+[data-theme="light"] :focus-visible {
+  outline: 2px solid var(--accent-text);
+  outline-offset: 2px;
+}
+
+/* Tailwind v4 bindings: bg-surface, text-muted, border-border, text-accent,
+   bg-teal-500, font-mono… `inline` makes utilities reference the :root
+   variables above, so there is exactly one place to edit a value. */
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-text: var(--text);
+  --color-muted: var(--text-muted);
+  --color-on-accent: var(--text-on-accent);
+  --color-accent: var(--accent);
+  --color-accent-glow: var(--accent-glow);
+  --color-accent-text: var(--accent-text);
+  --color-danger: var(--danger);
+  --color-teal-300: var(--teal-300);
+  --color-teal-400: var(--teal-400);
+  --color-teal-500: var(--teal-500);
+  --color-teal-700: var(--teal-700);
+  --color-teal-800: var(--teal-800);
+  --color-teal-900: var(--teal-900);
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
 }
 
 * {
@@ -74,68 +270,130 @@ img, video, canvas, svg { max-width: 100%; }
 h1, h2, h3, h4 { font-family: var(--font-display); }
 
 ::selection {
-  background: rgba(139, 92, 246, 0.35);
-  color: #fff;
+  background: var(--accent);
+  color: var(--text-on-accent);
+}
+
+/* Keyboard focus: one visible ring everywhere. */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
 }
 
 /* ── Scrollbar ─────────────────────────────── */
 ::-webkit-scrollbar { width: 8px; }
 ::-webkit-scrollbar-track { background: var(--bg); }
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #6366F1, #22D3EE);
+  background: var(--teal-700);
   border-radius: 8px;
   border: 2px solid var(--bg);
 }
-html { scrollbar-color: #6366F1 var(--bg); scrollbar-width: thin; }
+html { scrollbar-color: var(--teal-700) var(--bg); scrollbar-width: thin; }
+
+/* ── Section rhythm ─────────────────────────────── */
+/* A hairline between every two dark sections of the landing. The light
+   sheet is not a <section>, so nothing is drawn against it: its own edge
+   and margin are the boundary. */
+main > section + section { border-top: 1px solid var(--border); }
 
 /* ── Reusable helpers ─────────────────────────────── */
+/* Used once, on the hero headline's key word. Everything else that wants
+   emphasis takes a flat var(--accent). */
 .gradient-text {
-  background: var(--grad);
+  background: linear-gradient(110deg, var(--accent) 0%, var(--teal-300) 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
   color: transparent;
 }
 
+/* Service label: section numbers (01, 02…), captions. The only place the
+   mono font is used — body and display typography stay as they are. */
+.mono-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
 .eyebrow {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  font-family: var(--font-display);
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 3px;
+  gap: 10px;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--text-2);
+  color: var(--text-muted);
 }
 .eyebrow::before {
   content: "";
   width: 26px; height: 1px;
-  background: linear-gradient(90deg, transparent, var(--violet));
+  background: var(--accent-text);
 }
+.eyebrow-num { color: var(--accent-text); }
 
-/* Card surface — solid dark so the background wave never bleeds through */
-.glass {
-  background: #0b0d17;
-  border: 1px solid var(--border);
-  border-radius: 20px;
+/* Accent word of a heading — the brand's signature. Mint text on dark.
+   On a light surface mint text is unreadable, so the word is set like a
+   highlighter mark instead: dark text on a mint fill that is drawn in
+   from the left once the heading scrolls into view (AnimatedHeading sets
+   data-inview on the <h2>, and --mk-* per word). */
+.accent-word { color: var(--accent-text); }
+[data-theme="light"] .accent-word {
+  display: inline-block;
+  color: var(--text-on-accent);
+  padding-bottom: 0.06em;
+  margin-bottom: -0.06em;
+  background: linear-gradient(var(--accent), var(--accent)) left center / 0% 100% no-repeat;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  transition: background-size var(--mk-dur, 700ms) var(--mk-ease, ease-out) var(--mk-delay, 0ms);
+}
+[data-theme="light"] .accent-word[data-first] {
+  padding-left: 0.14em;
+  border-top-left-radius: 0.22em;
+  border-bottom-left-radius: 0.22em;
+}
+[data-theme="light"] .accent-word[data-last] {
+  padding-right: 0.14em;
+  border-top-right-radius: 0.22em;
+  border-bottom-right-radius: 0.22em;
+}
+[data-theme="light"] [data-inview="true"] .accent-word { background-size: 100% 100%; }
+
+/* Card: flat surface with a hairline border. Solid on purpose, so the
+   hero particles never bleed through. */
+.card {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-card);
+  transition:
+          border-color 0.35s var(--ease-out),
+          box-shadow 0.35s var(--ease-out),
+          transform 0.4s var(--ease-out);
+}
+.card-clip { overflow: hidden; }
+.card-hover:hover {
+  border-color: var(--border-strong);
+  box-shadow: var(--card-hover-shadow);
+  transform: translateY(-4px);
 }
 
 /* Spotlight card — reacts to --mx/--my set on hover */
-.spot {
-  position: relative;
-  overflow: hidden;
-  isolation: isolate;
-}
+.spot { isolation: isolate; overflow: hidden; }
 .spot::before {
   content: "";
   position: absolute;
   inset: 0;
   border-radius: inherit;
   background: radial-gradient(
-          460px circle at var(--mx, 50%) var(--my, 0%),
-          rgba(139, 92, 246, 0.16),
-          transparent 42%
+          420px circle at var(--mx, 50%) var(--my, 0%),
+          var(--spot-color),
+          transparent 45%
   );
   opacity: 0;
   transition: opacity 0.35s var(--ease-out);
@@ -144,30 +402,149 @@ html { scrollbar-color: #6366F1 var(--bg); scrollbar-width: thin; }
 }
 .spot:hover::before { opacity: 1; }
 
-/* ── Keyframes ─────────────────────────────── */
-@keyframes aurora-drift {
-  0%,100% { transform: translate3d(0,0,0) scale(1); }
-  33%     { transform: translate3d(6%, -4%, 0) scale(1.12); }
-  66%     { transform: translate3d(-5%, 5%, 0) scale(0.95); }
+/* Tag / chip */
+.tag {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  padding: 5px 12px;
+  background: var(--surface-2);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-pill);
 }
+/* On a light surface the tag is where the mint lives: a mint tint. */
+[data-theme="light"] .tag {
+  color: var(--accent-text);
+  background: rgba(33, 241, 168, 0.14);
+  border-color: rgba(0, 105, 92, 0.22);
+}
+
+/* Small glass controls: the burger, the menu's close button. */
+.glass-chip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  cursor: pointer;
+  border-radius: 50%;
+  color: var(--accent);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  -webkit-backdrop-filter: blur(12px) saturate(1.6);
+  backdrop-filter: blur(12px) saturate(1.6);
+  transition: background 0.2s, color 0.25s, border-color 0.25s;
+}
+.glass-chip:hover { background: rgba(255, 255, 255, 0.18); }
+
+.back-link { transition: color 0.2s; }
+.back-link:hover { color: var(--accent-text); }
+
+/* Icon holder — radius is set per use, as before */
+.tile {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  background: var(--tile-bg);
+  border: 1px solid var(--tile-border);
+  color: var(--accent-text);
+}
+
+/* Brand mark: mint tile, dark bars. */
+.logo-mark {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  background: var(--accent);
+  color: var(--text-on-accent);
+}
+
+/* ── Buttons ───────────────────────────────
+   The <button> takes the magnetic pull; the visible face is the inner
+   .btn-face, which shifts 2px on hover while the glow lights up — two
+   transforms that never fight over one element. */
+.btn {
+  position: relative;
+  display: inline-flex;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 13.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--text);
+  border-radius: var(--radius-pill);
+  transition: transform 0.35s var(--ease-out), filter 0.3s;
+  will-change: transform;
+}
+.btn-face {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 16px 30px;
+  border: 1px solid transparent;
+  border-radius: inherit;
+  transition:
+          transform 0.25s var(--ease-out),
+          background-color 0.25s,
+          border-color 0.25s;
+}
+.btn:hover .btn-face { transform: translate(2px, -2px); }
+.btn:active .btn-face { transform: translate(0, 0); }
+
+.btn-primary { color: var(--text-on-accent); }
+.btn-primary .btn-face { background: var(--accent); }
+.btn-primary:hover { filter: drop-shadow(0 0 16px var(--accent-glow)); }
+
+.btn-ghost .btn-face {
+  background: transparent;
+  border-color: var(--ghost-border);
+}
+.btn-ghost:hover .btn-face {
+  background: var(--ghost-bg-hover);
+  border-color: var(--ghost-border-hover);
+}
+
+/* On a light section a mint button has a weak outline and reads pale, so
+   the primary button turns ink-dark and only goes mint on hover. */
+[data-theme="light"] .btn-primary { color: var(--bg); }
+[data-theme="light"] .btn-primary .btn-face {
+  background: var(--text);
+  transition:
+          transform 0.25s var(--ease-out),
+          background-color 0.25s,
+          color 0.25s;
+}
+[data-theme="light"] .btn-primary:hover { filter: none; color: var(--text-on-accent); }
+[data-theme="light"] .btn-primary:hover .btn-face { background: var(--accent); }
+
+.btn:disabled { cursor: not-allowed; filter: none; }
+.btn:disabled .btn-face {
+  transform: none;
+  background: var(--teal-800);
+  color: var(--text-muted);
+}
+[data-theme="light"] .btn:disabled .btn-face {
+  background: var(--surface-2);
+  color: var(--text-muted);
+}
+
+/* ── Keyframes ─────────────────────────────── */
 @keyframes pulse-dot {
-  0%,100% { box-shadow: 0 0 0 0 rgba(34,197,94,0.5); }
-  50%     { box-shadow: 0 0 0 5px rgba(34,197,94,0); }
+  0%,100% { box-shadow: 0 0 0 0 rgba(33, 241, 168, 0.5); }
+  50%     { box-shadow: 0 0 0 5px rgba(33, 241, 168, 0); }
 }
 @keyframes marquee {
   from { transform: translateX(0); }
   to   { transform: translateX(-50%); }
-}
-@keyframes shimmer {
-  from { background-position: 200% 0; }
-  to   { background-position: -200% 0; }
-}
-@keyframes float-y {
-  0%,100% { transform: translateY(0); }
-  50%     { transform: translateY(-14px); }
-}
-@keyframes spin-slow {
-  to { transform: rotate(360deg); }
 }
 
 /* First-visit splash: hidden instantly (before hydration) for repeat
@@ -176,7 +553,7 @@ html { scrollbar-color: #6366F1 var(--bg); scrollbar-width: thin; }
 html.intro-seen .kd-intro-overlay { display: none !important; }
 
 /* ── Intro logo animation ─────────────────────────────── */
-/* Base fill stays flat — no gradient — per spec. The neon glow below is a
+/* Base fill stays flat — no gradient — per spec. The mint glow below is a
    separate lighting accent layered on top, not part of the background fill. */
 .kd-intro-overlay {
   /* No CSS viewport unit (vh/dvh/svh/lvh) drives this box's geometry at
@@ -205,7 +582,7 @@ html.intro-seen .kd-intro-overlay { display: none !important; }
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  background: #050514;
+  background: var(--bg);
   will-change: opacity;
 }
 .kd-intro-overlay::before {
@@ -229,9 +606,9 @@ html.intro-seen .kd-intro-overlay { display: none !important; }
   pointer-events: none;
   background: radial-gradient(
           circle,
-          rgba(168, 85, 247, 0.20) 0%,
-          rgba(99, 102, 241, 0.12) 40%,
-          rgba(34, 211, 238, 0.06) 62%,
+          rgba(33, 241, 168, 0.10) 0%,
+          rgba(0, 121, 107, 0.10) 40%,
+          rgba(0, 77, 64, 0.06) 62%,
           transparent 78%
   );
   filter: blur(68px);
@@ -253,9 +630,7 @@ html.intro-seen .kd-intro-overlay { display: none !important; }
   width: 52px;
   height: 52px;
   will-change: transform, opacity;
-  filter:
-          drop-shadow(0 0 18px rgba(168, 85, 247, 0.45))
-          drop-shadow(0 0 38px rgba(34, 211, 238, 0.22));
+  filter: drop-shadow(0 0 22px rgba(33, 241, 168, 0.28));
 }
 .kd-intro-text {
   display: inline-flex;
@@ -264,10 +639,7 @@ html.intro-seen .kd-intro-overlay { display: none !important; }
   font-weight: 500;
   font-size: 29px;
   letter-spacing: 0.02em;
-  color: #F8F9FF;
-  text-shadow:
-          0 0 16px rgba(168, 85, 247, 0.4),
-          0 0 32px rgba(34, 211, 238, 0.2);
+  color: var(--text);
   white-space: pre;
   will-change: opacity;
 }
@@ -276,8 +648,7 @@ html.intro-seen .kd-intro-overlay { display: none !important; }
   width: 2px;
   height: 0.9em;
   margin-left: 2px;
-  background: #F8F9FF;
-  box-shadow: 0 0 8px rgba(168, 85, 247, 0.6);
+  background: var(--accent);
   opacity: 0;
 }
 .kd-intro-caret[data-blink="true"] {
@@ -321,5 +692,10 @@ html.intro-seen .kd-intro-overlay { display: none !important; }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  .aurora-blob, .grain, [data-marquee] { animation: none !important; }
+  .btn, .btn-face, .card { transition: none; }
+  .light-sheet .card { transition: border-color 0.22s ease; }
+  .btn:hover .btn-face, .card-hover:hover { transform: none; }
+  .light-sheet .card-hover:hover { box-shadow: 0 1px 2px rgba(7, 17, 14, 0.04), 0 12px 32px rgba(7, 17, 14, 0.05); }
+  [data-theme="light"] .accent-word { transition: none; background-size: 100% 100%; }
+  .grain, [data-marquee] { animation: none !important; }
 }

@@ -5,22 +5,26 @@ export default function SectionTitle({
     title,
     subtitle,
     eyebrow,
-    gradientWord,
+    index,
+    accentWord,
     align = "left",
 }: {
     title: string;
     subtitle?: string;
     eyebrow?: string;
-    /** substring inside `title` to paint with the neon gradient */
-    gradientWord?: string;
+    /** section number shown in mono before the eyebrow, e.g. "02" */
+    index?: string;
+    /** substring inside `title` set as the accent word: mint text on dark,
+     *  a mint marker on a light surface (.accent-word in globals.css) */
+    accentWord?: string;
     align?: "left" | "center";
 }) {
-    // Build heading segments, splitting out the gradient word if present.
-    const segments: { text: string; gradient?: boolean }[] = [];
-    if (gradientWord && title.includes(gradientWord)) {
-        const [before, after] = title.split(gradientWord);
+    // Build heading segments, splitting out the accent word if present.
+    const segments: { text: string; accent?: boolean }[] = [];
+    if (accentWord && title.includes(accentWord)) {
+        const [before, after] = title.split(accentWord);
         if (before.trim()) segments.push({ text: before.trim() });
-        segments.push({ text: gradientWord, gradient: true });
+        segments.push({ text: accentWord, accent: true });
         if (after.trim()) segments.push({ text: after.trim() });
     } else {
         segments.push({ text: title });
@@ -46,6 +50,7 @@ export default function SectionTitle({
                                 : undefined
                         }
                     >
+                        {index && <span className="eyebrow-num">{index}</span>}
                         {eyebrow}
                     </span>
                 </Reveal>
@@ -65,7 +70,7 @@ export default function SectionTitle({
                     <p
                         style={{
                             fontSize: "18px",
-                            color: "var(--text-2)",
+                            color: "var(--text-muted)",
                             maxWidth: "600px",
                             lineHeight: 1.65,
                             ...(align === "center"

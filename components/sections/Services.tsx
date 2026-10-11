@@ -10,17 +10,14 @@ import { SERVICES } from "@/lib/constants";
 const META = [
     {
         icon: "cart",
-        glow: "rgba(168,85,247,0.5)",
         tags: ["Каталог", "Кошик", "Оплата", "Нова Пошта"],
     },
     {
         icon: "building",
-        glow: "rgba(99,102,241,0.5)",
         tags: ["Багатосторінковий", "CMS", "SEO"],
     },
     {
         icon: "rocket",
-        glow: "rgba(34,211,238,0.5)",
         tags: ["Швидкий старт", "Аналітика", "A/B"],
     },
 ];
@@ -37,9 +34,10 @@ export default function Services() {
         <section id="services" style={{ padding: "130px 0", position: "relative" }}>
             <Container>
                 <SectionTitle
+                    index="02"
                     eyebrow="Послуги"
                     title="Що я роблю"
-                    gradientWord="роблю"
+                    accentWord="роблю"
                     subtitle="Повний цикл — від першого дзвінка до запущеного сайту з адмінкою."
                 />
 
@@ -55,56 +53,37 @@ export default function Services() {
                         return (
                             <Reveal key={service.id} delay={i * 0.1} y={40}>
                                 <div
-                                    className="glass spot"
+                                    className="card card-hover spot"
                                     onMouseMove={spotlight}
-                                    style={{
-                                        padding: 32,
-                                        height: "100%",
-                                        transition:
-                                            "transform 0.4s var(--ease-out), border-color 0.4s",
-                                    }}
-                                    onMouseEnter={(e) => {
-                                        e.currentTarget.style.transform =
-                                            "translateY(-6px)";
-                                        e.currentTarget.style.borderColor =
-                                            "var(--border-strong)";
-                                    }}
-                                    onMouseLeave={(e) => {
-                                        e.currentTarget.style.transform =
-                                            "translateY(0)";
-                                        e.currentTarget.style.borderColor =
-                                            "var(--border)";
-                                    }}
+                                    style={{ padding: 32, height: "100%" }}
                                 >
-                                    {/* index */}
+                                    {/* index + icon share one row, split by a rule */}
                                     <div
                                         style={{
-                                            fontFamily: "var(--font-display)",
-                                            fontSize: 13,
-                                            fontWeight: 600,
-                                            color: "var(--text-3)",
-                                            letterSpacing: 2,
-                                            marginBottom: 22,
+                                            display: "flex",
+                                            alignItems: "center",
+                                            justifyContent: "space-between",
+                                            paddingBottom: 22,
+                                            marginBottom: 24,
+                                            borderBottom: "1px solid var(--border)",
                                         }}
                                     >
-                                        0{i + 1}
-                                    </div>
-
-                                    <div
-                                        style={{
-                                            width: 56,
-                                            height: 56,
-                                            borderRadius: 16,
-                                            display: "grid",
-                                            placeItems: "center",
-                                            marginBottom: 22,
-                                            background: "rgba(255,255,255,0.04)",
-                                            border: "1px solid var(--border)",
-                                            boxShadow: `0 0 30px ${m.glow}`,
-                                            color: "#fff",
-                                        }}
-                                    >
-                                        <Icon name={m.icon} size={24} />
+                                        <span
+                                            className="mono-label"
+                                            style={{ fontSize: 13 }}
+                                        >
+                                            0{i + 1}
+                                        </span>
+                                        <div
+                                            className="tile"
+                                            style={{
+                                                width: 48,
+                                                height: 48,
+                                                borderRadius: 14,
+                                            }}
+                                        >
+                                            <Icon name={m.icon} size={22} />
+                                        </div>
                                     </div>
 
                                     <h3
@@ -121,7 +100,7 @@ export default function Services() {
                                     <p
                                         style={{
                                             fontSize: 14.5,
-                                            color: "var(--text-2)",
+                                            color: "var(--text-muted)",
                                             lineHeight: 1.7,
                                             marginBottom: 22,
                                         }}
@@ -138,18 +117,7 @@ export default function Services() {
                                         }}
                                     >
                                         {m.tags.map((t) => (
-                                            <span
-                                                key={t}
-                                                style={{
-                                                    fontSize: 12,
-                                                    color: "var(--text-2)",
-                                                    padding: "5px 11px",
-                                                    borderRadius: 8,
-                                                    background:
-                                                        "rgba(255,255,255,0.04)",
-                                                    border: "1px solid var(--border)",
-                                                }}
-                                            >
+                                            <span key={t} className="tag">
                                                 {t}
                                             </span>
                                         ))}
@@ -164,20 +132,17 @@ export default function Services() {
                                             borderTop: "1px solid var(--border)",
                                         }}
                                     >
+                                        <span className="mono-label">вартість</span>
                                         <span
-                                            style={{
-                                                fontSize: 12,
-                                                color: "var(--text-3)",
-                                            }}
-                                        >
-                                            вартість
-                                        </span>
-                                        <span
-                                            className="gradient-text"
                                             style={{
                                                 fontFamily: "var(--font-display)",
                                                 fontSize: 18,
                                                 fontWeight: 700,
+                                                color: "var(--text)",
+                                                textDecoration: "underline",
+                                                textDecorationColor: "var(--accent)",
+                                                textDecorationThickness: 3,
+                                                textUnderlineOffset: 6,
                                             }}
                                         >
                                             {service.price}

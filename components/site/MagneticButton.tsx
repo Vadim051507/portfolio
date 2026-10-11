@@ -35,47 +35,19 @@ export default function MagneticButton({
         if (el) el.style.transform = "translate(0,0)";
     };
 
-    const base: React.CSSProperties = {
-        position: "relative",
-        padding: "16px 34px",
-        fontFamily: "var(--font-display)",
-        fontWeight: 600,
-        fontSize: "15px",
-        letterSpacing: "0.2px",
-        borderRadius: "100px",
-        cursor: "pointer",
-        border: "none",
-        transition: "transform 0.35s cubic-bezier(0.16,1,0.3,1), box-shadow 0.3s",
-        willChange: "transform",
-    };
-
-    const styles: React.CSSProperties =
-        variant === "primary"
-            ? {
-                  ...base,
-                  color: "#fff",
-                  background: "linear-gradient(115deg, #A855F7, #6366F1 55%, #22D3EE)",
-                  boxShadow:
-                      "0 8px 30px rgba(139,92,246,0.45), inset 0 1px 0 rgba(255,255,255,0.25)",
-              }
-            : {
-                  ...base,
-                  color: "var(--text)",
-                  background: "rgba(255,255,255,0.04)",
-                  border: "1px solid var(--border-strong)",
-                  backdropFilter: "blur(8px)",
-              };
-
+    // Shape and colour live in globals.css (.btn / .btn-face). The magnetic
+    // pull moves the <button>; the hover shift moves the inner face, so the
+    // two transforms never fight over one element.
     return (
         <button
             ref={ref}
             onClick={onClick}
             onMouseMove={onMove}
             onMouseLeave={reset}
-            style={styles}
+            className={`btn ${variant === "primary" ? "btn-primary" : "btn-ghost"}`}
             {...rest}
         >
-            {children}
+            <span className="btn-face">{children}</span>
         </button>
     );
 }

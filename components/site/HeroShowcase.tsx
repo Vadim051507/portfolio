@@ -66,13 +66,14 @@ export default function HeroShowcase() {
             onMouseLeave={onLeave}
             style={{ perspective: "1200px", position: "relative", width: "100%" }}
         >
+            {/* The hero's one glow: a soft mint wash behind the mock. */}
             <div
                 aria-hidden
                 style={{
                     position: "absolute",
                     inset: "-12% -6%",
                     background:
-                        "radial-gradient(circle at 50% 40%, rgba(139,92,246,0.35), rgba(34,211,238,0.14) 45%, transparent 70%)",
+                        "radial-gradient(circle at 50% 40%, rgba(33,241,168,0.16), rgba(0,121,107,0.10) 45%, transparent 70%)",
                     filter: "blur(30px)",
                     zIndex: 0,
                 }}
@@ -87,10 +88,9 @@ export default function HeroShowcase() {
                     zIndex: 1,
                     borderRadius: "18px",
                     overflow: "hidden",
-                    border: "1px solid rgba(255,255,255,0.14)",
-                    background: "#0B0D18",
-                    boxShadow:
-                        "0 40px 120px rgba(0,0,0,0.6), 0 0 0 1px rgba(139,92,246,0.15), inset 0 1px 0 rgba(255,255,255,0.08)",
+                    border: "1px solid var(--border-strong)",
+                    background: "var(--surface)",
+                    boxShadow: "0 40px 120px rgba(4,18,13,0.7)",
                 }}
             >
                 {/* browser bar */}
@@ -100,19 +100,18 @@ export default function HeroShowcase() {
                         alignItems: "center",
                         gap: "7px",
                         padding: "13px 16px",
-                        borderBottom: "1px solid rgba(255,255,255,0.07)",
-                        background: "rgba(255,255,255,0.02)",
+                        borderBottom: "1px solid var(--border)",
+                        background: "var(--surface-2)",
                     }}
                 >
-                    {["#FF5F57", "#FEBC2E", "#28C840"].map((c) => (
+                    {[0, 1, 2].map((k) => (
                         <span
-                            key={c}
+                            key={k}
                             style={{
-                                width: 11,
-                                height: 11,
+                                width: 9,
+                                height: 9,
                                 borderRadius: "50%",
-                                background: c,
-                                opacity: 0.9,
+                                background: "var(--border-strong)",
                             }}
                         />
                     ))}
@@ -123,18 +122,31 @@ export default function HeroShowcase() {
                             maxWidth: 340,
                             height: 24,
                             borderRadius: 7,
-                            background: "rgba(255,255,255,0.05)",
-                            border: "1px solid rgba(255,255,255,0.06)",
+                            background: "var(--bg)",
+                            border: "1px solid var(--border)",
                             display: "flex",
                             alignItems: "center",
-                            padding: "0 12px",
+                            padding: "0 10px",
                             fontSize: 11,
-                            color: "var(--text-3)",
-                            fontFamily: "var(--font-body)",
+                            color: "var(--text-muted)",
+                            fontFamily: "var(--font-mono)",
                             overflow: "hidden",
                         }}
                     >
-                        <span style={{ color: "#22D3EE", marginRight: 6 }}>🔒</span>
+                        <svg
+                            aria-hidden
+                            width="10"
+                            height="10"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="var(--accent)"
+                            strokeWidth="2.2"
+                            strokeLinecap="round"
+                            style={{ marginRight: 7, flexShrink: 0 }}
+                        >
+                            <rect x="4" y="11" width="16" height="10" rx="2" />
+                            <path d="M8 11V7a4 4 0 0 1 8 0v4" />
+                        </svg>
                         <AnimatePresence mode="wait">
                             <motion.span
                                 key={active.domain}
@@ -177,7 +189,7 @@ export default function HeroShowcase() {
                             position: "absolute",
                             inset: 0,
                             background:
-                                "linear-gradient(180deg, transparent 60%, rgba(5,6,12,0.35))",
+                                "linear-gradient(180deg, transparent 55%, rgba(7,12,11,0.6))",
                             pointerEvents: "none",
                         }}
                     />
@@ -207,8 +219,8 @@ export default function HeroShowcase() {
                                     fontFamily: "var(--font-display)",
                                     fontSize: 15,
                                     fontWeight: 600,
-                                    color: "#fff",
-                                    textShadow: "0 2px 10px rgba(0,0,0,0.6)",
+                                    color: "var(--text)",
+                                    textShadow: "0 2px 10px rgba(4,18,13,0.8)",
                                 }}
                             >
                                 {active.title}
@@ -230,8 +242,8 @@ export default function HeroShowcase() {
                                         padding: 0,
                                         background:
                                             k === i
-                                                ? "linear-gradient(90deg,#A855F7,#22D3EE)"
-                                                : "rgba(255,255,255,0.35)",
+                                                ? "var(--accent)"
+                                                : "rgba(244,255,251,0.4)",
                                         transition: "width 0.35s var(--ease-out)",
                                     }}
                                 />

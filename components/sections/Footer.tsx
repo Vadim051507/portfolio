@@ -20,7 +20,7 @@ export default function Footer() {
                 overflow: "hidden",
             }}
         >
-            {/* giant faded wordmark */}
+            {/* giant outlined wordmark */}
             <div
                 aria-hidden
                 style={{
@@ -34,12 +34,8 @@ export default function Footer() {
                     letterSpacing: "-6px",
                     lineHeight: 1,
                     whiteSpace: "nowrap",
-                    background:
-                        "linear-gradient(180deg, rgba(139,92,246,0.10), transparent)",
-                    WebkitBackgroundClip: "text",
-                    backgroundClip: "text",
-                    WebkitTextFillColor: "transparent",
                     color: "transparent",
+                    WebkitTextStroke: "1px var(--border)",
                     pointerEvents: "none",
                     userSelect: "none",
                 }}
@@ -68,27 +64,20 @@ export default function Footer() {
                                 }}
                             >
                                 <span
+                                    className="logo-mark"
                                     style={{
                                         width: 34,
                                         height: 34,
                                         borderRadius: 10,
-                                        background:
-                                            "linear-gradient(135deg,#8B5CF6,#22D3EE)",
-                                        display: "grid",
-                                        placeItems: "center",
-                                        boxShadow: "0 4px 16px rgba(139,92,246,0.5)",
                                     }}
                                 >
                                     <svg
                                         width="16"
                                         height="16"
                                         viewBox="0 0 16 16"
-                                        fill="white"
+                                        fill="currentColor"
                                     >
-                                        <path
-                                            d="M3 2h4v6H3V2zm6 0h4v10H9V2zM3 10h4v4H3v-4z"
-                                            opacity="0.95"
-                                        />
+                                        <path d="M3 2h4v6H3V2zm6 0h4v10H9V2zM3 10h4v4H3v-4z" />
                                     </svg>
                                 </span>
                                 <span
@@ -106,7 +95,7 @@ export default function Footer() {
                             <p
                                 style={{
                                     fontSize: 14,
-                                    color: "var(--text-2)",
+                                    color: "var(--text-muted)",
                                     lineHeight: 1.7,
                                 }}
                             >
@@ -151,33 +140,47 @@ export default function Footer() {
                             borderTop: "1px solid var(--border)",
                         }}
                     >
-                        <span style={{ fontSize: 13.5, color: "var(--text-3)" }}>
-                            © {year} {SITE.name}. Зроблено з ❤️ в Україні.
+                        <span style={{ fontSize: 13.5, color: "var(--text-muted)" }}>
+                            © {year} {SITE.name}. Зроблено з{" "}
+                            <svg
+                                role="img"
+                                aria-label="любов'ю"
+                                width="12"
+                                height="12"
+                                viewBox="0 0 24 24"
+                                fill="var(--accent)"
+                                style={{
+                                    display: "inline-block",
+                                    verticalAlign: "-1px",
+                                }}
+                            >
+                                <path d="M12 21 3.2 12.4a5.4 5.4 0 0 1 7.6-7.6L12 6l1.2-1.2a5.4 5.4 0 0 1 7.6 7.6z" />
+                            </svg>{" "}
+                            в Україні.
                         </span>
                         <button
+                            type="button"
                             onClick={scrollTop}
+                            className="mono-label"
                             style={{
                                 display: "inline-flex",
                                 alignItems: "center",
                                 gap: 8,
-                                fontSize: 13,
-                                color: "var(--text-2)",
-                                background: "rgba(255,255,255,0.04)",
+                                background: "transparent",
                                 border: "1px solid var(--border)",
                                 borderRadius: 100,
-                                padding: "8px 16px",
+                                padding: "9px 16px",
                                 cursor: "pointer",
-                                fontFamily: "var(--font-display)",
                                 transition: "border-color 0.2s, color 0.2s",
                             }}
                             onMouseEnter={(e) => {
                                 e.currentTarget.style.borderColor =
                                     "var(--border-strong)";
-                                e.currentTarget.style.color = "var(--text)";
+                                e.currentTarget.style.color = "var(--accent)";
                             }}
                             onMouseLeave={(e) => {
                                 e.currentTarget.style.borderColor = "var(--border)";
-                                e.currentTarget.style.color = "var(--text-2)";
+                                e.currentTarget.style.color = "var(--text-muted)";
                             }}
                         >
                             Наверх ↑
@@ -197,46 +200,44 @@ function FooterCol({
     links: { label: string; href: string; ext?: boolean }[];
 }) {
     const { scrollTo } = useSmoothScroll();
-    const go = (href: string, ext?: boolean) => {
-        if (ext) window.open(href, "_blank");
-        else scrollTo(href);
-    };
+
     return (
         <div>
-            <div
-                style={{
-                    fontSize: 12,
-                    fontWeight: 600,
-                    letterSpacing: 2,
-                    textTransform: "uppercase",
-                    color: "var(--text-3)",
-                    marginBottom: 16,
-                    fontFamily: "var(--font-display)",
-                }}
-            >
+            <div className="mono-label" style={{ marginBottom: 16 }}>
                 {title}
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                 {links.map((l) => (
-                    <span
+                    <a
                         key={l.label}
-                        onClick={() => go(l.href, l.ext)}
+                        href={l.href}
+                        {...(l.ext
+                            ? { target: "_blank", rel: "noopener noreferrer" }
+                            : {
+                                  // in-page anchors go through Lenis, like
+                                  // every other scroll on the site
+                                  onClick: (e: React.MouseEvent) => {
+                                      e.preventDefault();
+                                      scrollTo(l.href);
+                                  },
+                              })}
                         style={{
                             fontSize: 14,
-                            color: "var(--text-2)",
+                            color: "var(--text-muted)",
+                            textDecoration: "none",
                             cursor: "pointer",
                             transition: "color 0.2s",
                             width: "fit-content",
                         }}
                         onMouseEnter={(e) =>
-                            (e.currentTarget.style.color = "var(--violet-bright)")
+                            (e.currentTarget.style.color = "var(--accent)")
                         }
                         onMouseLeave={(e) =>
-                            (e.currentTarget.style.color = "var(--text-2)")
+                            (e.currentTarget.style.color = "var(--text-muted)")
                         }
                     >
                         {l.label}
-                    </span>
+                    </a>
                 ))}
             </div>
         </div>

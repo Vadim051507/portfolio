@@ -20,16 +20,64 @@ export default function Portfolio() {
                     grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
                     gap: 24px;
                 }
-                .pf-card:hover .pf-img { transform: scale(1.06); }
-                .pf-card:hover .pf-arrow { transform: translate(4px,-4px); }
+                .pf-card[data-live="true"]:hover .pf-img { transform: scale(1.06); }
+                .pf-card[data-live="false"] .pf-img { opacity: 0.92; }
+                /* Sits on the screenshot, so it is dark glass on any theme. */
+                .pf-domain {
+                    position: absolute;
+                    top: 14px;
+                    left: 14px;
+                    padding: 5px 11px;
+                    font-family: var(--font-mono);
+                    font-size: 11px;
+                    color: var(--white);
+                    background: rgba(7, 12, 11, 0.62);
+                    border: 1px solid rgba(244, 255, 251, 0.24);
+                    border-radius: 100px;
+                    -webkit-backdrop-filter: blur(10px) saturate(1.4);
+                    backdrop-filter: blur(10px) saturate(1.4);
+                }
+                .pf-soon {
+                    position: absolute;
+                    top: 14px;
+                    right: 14px;
+                    padding: 5px 11px;
+                    font-family: var(--font-mono);
+                    font-size: 11px;
+                    font-weight: 500;
+                    letter-spacing: 0.1em;
+                    text-transform: uppercase;
+                    color: var(--text-on-accent);
+                    background: var(--accent);
+                    border-radius: 100px;
+                }
+                .pf-arrow {
+                    display: grid;
+                    place-items: center;
+                    flex-shrink: 0;
+                    width: 32px;
+                    height: 32px;
+                    margin-top: -3px;
+                    border-radius: 50%;
+                    border: 1px solid var(--border-strong);
+                    color: var(--text);
+                    transition: background-color 0.22s, border-color 0.22s, color 0.22s;
+                }
+                .pf-card:hover .pf-arrow,
+                .pf-card:focus-visible .pf-arrow {
+                    background: var(--accent);
+                    border-color: var(--accent);
+                    color: var(--text-on-accent);
+                }
                 @media (max-width: 720px) { .pf-grid { grid-template-columns: 1fr; } }
             `}</style>
 
             <Container>
                 <SectionTitle
+                    index="03"
                     eyebrow="Портфоліо"
                     title="Обрані роботи"
-                    gradientWord="роботи"
+                    accentWord="роботи"
                     subtitle="Кожен проєкт — від дизайну до запуску. Наведіть, щоб роздивитись."
                 />
 
@@ -39,27 +87,21 @@ export default function Portfolio() {
                         return (
                             <Reveal key={p.slug} delay={i * 0.1} y={44}>
                                 <div
-                                    className="pf-card glass"
+                                    className={`pf-card card card-clip${live ? " card-hover" : ""}`}
+                                    data-live={live}
                                     onClick={() => live && router.push(p.href)}
+                                    {...(live
+                                        ? {
+                                              role: "link",
+                                              tabIndex: 0,
+                                              onKeyDown: (e: React.KeyboardEvent) => {
+                                                  if (e.key === "Enter") router.push(p.href);
+                                              },
+                                          }
+                                        : {})}
                                     style={{
-                                        overflow: "hidden",
                                         cursor: live ? "pointer" : "default",
-                                        transition:
-                                            "transform 0.4s var(--ease-out), border-color 0.4s, box-shadow 0.4s",
-                                    }}
-                                    onMouseEnter={(e) => {
-                                        e.currentTarget.style.transform =
-                                            "translateY(-6px)";
-                                        e.currentTarget.style.borderColor =
-                                            "var(--border-strong)";
-                                        e.currentTarget.style.boxShadow = `0 30px 80px rgba(0,0,0,0.5), 0 0 60px ${p.accent}`;
-                                    }}
-                                    onMouseLeave={(e) => {
-                                        e.currentTarget.style.transform =
-                                            "translateY(0)";
-                                        e.currentTarget.style.borderColor =
-                                            "var(--border)";
-                                        e.currentTarget.style.boxShadow = "none";
+                                        height: "100%",
                                     }}
                                 >
                                     {/* image */}
@@ -90,47 +132,12 @@ export default function Portfolio() {
                                             style={{
                                                 position: "absolute",
                                                 inset: 0,
-                                                background: `linear-gradient(180deg, transparent 40%, rgba(5,6,12,0.55))`,
+                                                background: `linear-gradient(180deg, transparent 40%, rgba(7,12,11,0.6))`,
                                             }}
                                         />
                                         {/* domain chip */}
-                                        <span
-                                            style={{
-                                                position: "absolute",
-                                                top: 14,
-                                                left: 14,
-                                                fontSize: 11.5,
-                                                color: "var(--text-2)",
-                                                padding: "5px 11px",
-                                                borderRadius: 100,
-                                                background: "rgba(5,6,12,0.6)",
-                                                border: "1px solid var(--border)",
-                                                backdropFilter: "blur(8px)",
-                                                fontFamily: "var(--font-body)",
-                                            }}
-                                        >
-                                            {p.domain}
-                                        </span>
-                                        {!live && (
-                                            <span
-                                                style={{
-                                                    position: "absolute",
-                                                    top: 14,
-                                                    right: 14,
-                                                    fontSize: 11,
-                                                    fontWeight: 600,
-                                                    color: "#fff",
-                                                    padding: "5px 11px",
-                                                    borderRadius: 100,
-                                                    background:
-                                                        "rgba(139,92,246,0.35)",
-                                                    border: "1px solid rgba(139,92,246,0.5)",
-                                                    backdropFilter: "blur(8px)",
-                                                }}
-                                            >
-                                                Скоро
-                                            </span>
-                                        )}
+                                        <span className="pf-domain">{p.domain}</span>
+                                        {!live && <span className="pf-soon">Скоро</span>}
                                     </div>
 
                                     {/* body */}
@@ -155,24 +162,30 @@ export default function Portfolio() {
                                                 {p.title}
                                             </h3>
                                             {live && (
-                                                <span
-                                                    className="pf-arrow"
-                                                    style={{
-                                                        fontSize: 20,
-                                                        color: "var(--violet-bright)",
-                                                        transition:
-                                                            "transform 0.3s var(--ease-out)",
-                                                        flexShrink: 0,
-                                                    }}
-                                                >
-                                                    ↗
+                                                <span className="pf-arrow">
+                                                    {/* drawn, not typed: the ↗
+                                                        character falls back to a
+                                                        colour emoji on some systems */}
+                                                    <svg
+                                                        aria-hidden
+                                                        width="15"
+                                                        height="15"
+                                                        viewBox="0 0 24 24"
+                                                        fill="none"
+                                                        stroke="currentColor"
+                                                        strokeWidth="2"
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                    >
+                                                        <path d="M7 17 17 7M8 7h9v9" />
+                                                    </svg>
                                                 </span>
                                             )}
                                         </div>
                                         <p
                                             style={{
                                                 fontSize: 14.5,
-                                                color: "var(--text-2)",
+                                                color: "var(--text-muted)",
                                                 lineHeight: 1.6,
                                                 marginBottom: 18,
                                             }}
@@ -187,18 +200,7 @@ export default function Portfolio() {
                                             }}
                                         >
                                             {p.tags.map((t) => (
-                                                <span
-                                                    key={t}
-                                                    style={{
-                                                        fontSize: 12,
-                                                        color: "var(--text-2)",
-                                                        padding: "4px 10px",
-                                                        borderRadius: 7,
-                                                        background:
-                                                            "rgba(255,255,255,0.04)",
-                                                        border: "1px solid var(--border)",
-                                                    }}
-                                                >
+                                                <span key={t} className="tag">
                                                     {t}
                                                 </span>
                                             ))}

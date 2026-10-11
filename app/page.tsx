@@ -14,8 +14,12 @@ export default function Home() {
             <main>
                 <Hero />
                 <MobileShowcase />
-                <Services />
-                <Portfolio />
+                {/* The one light block of the page: a sheet lying on the
+                    dark canvas (.light-sheet in globals.css). */}
+                <div className="light-sheet" data-theme="light">
+                    <Services />
+                    <Portfolio />
+                </div>
                 <Process />
                 <TechStack />
                 <FAQSection />
