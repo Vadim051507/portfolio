@@ -5,7 +5,6 @@ import { motion, useScroll, useSpring, useTransform } from "framer-motion";
 import Container from "@/components/ui/Container";
 import SectionTitle from "@/components/ui/SectionTitle";
 import { PROCESS_STEPS } from "@/lib/constants";
-import { COLORS, accentAlpha } from "@/lib/colors";
 
 export default function Process() {
     const ref = useRef<HTMLDivElement>(null);
@@ -20,7 +19,7 @@ export default function Process() {
     });
 
     return (
-        <section id="process" style={{ padding: "130px 0", position: "relative" }}>
+        <section id="process" data-theme="light" style={{ padding: "130px 0", position: "relative" }}>
             <Container>
                 <SectionTitle
                     index="04"
@@ -55,7 +54,7 @@ export default function Process() {
                             width: 1,
                             transformOrigin: "top",
                             scaleY: fill,
-                            background: "var(--accent)",
+                            background: "var(--accent-text)",
                         }}
                     />
 
@@ -86,17 +85,17 @@ function Step({
     progress: ReturnType<typeof useSpring>;
 }) {
     const threshold = index / (total - 1 || 1);
-    // node lights up once the fill passes this step
+    // Node lights up once the fill passes this step. The values are CSS
+    // variables rather than constants, so the section's theme (dark or
+    // light) decides the actual colours.
     const nodeBg = useTransform(progress, (v) =>
-        v >= threshold - 0.02 ? COLORS.accent : COLORS.surface
+        v >= threshold - 0.02 ? "var(--accent)" : "var(--surface)"
     );
     const nodeColor = useTransform(progress, (v) =>
-        v >= threshold - 0.02 ? COLORS.textOnAccent : COLORS.textMuted
+        v >= threshold - 0.02 ? "var(--text-on-accent)" : "var(--text-muted)"
     );
     const nodeShadow = useTransform(progress, (v) =>
-        v >= threshold - 0.02
-            ? `0 0 18px ${accentAlpha(0.35)}`
-            : `0 0 0px ${accentAlpha(0)}`
+        v >= threshold - 0.02 ? "var(--node-glow)" : "none"
     );
 
     return (
@@ -130,6 +129,7 @@ function Step({
                     background: nodeBg,
                     border: "1px solid var(--border-strong)",
                     boxShadow: nodeShadow,
+                    transition: "background-color 0.3s, color 0.3s",
                 }}
             >
                 {step.number}

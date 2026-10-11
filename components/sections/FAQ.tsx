@@ -59,7 +59,7 @@ function FAQItem({
                     >
                         <span
                             className="mono-label"
-                            style={{ color: "var(--accent)", flexShrink: 0 }}
+                            style={{ color: "var(--accent-text)", flexShrink: 0 }}
                         >
                             {String(index + 1).padStart(2, "0")}
                         </span>
@@ -79,7 +79,7 @@ function FAQItem({
                             background: open ? "var(--accent)" : "transparent",
                             color: open
                                 ? "var(--text-on-accent)"
-                                : "var(--accent)",
+                                : "var(--accent-text)",
                             fontSize: 20,
                             lineHeight: 1,
                             transition: "background 0.3s, color 0.3s",
@@ -118,7 +118,7 @@ function FAQItem({
 
 export default function FAQSection() {
     return (
-        <section id="faq" style={{ padding: "130px 0", position: "relative" }}>
+        <section id="faq" data-theme="light" style={{ padding: "130px 0", position: "relative" }}>
             <style>{`
                 .faq-grid {
                     display: grid;
@@ -237,7 +237,7 @@ export default function FAQSection() {
                                         >
                                             <span
                                                 style={{
-                                                    color: "var(--accent)",
+                                                    color: "var(--accent-text)",
                                                     display: "grid",
                                                     placeItems: "center",
                                                     flexShrink: 0,

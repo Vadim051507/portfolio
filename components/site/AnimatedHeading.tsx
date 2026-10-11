@@ -6,7 +6,7 @@ import { useRef } from "react";
 /**
  * Kinetic heading: each word rises out of an overflow mask on scroll-in.
  * Pass an array of {text, accent} segments; accent segments are painted in
- * the flat mint accent.
+ * --accent-text (mint on dark sections, deep teal on light ones).
  */
 type Segment = { text: string; accent?: boolean };
 
@@ -50,7 +50,7 @@ export default function AnimatedHeading({
                                     display: "inline-block",
                                     paddingRight: "0.26em",
                                     ...(seg.accent
-                                        ? { color: "var(--accent)" }
+                                        ? { color: "var(--accent-text)" }
                                         : {}),
                                 }}
                                 initial={{ y: "110%", opacity: 0 }}

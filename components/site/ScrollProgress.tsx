@@ -23,6 +23,9 @@ export default function ScrollProgress() {
                 transformOrigin: "0% 50%",
                 scaleX,
                 background: "var(--accent)",
+                // hairline of ink under the rail, so it stays visible while a
+                // light section is scrolling beneath it
+                boxShadow: "0 1px 0 rgba(4, 18, 13, 0.45)",
                 zIndex: 9999,
             }}
         />
