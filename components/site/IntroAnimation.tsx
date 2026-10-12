@@ -2,17 +2,51 @@
 
 import { memo, useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import logoSrc from "@/app/logo/logo(1).svg";
+import { COLORS } from "@/lib/colors";
+
+// WebGL (ogl) — client only, in its own lazy chunk. The intro is short and
+// its clock does not wait for the discharge, so the chunk and the silhouette
+// are requested as soon as this module evaluates — but only when the intro
+// is going to play: `intro-seen` is set before first paint by the blocking
+// script in app/layout.tsx on repeat visits and under reduced motion.
+//
+// A plain import() kept in state, not next/dynamic: dynamic() resolves
+// through Suspense, and React retried that boundary only after the rest of
+// the page had hydrated — the canvas showed up ~450ms into the intro
+// instead of ~50ms. The effect is the same (never rendered on the server).
+const ELECTRIC_SRC = "/logo-electric.svg";
+const loadElectric = () => import("@/components/react-bits/ElectricLogo");
+type ElectricLogoComponent = Awaited<ReturnType<typeof loadElectric>>["default"];
+if (
+    typeof window !== "undefined" &&
+    !document.documentElement.classList.contains("intro-seen")
+) {
+    void loadElectric();
+    const img = new Image();
+    img.crossOrigin = "anonymous"; // same mode ElectricLogo requests it in
+    img.src = ELECTRIC_SRC;
+}
 
 const TEXT = "Kindratyak.dev";
 const STORAGE_KEY = "intro-shown";
 
-/* Timeline (ms) — see task spec for the 4-phase breakdown:
-   0-600      phase 1: logo fades + scales in, centered
-   600-900    phase 2 pause: hold, letting the eye register the mark
-   900-1450   phase 2 transition: logo shrinks + group re-centers
-   900-~1390  phase 3 (overlaps): "Kindratyak.dev" types out next to the logo
-   ~1790-2190 phase 4: whole intro fades out, revealing the site          */
+/* Timeline (ms). Two variants share one choreography; they differ only in
+   how long the big centred logo is held before it shrinks.
+
+   Electric (WebGL2 available):
+   0-600      logo fades + scales in, centred; the discharge ignites over
+              ~650ms along the tile and its three bars
+   ~650-1250  full arc
+   1250-1500  discharge fades out (canvas opacity), then unmounts
+   1500-2050  logo shrinks + group re-centres (discharge is already gone)
+   1500-1990  "Kindratyak.dev" types out next to the logo
+   2390-2790  whole intro fades out, revealing the site
+
+   Static fallback (no WebGL2, or ?intro=1 under reduced motion): the same
+   without the discharge and with the original short hold — shrink at 900,
+   fade 1790-2190.
+
+   A click or Esc skips straight to the final fade.                       */
 const PHASE1_DURATION = 0.6;
 const PAUSE_DURATION = 0.3;
 const PHASE2_DURATION = 0.55;
@@ -20,14 +54,27 @@ const CHAR_DELAY = 35;
 const EXIT_DELAY = 400;
 const EXIT_DURATION = 0.4;
 
-const TYPE_START_MS = (PHASE1_DURATION + PAUSE_DURATION) * 1000;
-const TYPE_DURATION_MS = TEXT.length * CHAR_DELAY;
-const EXIT_START_MS = TYPE_START_MS + TYPE_DURATION_MS + EXIT_DELAY;
+const ELECTRIC_FADE_START_MS = 1250;
+const ELECTRIC_FADE_DURATION = 0.25;
 
-// Logo displays at ~150px/125px during phase 1, then shrinks to its
-// natural 52px/44px box — expressed as a transform scale so nothing but
-// opacity/transform ever animates (no layout shift).
-const BIG_SCALE = 2.85;
+const STATIC_SHRINK_MS = (PHASE1_DURATION + PAUSE_DURATION) * 1000;
+const ELECTRIC_SHRINK_MS = ELECTRIC_FADE_START_MS + ELECTRIC_FADE_DURATION * 1000;
+const TYPE_DURATION_MS = TEXT.length * CHAR_DELAY;
+const EXIT_AFTER_SHRINK_MS = TYPE_DURATION_MS + EXIT_DELAY;
+
+// The logo's layout box is its final 52px/44px size; while centred it is
+// shown 6.75x larger through a transform, so nothing but opacity/transform
+// ever animates (no layout shift). 6.75 puts the mint tile at ~312px —
+// exactly where ElectricLogo draws its outline: the canvas box is 480px
+// (406px on phones, --kd-electric-box in globals.css) and scale 0.65 fits
+// the tile into 0.65 of it. The tile is 320/360 of the SVG, hence
+// 480 * 0.65 / (52 * 320 / 360) = 6.75. Change one, change the others.
+const BIG_SCALE = 6.75;
+const ELECTRIC_SCALE = 0.65;
+
+// Bright core of the discharge: a light mint, between --white and --accent.
+// Not a design token — it only exists inside the shader.
+const SPARK_CORE = "#D7FFF0";
 
 const EASE_IN = [0.16, 1, 0.3, 1] as const;
 const EASE_MOVE = [0.65, 0, 0.35, 1] as const;
@@ -42,7 +89,7 @@ const VVH_BUFFER_PX = 400;
  * Typewriter reveal, isolated in its own memoized component so its ~35ms
  * setInterval ticks (14 re-renders) never re-render the parent — and thus
  * never touch the logo/glow/overlay motion elements animating alongside it.
- * `start` is a one-way trigger: flips false→true once, at TYPE_START_MS.
+ * `start` is a one-way trigger: flips false→true once, when the logo shrinks.
  */
 const TypewriterText = memo(function TypewriterText({
                                                         text,
@@ -81,13 +128,30 @@ const TypewriterText = memo(function TypewriterText({
     );
 });
 
+const hasWebGL2 = () => {
+    try {
+        const gl = document.createElement("canvas").getContext("webgl2");
+        if (!gl) return false;
+        gl.getExtension("WEBGL_lose_context")?.loseContext();
+        return true;
+    } catch {
+        return false;
+    }
+};
+
 /**
- * First-visit-per-session splash: logo pops in centered, shrinks into a
- * left-aligned mark, "Kindratyak.dev" types out beside it, then the whole
- * thing fades to reveal the site.
+ * First-visit-per-session splash: the logo pops in large and centred with
+ * an electric discharge running along its outline (React Bits ElectricLogo),
+ * the discharge dies down, the logo shrinks into a left-aligned mark,
+ * "Kindratyak.dev" types out beside it, then the whole thing fades to
+ * reveal the site.
  *
- * Renders unconditionally (gated only by `gone`, which starts false) so the
- * overlay is part of the server-rendered HTML and the very first paint —
+ * The real logo is a plain <img> under the canvas — ElectricLogo only draws
+ * the discharge, tracing public/logo-electric.svg. So the overlay with the
+ * logo is in the server-rendered HTML and the very first paint, and the
+ * intro never waits for WebGL: without it the same intro plays static.
+ *
+ * Renders unconditionally (gated only by `gone`, which starts false) —
  * no gap where the site underneath could flash through while waiting on a
  * post-mount effect. Runs once per sessionStorage flag; the blocking script
  * in app/layout.tsx's <head> + `.intro-seen` in globals.css hide it before
@@ -98,8 +162,13 @@ export default function IntroAnimation() {
     const [shrink, setShrink] = useState(false);
     const [exiting, setExiting] = useState(false);
     const [gone, setGone] = useState(false);
+    // "on" mounts the canvas, "fading" dims it, "off" unmounts it (which is
+    // what destroys the WebGL context — see ElectricLogo's effect cleanup).
+    const [electric, setElectric] = useState<"off" | "on" | "fading">("off");
+    const [ElectricLogo, setElectricLogo] = useState<ElectricLogoComponent | null>(null);
     const timers = useRef<Array<ReturnType<typeof setTimeout>>>([]);
     const overlayRef = useRef<HTMLDivElement>(null);
+    const skipRef = useRef<() => void>(() => {});
 
     // Primary defense against the iOS Safari toolbar gap: no CSS viewport
     // unit (vh/dvh/svh/lvh) is trusted here at all — during the address-bar
@@ -162,17 +231,55 @@ export default function IntroAnimation() {
         const after = (fn: () => void, ms: number) => {
             timers.current.push(setTimeout(fn, ms));
         };
-
-        after(() => setShrink(true), TYPE_START_MS);
-        after(() => setExiting(true), EXIT_START_MS);
-        after(() => {
+        const clear = () => {
+            timers.current.forEach((t) => clearTimeout(t));
+            timers.current = [];
+        };
+        const finish = () => {
             setGone(true);
             document.body.style.overflow = "";
             markShown();
-        }, EXIT_START_MS + EXIT_DURATION * 1000);
+        };
+
+        const withElectric = !reduced && hasWebGL2();
+        const shrinkAt = withElectric ? ELECTRIC_SHRINK_MS : STATIC_SHRINK_MS;
+        const exitAt = shrinkAt + EXIT_AFTER_SHRINK_MS;
+
+        let alive = true;
+        if (withElectric) {
+            void loadElectric().then((m) => {
+                if (alive) setElectricLogo(() => m.default);
+            });
+            setElectric("on");
+            after(() => setElectric("fading"), ELECTRIC_FADE_START_MS);
+        }
+        after(() => {
+            setElectric("off");
+            setShrink(true);
+        }, shrinkAt);
+        after(() => setExiting(true), exitAt);
+        after(finish, exitAt + EXIT_DURATION * 1000);
+
+        // Click or Esc: drop whatever is left and go to the final fade.
+        let skipped = false;
+        const skip = () => {
+            if (skipped) return;
+            skipped = true;
+            clear();
+            setElectric("off");
+            setExiting(true);
+            after(finish, EXIT_DURATION * 1000);
+        };
+        skipRef.current = skip;
+        const onKey = (e: KeyboardEvent) => {
+            if (e.key === "Escape") skip();
+        };
+        window.addEventListener("keydown", onKey);
 
         return () => {
-            timers.current.forEach((t) => clearTimeout(t));
+            alive = false;
+            clear();
+            window.removeEventListener("keydown", onKey);
             document.body.style.overflow = "";
         };
     }, []);
@@ -187,6 +294,7 @@ export default function IntroAnimation() {
             animate={{ opacity: exiting ? 0 : 1 }}
             transition={{ duration: EXIT_DURATION, ease: "easeInOut" }}
             style={{ pointerEvents: exiting ? "none" : "auto" }}
+            onClick={() => skipRef.current()}
         >
             <motion.div
                 className="kd-intro-glow"
@@ -204,7 +312,7 @@ export default function IntroAnimation() {
             />
             <div className="kd-intro-group">
                 <motion.img
-                    src={logoSrc.src}
+                    src="/logo.svg"
                     alt="Kindratyak.dev"
                     className="kd-intro-logo"
                     initial={{ opacity: 0, scale: BIG_SCALE * 0.9 }}
@@ -221,6 +329,34 @@ export default function IntroAnimation() {
                     start={shrink}
                 />
             </div>
+            {/* Discharge over the big centred logo. Scales in with the logo
+                (same 0.9 → 1 and easing) so the outline stays on its edge. */}
+            {electric !== "off" && ElectricLogo && (
+                <motion.div
+                    className="kd-intro-electric"
+                    initial={{ opacity: 1, scale: 0.9 }}
+                    animate={{ opacity: electric === "fading" ? 0 : 1, scale: 1 }}
+                    transition={{
+                        opacity: { duration: ELECTRIC_FADE_DURATION, ease: "easeOut" },
+                        scale: { duration: PHASE1_DURATION, ease: EASE_IN },
+                    }}
+                    style={{ x: "-50%", y: "-50%" }}
+                >
+                    <ElectricLogo
+                        src={ELECTRIC_SRC}
+                        color={SPARK_CORE}
+                        glowColor={COLORS.accent}
+                        scale={ELECTRIC_SCALE}
+                        strands={4}
+                        bend={0.6}
+                        crackle={1.5}
+                        arcs={1}
+                        speed={2.5}
+                        interactive
+                        glow={0.6}
+                    />
+                </motion.div>
+            )}
         </motion.div>
     );
 }

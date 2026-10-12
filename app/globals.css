@@ -626,11 +626,29 @@ html.intro-seen .kd-intro-overlay { display: none !important; }
   gap: 14px;
 }
 .kd-intro-logo {
+  /* Above the text: while the big logo shrinks, the line being typed
+     comes out from behind it instead of being printed across the tile. */
+  position: relative;
+  z-index: 1;
   display: block;
   width: 52px;
   height: 52px;
   will-change: transform, opacity;
   filter: drop-shadow(0 0 22px rgba(33, 241, 168, 0.28));
+}
+/* Canvas of the electric discharge (React Bits ElectricLogo), centred on
+   the overlay — which is where the big logo sits until it shrinks. The box
+   is larger than the logo because the arcs reach outside it; its size is
+   tied to BIG_SCALE in IntroAnimation.tsx. */
+.kd-intro-electric {
+  --kd-electric-box: 480px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 3;
+  width: var(--kd-electric-box);
+  height: var(--kd-electric-box);
+  will-change: opacity, transform;
 }
 .kd-intro-text {
   display: inline-flex;
@@ -662,6 +680,7 @@ html.intro-seen .kd-intro-overlay { display: none !important; }
 @media (max-width: 640px) {
   .kd-intro-glow { width: 500px; height: 500px; filter: blur(52px); }
   .kd-intro-logo { width: 44px; height: 44px; }
+  .kd-intro-electric { --kd-electric-box: 406px; }
   .kd-intro-text { font-size: 22px; }
   .kd-intro-group { gap: 10px; }
 }

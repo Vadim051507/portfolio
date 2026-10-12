@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
+import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import Container from "@/components/ui/Container";
 import SectionTitle from "@/components/ui/SectionTitle";
@@ -7,10 +9,60 @@ import Reveal from "@/components/site/Reveal";
 import { HERO_BROWSER_PROJECTS } from "@/lib/constants";
 
 // Which projects have a live detail page.
-const LIVE = new Set(["tokarchuk-dental", "bavovnastore"]);
+const LIVE: ReadonlySet<string> = new Set(["tokarchuk-dental", "bavovnastore"]);
+
+// The 3D ring replaces the card grid from 1024px up. Which of the two is
+// visible is decided in CSS (no layout jump on hydration); this query only
+// decides whether the ring's code is fetched at all.
+const RING_QUERY = "(min-width: 1024px)";
+
+const PortfolioRing = dynamic(() => import("@/components/sections/PortfolioRing"), {
+    ssr: false,
+});
+
+/** True once the slot is near the viewport on a ring-sized screen. */
+function useRingMount(slot: React.RefObject<HTMLDivElement | null>) {
+    const [mount, setMount] = useState(false);
+
+    useEffect(() => {
+        const el = slot.current;
+        if (!el) return;
+        const query = window.matchMedia(RING_QUERY);
+        let io: IntersectionObserver | null = null;
+
+        const sync = () => {
+            io?.disconnect();
+            io = null;
+            if (!query.matches) {
+                setMount(false);
+                return;
+            }
+            io = new IntersectionObserver(
+                ([entry]) => {
+                    if (!entry.isIntersecting) return;
+                    setMount(true);
+                    io?.disconnect();
+                },
+                { rootMargin: "600px 0px" }
+            );
+            io.observe(el);
+        };
+
+        sync();
+        query.addEventListener("change", sync);
+        return () => {
+            query.removeEventListener("change", sync);
+            io?.disconnect();
+        };
+    }, [slot]);
+
+    return mount;
+}
 
 export default function Portfolio() {
     const router = useRouter();
+    const ringSlot = useRef<HTMLDivElement>(null);
+    const ringMounted = useRingMount(ringSlot);
 
     return (
         <section id="portfolio" style={{ padding: "130px 0", position: "relative" }}>
@@ -70,6 +122,71 @@ export default function Portfolio() {
                     color: var(--text-on-accent);
                 }
                 @media (max-width: 720px) { .pf-grid { grid-template-columns: 1fr; } }
+
+                /* ── 3D ring (PortfolioRing.tsx), 1024px and up ── */
+                .pf-ring-slot { display: none; }
+                @media (min-width: 1024px) {
+                    .pf-grid { display: none; }
+                    /* Height is reserved before the ring's code arrives:
+                       ring 460 + panel 182. */
+                    .pf-ring-slot { display: block; min-height: 642px; }
+                }
+                .pf-ring {
+                    position: relative;
+                    height: 460px;
+                }
+                /* Overrides for the third-party carousel, kept out of its
+                   own CSS: the site's focus ring instead of the grey inset
+                   shadow, and a soft edge so cards dissolve into the sheet. */
+                .pf-ring .circular-carousel { border-radius: 20px; }
+                /* on the inner view, not the root: a mask on the root would
+                   also erase its focus outline */
+                .pf-ring .circular-carousel__view {
+                    -webkit-mask-image: linear-gradient(to right, transparent, #000 9%, #000 91%, transparent);
+                    mask-image: linear-gradient(to right, transparent, #000 9%, #000 91%, transparent);
+                }
+                .pf-ring .circular-carousel:focus-visible {
+                    box-shadow: none;
+                    outline: 2px solid var(--accent-text);
+                    outline-offset: 2px;
+                }
+                .pf-info {
+                    display: flex;
+                    align-items: flex-end;
+                    justify-content: space-between;
+                    gap: 40px;
+                    min-height: 182px;
+                    padding-top: 28px;
+                    border-top: 1px solid var(--border);
+                }
+                .pf-info-text, .pf-info-actions { animation: pf-info-in 0.45s var(--ease-out) both; }
+                @keyframes pf-info-in {
+                    from { opacity: 0; transform: translateY(8px); }
+                    to   { opacity: 1; transform: none; }
+                }
+                .pf-info-meta { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-bottom: 12px; }
+                .pf-info-count { color: var(--accent-text); }
+                .pf-info-title {
+                    font-size: 28px;
+                    font-weight: 600;
+                    letter-spacing: -0.5px;
+                    color: var(--text);
+                    margin-bottom: 8px;
+                }
+                .pf-info-desc {
+                    font-size: 15.5px;
+                    line-height: 1.6;
+                    color: var(--text-muted);
+                    max-width: 560px;
+                    margin-bottom: 16px;
+                }
+                .pf-info-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+                .pf-info-actions { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+                .pf-info-actions .btn-face { padding: 14px 26px; }
+                .pf-info-soon { position: static; padding: 9px 18px; font-size: 12px; }
+                @media (prefers-reduced-motion: reduce) {
+                    .pf-info-text, .pf-info-actions { animation: none; }
+                }
             `}</style>
 
             <Container>
@@ -118,6 +235,7 @@ export default function Portfolio() {
                                             className="pf-img"
                                             src={p.image}
                                             alt={p.title}
+                                            loading="lazy"
                                             style={{
                                                 width: "100%",
                                                 height: "100%",
@@ -210,6 +328,10 @@ export default function Portfolio() {
                             </Reveal>
                         );
                     })}
+                </div>
+
+                <div className="pf-ring-slot" ref={ringSlot}>
+                    {ringMounted && <PortfolioRing live={LIVE} />}
                 </div>
             </Container>
         </section>
