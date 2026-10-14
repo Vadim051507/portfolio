@@ -6,10 +6,25 @@ import { useRouter } from "next/navigation";
 import Container from "@/components/ui/Container";
 import SectionTitle from "@/components/ui/SectionTitle";
 import Reveal from "@/components/site/Reveal";
+import Counter from "@/components/site/Counter";
+import MagneticButton from "@/components/site/MagneticButton";
+import { useSmoothScroll } from "@/components/SmoothScrollProvider";
 import { HERO_BROWSER_PROJECTS } from "@/lib/constants";
+import { screenOf } from "@/lib/gallery";
 
 // Which projects have a live detail page.
 const LIVE: ReadonlySet<string> = new Set(["tokarchuk-dental", "bavovnastore"]);
+
+// The facts under the work are counted from the data above, never typed
+// in, so they stay true when a project is added.
+const FACTS = [
+    { value: HERO_BROWSER_PROJECTS.length, label: "проєкти в портфоліо" },
+    { value: LIVE.size, label: "кейси з детальним розбором" },
+    {
+        value: new Set(HERO_BROWSER_PROJECTS.flatMap((p) => p.tags)).size,
+        label: "технологій у роботі",
+    },
+];
 
 // The 3D ring replaces the card grid from 1024px up. Which of the two is
 // visible is decided in CSS (no layout jump on hydration); this query only
@@ -61,6 +76,7 @@ function useRingMount(slot: React.RefObject<HTMLDivElement | null>) {
 
 export default function Portfolio() {
     const router = useRouter();
+    const { scrollTo } = useSmoothScroll();
     const ringSlot = useRef<HTMLDivElement>(null);
     const ringMounted = useRingMount(ringSlot);
 
@@ -128,12 +144,16 @@ export default function Portfolio() {
                 @media (min-width: 1024px) {
                     .pf-grid { display: none; }
                     /* Height is reserved before the ring's code arrives:
-                       ring 460 + panel 182. */
-                    .pf-ring-slot { display: block; min-height: 642px; }
+                       ring 470 + gap 24 + panel 182. */
+                    .pf-ring-slot { display: block; min-height: 676px; }
                 }
+                /* The ring breaks out of the 1200px container to the
+                   sheet's width: its size is set by width, so the extra
+                   width is what makes the front card large. */
                 .pf-ring {
                     position: relative;
-                    height: 460px;
+                    height: 470px;
+                    margin-inline: calc((100% - min(100vw - 96px, 1640px)) / 2);
                 }
                 /* Overrides for the third-party carousel, kept out of its
                    own CSS: the site's focus ring instead of the grey inset
@@ -156,6 +176,7 @@ export default function Portfolio() {
                     justify-content: space-between;
                     gap: 40px;
                     min-height: 182px;
+                    margin-top: 24px;
                     padding-top: 28px;
                     border-top: 1px solid var(--border);
                 }
@@ -184,6 +205,58 @@ export default function Portfolio() {
                 .pf-info-actions { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
                 .pf-info-actions .btn-face { padding: 14px 26px; }
                 .pf-info-soon { position: static; padding: 9px 18px; font-size: 12px; }
+                /* ── Facts + CTA, every width ── */
+                .pf-facts {
+                    display: grid;
+                    grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(0, 2.1fr);
+                    gap: 16px;
+                    margin-top: 72px;
+                }
+                .pf-fact {
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: space-between;
+                    gap: 18px;
+                    height: 100%;
+                    padding: 22px 24px;
+                }
+                .pf-fact-num {
+                    display: block;
+                    font-family: var(--font-display);
+                    font-size: 44px;
+                    font-weight: 600;
+                    letter-spacing: -1.5px;
+                    line-height: 1;
+                    color: var(--text);
+                }
+                .pf-fact-label { font-size: 14px; color: var(--text-muted); line-height: 1.45; }
+                .pf-cta {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    gap: 20px;
+                    height: 100%;
+                    padding: 24px 26px;
+                    border-radius: 20px;
+                    background: var(--accent);
+                    color: var(--text-on-accent);
+                }
+                /* On mint the sheet's dark primary button stays dark on
+                   hover too: its usual mint hover would vanish here. */
+                .pf-cta .btn-primary:hover { color: var(--bg); }
+                .pf-cta .btn-primary:hover .btn-face { background: var(--text); }
+                .pf-cta-title { font-size: 20px; font-weight: 600; letter-spacing: -0.3px; line-height: 1.25; }
+                .pf-cta-sub { margin-top: 6px; font-size: 14px; opacity: 0.75; }
+                @media (max-width: 1024px) {
+                    .pf-facts { grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: 48px; }
+                    .pf-facts > :last-child { grid-column: 1 / -1; }
+                }
+                @media (max-width: 560px) {
+                    .pf-facts { grid-template-columns: 1fr 1fr; }
+                    .pf-fact { padding: 20px; }
+                    .pf-fact-num { font-size: 36px; }
+                    .pf-cta { flex-direction: column; align-items: flex-start; }
+                }
                 @media (prefers-reduced-motion: reduce) {
                     .pf-info-text, .pf-info-actions { animation: none; }
                 }
@@ -233,7 +306,7 @@ export default function Portfolio() {
                                         {/* eslint-disable-next-line @next/next/no-img-element */}
                                         <img
                                             className="pf-img"
-                                            src={p.image}
+                                            src={screenOf(p.slug)}
                                             alt={p.title}
                                             loading="lazy"
                                             style={{
@@ -332,6 +405,30 @@ export default function Portfolio() {
 
                 <div className="pf-ring-slot" ref={ringSlot}>
                     {ringMounted && <PortfolioRing live={LIVE} />}
+                </div>
+
+                <div className="pf-facts">
+                    {FACTS.map((f, i) => (
+                        <Reveal key={f.label} delay={i * 0.08}>
+                            <div className="card pf-fact">
+                                <span className="pf-fact-num">
+                                    <Counter value={f.value} prefix={f.value < 10 ? "0" : ""} />
+                                </span>
+                                <span className="pf-fact-label">{f.label}</span>
+                            </div>
+                        </Reveal>
+                    ))}
+                    <Reveal delay={FACTS.length * 0.08}>
+                        <div className="pf-cta">
+                            <div>
+                                <p className="pf-cta-title">Ваш проєкт може бути наступним</p>
+                                <p className="pf-cta-sub">Розкажіть про задачу — відповім протягом дня.</p>
+                            </div>
+                            <MagneticButton onClick={() => scrollTo("#contact")}>
+                                Обговорити
+                            </MagneticButton>
+                        </div>
+                    </Reveal>
                 </div>
             </Container>
         </section>

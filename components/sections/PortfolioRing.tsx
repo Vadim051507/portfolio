@@ -13,22 +13,29 @@ import { GALLERY } from "@/lib/gallery";
 //
 // "orbit" keeps every card facing the viewer, so with only a few screens
 // the ones behind still read as screens; "cylinder" turns them edge-on and
-// shows their backs. Tilt is 0 so the screenshots stay rectangular — any
-// tilt skews them into trapezoids. The negative gap pulls the ring tight
-// so the front card stays large: the component scales the whole ring to
-// fit its box.
+// shows their backs.
+//
+// Autoplay is "step", not "drift": drift turns the ring all the time, so
+// most of the time two cards share the front half-and-half and stack into
+// each other. Step rests with one card dead centre and springs to the next.
+// Tilt stays 0: orbit cards face the viewer, so without tilt every screen
+// is a straight rectangle; any tilt skews them into trapezoids.
+// The component scales the whole ring to its box width, which is why the
+// box breaks out of the container (.pf-ring) and the gap is negative:
+// both make the front card larger. Low perspective widens the gap in size
+// between the front card and the ones receding.
 const RING = {
     preset: "orbit",
     cardWidth: 700,
     aspectRatio: 1.78,
-    gap: -280,
+    gap: -110,
     curve: 0,
     tilt: 0,
-    perspective: 1300,
-    speed: 16,
-    depthFade: 0.8,
+    perspective: 1000,
+    depthFade: 0.9,
     innerShade: 0.9,
     cornerRadius: 20,
+    interval: 4.5,
 } as const;
 
 /**
@@ -73,7 +80,7 @@ export default function PortfolioRing({ live }: { live: ReadonlySet<string> }) {
                     {...RING}
                     fadeColor="var(--bg)"
                     captions={false}
-                    autoplay="drift"
+                    autoplay="step"
                     pauseOnHover
                     snap
                     draggable

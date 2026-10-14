@@ -4,6 +4,7 @@
  * Один запис — одна картка кільця. Щоб додати екран (головна, адмінка,
  * мобільна версія): покласти картинку в public/projects/ і додати сюди
  * рядок. Коду чіпати не треба — кільце саме перерахує радіус.
+ * Мобільні картки Портфоліо теж беруть WebP звідси, через screenOf().
  *
  * - projectId — slug проєкту з HERO_BROWSER_PROJECTS (lib/constants.ts).
  *   Назва, опис, теги й посилання інфо-панелі беруться звідти, тут вони
@@ -47,4 +48,10 @@ export const GALLERY: GalleryItem[] = [
     screen("bavovnastore", "/projects/bavovnastore.webp", "Головна сторінка"),
     screen("florist-shop", "/projects/florist-shop.webp", "Головна сторінка"),
     screen("furniture-site", "/projects/furniture-site.webp", "Головна сторінка"),
+    screen("muscle-mania", "/projects/muscle-mania.webp", "Головна сторінка"),
 ];
+
+/** Перший екран проєкту з GALLERY, інакше його PNG з HERO_BROWSER_PROJECTS. */
+export const screenOf = (id: GalleryProjectId): string =>
+    GALLERY.find((g) => g.projectId === id)?.src ??
+    HERO_BROWSER_PROJECTS.find((p) => p.slug === id)!.image;
