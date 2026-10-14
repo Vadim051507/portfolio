@@ -247,4 +247,4 @@ teal-500, ~8% мʼята, ~3% білі. Additive blending, `opacity: 0.42` — �
 - UA/EN перемикач нічого не робить; у `florist-shop` немає кейс-сторінки.
 - `lib/constants.ts`: невживані `PROJECTS`, `TECH_STACK` і поле `accent` у
   `HERO_BROWSER_PROJECTS`.
-- Скриншоти проєктів — важкі PNG через `<img>`, не `next/image`.
+- Скриншоти: Портфоліо бере WebP з `lib/gallery.ts` (`screenOf()`), але Hero досі важкі PNG через `<img>`, не `next/image`.

@@ -162,7 +162,30 @@ export const HERO_BROWSER_PROJECTS = [
         image: "/projects/florist-shop.png",
         accent: "rgba(217, 119, 6, 0.4)",
         href: "/projects/florist-shop",
-    }
+    },
+    {
+        slug: "furniture-site",
+        domain: "eurokitchen.com.ua",
+        title: "Eurokitchen",
+        tags: ["Next.js", "Tailwind", "Framer Motion"],
+        description: "Лендінг для компанії меблів на замовлення",
+        image: "/projects/furniture-site.png",
+        accent: "rgba(146, 104, 52, 0.4)",
+        href: "/projects/furniture-site",
+    },
+    {
+        slug: "muscle-mania",
+        domain: "musclemania.com",
+        title: "MuscleMania",
+        // TODO: вписати стек. Теги рахуються у факті «технологій у роботі»
+        // в Портфоліо, тож сюди тільки технології, не функції сайту.
+        tags: [],
+        description: "Інтернет-магазин спортивного харчування",
+        image: "/projects/muscle-mania.png",
+        // Жовтий бренду на чорному
+        accent: "rgba(245, 197, 24, 0.4)",
+        href: "/projects/muscle-mania",
+    },
     // Якщо додаси третій проєкт, наприклад адмін-панель Bavovna:
     // {
     //   slug: "bavovnastore-admin",

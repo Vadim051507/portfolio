@@ -1,0 +1,6 @@
+<svg width="512" height="512" viewBox="0 0 360 360" xmlns="http://www.w3.org/2000/svg">
+  <!-- Silhouette of logo.svg for the intro's ElectricLogo: the same tile with
+       the three bars cut out as holes, so the discharge traces the bars as
+       well as the tile's outer edge. Only the alpha channel is read. -->
+  <path fill="#fff" fill-rule="evenodd" d="M102 20h156a82 82 0 0 1 82 82v156a82 82 0 0 1-82 82H102a82 82 0 0 1-82-82V102a82 82 0 0 1 82-82ZM125 86h36v100h-36ZM125 202h36v72h-36ZM199 108h36v145h-36Z"/>
+</svg>
