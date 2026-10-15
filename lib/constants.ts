@@ -1,13 +1,22 @@
+// Єдине джерело правди для імені й контактів: шапка, hero, FAQ, контакти,
+// футер і мета-теги беруть дані тільки звідси.
 export const SITE = {
     name: "KINDRATYAK",
-    title: "Розробка сайтів для малого бізнесу — YOUR_NAME",
+    ownerName: "Вадим Кіндратяк",
+    role: "Розробник сайтів",
+    title: "Сайти для локального бізнесу | Вадим Кіндратяк",
     description:
-        "Інтернет-магазини, корпоративні сайти та лендінги для малого бізнесу в Україні. Швидко, надійно, з підтримкою після запуску.",
-    telegram: "https://t.me/YOUR_NICK",
-    telegramNick: "@YOUR_NICK",
+        "Роблю сайти для клінік, майстерень і локальних послуг. Швидкі, з налаштованим пошуком, із ціною до початку роботи.",
+    telegram: "https://t.me/+380966008376",
+    telegramDisplay: "+38 096 600 83 76",
+    telegram2: "https://t.me/+380962380674",
+    telegram2Display: "+38 096 238 06 74",
+    phone: "tel:+380966008376",
+    phoneDisplay: "+38 096 600 83 76",
     email: "wadimlikar@gmail.com",
-    github: "https://github.com/YOUR",
-    instagram: "https://instagram.com/YOUR_INSTA",  // ← додати
+    github: "https://github.com/Vadim051507",
+    instagram: "https://www.instagram.com/kindratyak.dev/",
+    linkedin: encodeURI("https://www.linkedin.com/in/вадим-кіндратяк-869661397"),
 };
 
 export const SERVICES = [

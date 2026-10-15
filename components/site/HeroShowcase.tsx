@@ -10,7 +10,9 @@ import {
 } from "framer-motion";
 import { HERO_BROWSER_PROJECTS } from "@/lib/constants";
 
-const PROJECTS = [...HERO_BROWSER_PROJECTS];
+// Hero shows only launched work; the full list stays in the Portfolio.
+const LIVE_SLUGS: readonly string[] = ["tokarchuk-dental", "bavovnastore"];
+const PROJECTS = HERO_BROWSER_PROJECTS.filter((p) => LIVE_SLUGS.includes(p.slug));
 const INTERVAL = 3600;
 
 /**

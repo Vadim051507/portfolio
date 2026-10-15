@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { useSmoothScroll } from "./SmoothScrollProvider";
+import { SITE } from "@/lib/constants";
 
 type Link = { label: string; href: string };
 type Social = { label: string; href: string; icon: React.ReactNode };
@@ -108,8 +109,8 @@ export default function NavMobile({ open, onClose, links, social }: NavMobilePro
                             </svg>
                         </div>
                         <div style={{ lineHeight: 1.2 }}>
-                            <div style={{ color: "var(--text)", fontWeight: 700, fontSize: "14px" }}>YOUR NAME</div>
-                            <div style={{ color: "var(--text-muted)", fontSize: "11px" }}>Fullstack Dev</div>
+                            <div style={{ color: "var(--text)", fontWeight: 700, fontSize: "14px" }}>{SITE.ownerName}</div>
+                            <div style={{ color: "var(--text-muted)", fontSize: "11px" }}>{SITE.role}</div>
                         </div>
                     </div>
 

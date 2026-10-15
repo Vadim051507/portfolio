@@ -4,6 +4,7 @@ import { useState, useEffect, useLayoutEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import NavMobile from "./NavMobile";
 import { useSmoothScroll } from "./SmoothScrollProvider";
+import { SITE } from "@/lib/constants";
 
 const NAV_LINKS = [
     { label: "Головна",    href: "#hero" },
@@ -15,8 +16,8 @@ const NAV_LINKS = [
 
 const SOCIAL = [
     {
-        label: "Instagram",
-        href: "https://instagram.com/YOUR_INSTA",
+        label: "Сторінка в Instagram",
+        href: SITE.instagram,
         icon: (
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                 <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
@@ -26,8 +27,8 @@ const SOCIAL = [
         ),
     },
     {
-        label: "Telegram",
-        href: "https://t.me/YOUR_NICK",
+        label: "Написати в Telegram",
+        href: SITE.telegram,
         icon: (
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M21.2 4.3 2.5 11.2c-1.2.5-1.2 1.1-.2 1.4l4.7 1.5 1.8 5.4c.2.6.3.9.9.9.4 0 .6-.2.9-.4l2.7-2.6 5.6 4.1c1 .6 1.8.3 2-1L22 5.3c.4-1.5-.6-2.2-1.8-1z"/>
@@ -35,8 +36,8 @@ const SOCIAL = [
         ),
     },
     {
-        label: "GitHub",
-        href: "https://github.com/YOUR",
+        label: "Профіль на GitHub",
+        href: SITE.github,
         icon: (
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
@@ -384,8 +385,8 @@ export default function Nav() {
                             </svg>
                         </div>
                         <div>
-                            <div className="nav-name">YOUR NAME</div>
-                            <div className="nav-role">Fullstack Dev</div>
+                            <div className="nav-name">{SITE.ownerName}</div>
+                            <div className="nav-role">{SITE.role}</div>
                         </div>
                     </div>
 

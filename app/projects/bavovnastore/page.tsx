@@ -1,9 +1,10 @@
 import Container from "@/components/ui/Container";
 import BackButton from "@/components/ui/BackButton";
 import type { Metadata } from "next";
+import { SITE } from "@/lib/constants";
 
 export const metadata: Metadata = {
-    title: "BavovnaStore — YOUR_NAME",
+    title: `BavovnaStore | ${SITE.ownerName}`,
     description: "Інтернет-магазин українського одягу на Spring Boot + React.",
 };
 
