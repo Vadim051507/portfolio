@@ -28,6 +28,11 @@ export const metadata: Metadata = {
         type: "website",
         locale: "uk_UA",
     },
+    twitter: {
+        card: "summary",
+        title: SITE.title,
+        description: SITE.description,
+    },
 };
 
 // viewport-fit=cover lets the page draw under the iOS home-indicator /

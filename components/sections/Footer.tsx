@@ -124,6 +124,7 @@ export default function Footer() {
                                         href: SITE.instagram,
                                         ext: true,
                                     },
+                                    { label: "LinkedIn", href: SITE.linkedin, ext: true },
                                 ]}
                             />
                         </div>

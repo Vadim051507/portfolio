@@ -162,9 +162,22 @@ export default function Contact() {
                                 <ContactCard
                                     icon="telegram"
                                     label="Telegram"
-                                    value={SITE.telegramNick}
+                                    value={SITE.telegramDisplay}
                                     href={SITE.telegram}
                                     external
+                                />
+                                <ContactCard
+                                    icon="telegram"
+                                    label="Telegram 2"
+                                    value={SITE.telegram2Display}
+                                    href={SITE.telegram2}
+                                    external
+                                />
+                                <ContactCard
+                                    icon="phone"
+                                    label="Телефон"
+                                    value={SITE.phoneDisplay}
+                                    href={SITE.phone}
                                 />
                                 <ContactCard
                                     icon="mail"

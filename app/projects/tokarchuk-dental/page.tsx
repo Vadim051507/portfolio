@@ -1,9 +1,10 @@
 import Container from "@/components/ui/Container";
 import BackButton from "@/components/ui/BackButton";
 import type { Metadata } from "next";
+import { SITE } from "@/lib/constants";
 
 export const metadata: Metadata = {
-    title: "Tokarchuk Dental Clinic — YOUR_NAME",
+    title: `Tokarchuk Dental Clinic | ${SITE.ownerName}`,
     description: "Корпоративний сайт стоматологічної клініки на Next.js з повноцінною адмінкою.",
 };
 

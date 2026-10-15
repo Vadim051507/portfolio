@@ -1,12 +1,10 @@
 "use client";
 
-import React from "react";
 import { motion } from "framer-motion";
 import dynamic from "next/dynamic";
 import Container from "@/components/ui/Container";
-import MagneticButton from "@/components/site/MagneticButton";
-import Counter from "@/components/site/Counter";
 import { useSmoothScroll } from "@/components/SmoothScrollProvider";
+import { SITE } from "@/lib/constants";
 
 const HeroShowcase = dynamic(() => import("@/components/site/HeroShowcase"), {
     ssr: false,
@@ -14,20 +12,6 @@ const HeroShowcase = dynamic(() => import("@/components/site/HeroShowcase"), {
 const ParticleTrail = dynamic(() => import("@/components/ParticleTrail"), {
     ssr: false,
 });
-
-const HEADLINE: { w: string; grad?: boolean; br?: boolean }[] = [
-    { w: "Сайти" },
-    { w: "які" },
-    { w: "продають", grad: true, br: true },
-    { w: "ваш" },
-    { w: "бізнес" },
-];
-
-const STATS = [
-    { value: 0, suffix: "", label: "передоплата" },
-    { value: 30, suffix: " днів", label: "підтримки безкоштовно" },
-    { value: 100, suffix: "%", label: "проєктів з адмінкою" },
-];
 
 export default function Hero() {
     const { scrollTo } = useSmoothScroll();
@@ -52,12 +36,57 @@ export default function Hero() {
                     gap: 56px;
                     align-items: center;
                 }
+                .hero-grid > * { min-width: 0; }
                 @media (max-width: 900px) {
                     .hero-grid { grid-template-columns: 1fr; gap: 64px; }
                     .hero-visual { order: -1; }
-                    .hero-stats { justify-content: flex-start !important; }
                 }
-                .hero-stat { padding-left: 16px; border-left: 1px solid var(--border-soft-strong); }
+
+                /* Headline: three fixed lines on wide screens; on narrow ones
+                   the lines flow inline and the nowrap groups keep the
+                   short words from ending up alone on a line. */
+                .hero-title {
+                    font-family: var(--font-display);
+                    font-size: clamp(36px, 5.4vw, 72px);
+                    font-weight: 700;
+                    line-height: 1.04;
+                    letter-spacing: -0.035em;
+                    margin-bottom: 26px;
+                    color: var(--text);
+                }
+                .hero-line { display: block; }
+                .hero-keep { white-space: nowrap; }
+                @media (max-width: 560px) {
+                    .hero-line { display: inline; }
+                    .hero-title { text-wrap: balance; }
+                }
+
+                /* Load-in: opacity + transform only, set in CSS so the H1
+                   is in the server HTML and paints without waiting for JS. */
+                @keyframes hero-in {
+                    from { opacity: 0; transform: translateY(14px); }
+                    to { opacity: 1; transform: none; }
+                }
+                .hero-in {
+                    animation: hero-in 450ms cubic-bezier(0.16, 1, 0.3, 1) both;
+                }
+                .hero-in-2 { animation-delay: 100ms; }
+                .hero-in-3 { animation-delay: 200ms; }
+                @media (prefers-reduced-motion: reduce) {
+                    .hero-in { animation: none; }
+                }
+
+                /* Hero CTAs: no pull toward the cursor and no face shift,
+                   only a colour / glow change on hover. */
+                .hero-cta .btn {
+                    will-change: auto;
+                    transition: filter 0.2s;
+                }
+                .hero-cta .btn-face {
+                    transition: background-color 0.2s, border-color 0.2s;
+                }
+                .hero-cta .btn:hover .btn-face,
+                .hero-cta .btn:active .btn-face { transform: none; }
             `}</style>
 
             {/* Original hero S-curve trail (scoped to the hero) */}
@@ -67,86 +96,20 @@ export default function Hero() {
                 <div className="hero-grid" style={{ position: "relative", zIndex: 2 }}>
                     {/* ── Text column ── */}
                     <div>
-                        {/* Availability badge */}
-                        <motion.div
-                            initial={{ opacity: 0, y: -10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.6 }}
-                            style={{
-                                display: "inline-flex",
-                                alignItems: "center",
-                                gap: 9,
-                                background: "var(--surface)",
-                                border: "1px solid var(--border-soft-strong)",
-                                borderRadius: 100,
-                                padding: "7px 16px",
-                                marginBottom: 30,
-                            }}
-                        >
-                            <span
-                                style={{
-                                    width: 8,
-                                    height: 8,
-                                    borderRadius: "50%",
-                                    background: "var(--accent)",
-                                    animation: "pulse-dot 2s infinite",
-                                }}
-                            />
-                            <span className="mono-label">
-                                Доступний для нових проєктів
+                        <h1 className="hero-title hero-in">
+                            <span className="hero-line">
+                                Сайти, <span className="hero-keep">через які</span>{" "}
                             </span>
-                        </motion.div>
-
-                        {/* Kinetic headline */}
-                        <h1
-                            style={{
-                                fontFamily: "var(--font-display)",
-                                fontSize: "clamp(42px, 6.4vw, 82px)",
-                                fontWeight: 700,
-                                lineHeight: 1.02,
-                                letterSpacing: "-3px",
-                                marginBottom: 26,
-                                color: "var(--text)",
-                            }}
-                        >
-                            {HEADLINE.map((word, i) => (
-                                <React.Fragment key={i}>
-                                    <span
-                                        style={{
-                                            display: "inline-block",
-                                            overflow: "hidden",
-                                            verticalAlign: "top",
-                                            paddingBottom: "0.1em",
-                                            marginBottom: "-0.1em",
-                                        }}
-                                    >
-                                        <motion.span
-                                            initial={{ y: "110%" }}
-                                            animate={{ y: "0%" }}
-                                            transition={{
-                                                duration: 0.9,
-                                                delay: 0.15 + i * 0.09,
-                                                ease: [0.16, 1, 0.3, 1],
-                                            }}
-                                            className={word.grad ? "gradient-text" : ""}
-                                            style={{
-                                                display: "inline-block",
-                                                paddingRight: "0.22em",
-                                            }}
-                                        >
-                                            {word.w}
-                                        </motion.span>
-                                    </span>
-                                    {word.br && <br />}
-                                </React.Fragment>
-                            ))}
+                            <span className="hero-line">
+                                вас <span className="gradient-text">знаходять</span>{" "}
+                            </span>
+                            <span className="hero-line">
+                                <span className="gradient-text hero-keep">у Google</span>
+                            </span>
                         </h1>
 
-                        {/* Subtitle */}
-                        <motion.p
-                            initial={{ opacity: 0, y: 16 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.7, delay: 0.6 }}
+                        <p
+                            className="hero-in hero-in-2"
                             style={{
                                 fontSize: 18,
                                 color: "var(--text-muted)",
@@ -155,16 +118,12 @@ export default function Hero() {
                                 marginBottom: 36,
                             }}
                         >
-                            Інтернет-магазини, корпоративні сайти та лендінги для
-                            малого бізнесу в Україні. З адмінкою та підтримкою після
-                            запуску.
-                        </motion.p>
+                            Для клінік, майстерень і локальних послуг. Швидкі, з
+                            налаштованим пошуком, із ціною до початку роботи.
+                        </p>
 
-                        {/* CTA */}
-                        <motion.div
-                            initial={{ opacity: 0, y: 16 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.7, delay: 0.75 }}
+                        <div
+                            className="hero-cta hero-in hero-in-3"
                             style={{
                                 display: "flex",
                                 gap: 16,
@@ -172,53 +131,27 @@ export default function Hero() {
                                 alignItems: "center",
                             }}
                         >
-                            <MagneticButton onClick={() => scrollTo("#contact")}>
-                                Обговорити проєкт →
-                            </MagneticButton>
-                            <MagneticButton
-                                variant="ghost"
-                                onClick={() => scrollTo("#portfolio")}
+                            <a
+                                href={SITE.telegram}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="btn btn-primary"
                             >
-                                Подивитись роботи
-                            </MagneticButton>
-                        </motion.div>
-
-                        {/* Stats */}
-                        <motion.div
-                            className="hero-stats"
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            transition={{ duration: 0.8, delay: 1 }}
-                            style={{
-                                display: "flex",
-                                gap: 32,
-                                marginTop: 52,
-                                flexWrap: "wrap",
-                            }}
-                        >
-                            {STATS.map((s) => (
-                                <div key={s.label} className="hero-stat">
-                                    <div
-                                        style={{
-                                            fontFamily: "var(--font-display)",
-                                            fontSize: 34,
-                                            fontWeight: 700,
-                                            color: "var(--text)",
-                                            lineHeight: 1,
-                                            marginBottom: 6,
-                                        }}
-                                    >
-                                        <Counter value={s.value} suffix={s.suffix} />
-                                    </div>
-                                    <div
-                                        className="mono-label"
-                                        style={{ maxWidth: 150, lineHeight: 1.5 }}
-                                    >
-                                        {s.label}
-                                    </div>
-                                </div>
-                            ))}
-                        </motion.div>
+                                <span className="btn-face">
+                                    Обговорити проєкт
+                                </span>
+                            </a>
+                            <a
+                                href="#portfolio"
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    scrollTo("#portfolio");
+                                }}
+                                className="btn btn-ghost"
+                            >
+                                <span className="btn-face">Подивитись роботи</span>
+                            </a>
+                        </div>
                     </div>
 
                     {/* ── Visual column ── */}
