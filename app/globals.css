@@ -73,9 +73,11 @@
   --radius-sheet: 40px;
   --sheet-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
 
-  --font-display: "Space Grotesk", "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-body:    "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --font-mono:    var(--font-jetbrains-mono), ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  /* One typeface for everything: Onest (next/font in layout.tsx). Display
+     and body are kept as names so components need not care. */
+  --font-sans:    var(--font-onest), -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-display: var(--font-sans);
+  --font-body:    var(--font-sans);
 
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -211,7 +213,7 @@
 }
 
 /* Tailwind v4 bindings: bg-surface, text-muted, border-border, text-accent,
-   bg-teal-500, font-mono… `inline` makes utilities reference the :root
+   bg-teal-500, font-sans… `inline` makes utilities reference the :root
    variables above, so there is exactly one place to edit a value. */
 @theme inline {
   --color-bg: var(--bg);
@@ -232,7 +234,7 @@
   --color-teal-700: var(--teal-700);
   --color-teal-800: var(--teal-800);
   --color-teal-900: var(--teal-900);
-  --font-mono: var(--font-jetbrains-mono), ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --font-sans: var(--font-onest), -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
 * {
@@ -267,7 +269,10 @@ body {
 
 img, video, canvas, svg { max-width: 100%; }
 
-h1, h2, h3, h4 { font-family: var(--font-display); }
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
+}
 
 ::selection {
   background: var(--accent);
@@ -307,34 +312,27 @@ main > section + section { border-top: 1px solid var(--border); }
   color: transparent;
 }
 
-/* Service label: section numbers (01, 02…), captions. The only place the
-   mono font is used — body and display typography stay as they are. */
-.mono-label {
-  font-family: var(--font-mono);
-  font-size: 11px;
+/* Small caption: field labels, meta lines, footer column titles. */
+.meta-label {
+  font-size: 13px;
   font-weight: 500;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
   color: var(--text-muted);
 }
 
+/* Section label above a heading: name only, a thin rule on the left. */
 .eyebrow {
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  font-family: var(--font-mono);
-  font-size: 11.5px;
+  font-size: 14px;
   font-weight: 500;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--text-muted);
+  color: var(--accent-text);
 }
 .eyebrow::before {
   content: "";
   width: 26px; height: 1px;
   background: var(--accent-text);
 }
-.eyebrow-num { color: var(--accent-text); }
 
 /* Accent word of a heading — the brand's signature. Mint text on dark.
    On a light surface mint text is unreadable, so the word is set like a
@@ -405,9 +403,8 @@ main > section + section { border-top: 1px solid var(--border); }
 /* Tag / chip */
 .tag {
   display: inline-block;
-  font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 0.04em;
+  font-size: 13px;
+  font-weight: 500;
   color: var(--text-muted);
   padding: 5px 12px;
   background: var(--surface-2);
@@ -462,7 +459,8 @@ main > section + section { border-top: 1px solid var(--border); }
 }
 
 /* ── Buttons ───────────────────────────────
-   The <button> takes the magnetic pull; the visible face is the inner
+   The <button> takes the magnetic pull (where one is used); the visible
+   face is the inner
    .btn-face, which shifts 2px on hover while the glow lights up — two
    transforms that never fight over one element. */
 .btn {
@@ -474,9 +472,7 @@ main > section + section { border-top: 1px solid var(--border); }
   cursor: pointer;
   font-family: var(--font-display);
   font-weight: 600;
-  font-size: 13.5px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  font-size: 15px;
   text-decoration: none;
   color: var(--text);
   border-radius: var(--radius-pill);
@@ -654,9 +650,9 @@ html.intro-seen .kd-intro-overlay { display: none !important; }
   display: inline-flex;
   align-items: center;
   font-family: var(--font-display);
-  font-weight: 500;
+  font-weight: 700;
   font-size: 29px;
-  letter-spacing: 0.02em;
+  letter-spacing: -0.02em;
   color: var(--text);
   white-space: pre;
   will-change: opacity;

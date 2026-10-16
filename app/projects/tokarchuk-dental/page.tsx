@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 import { SITE } from "@/lib/constants";
 
 export const metadata: Metadata = {
-    title: `Tokarchuk Dental Clinic | ${SITE.ownerName}`,
+    title: `Tokarchuk Dental Clinic | ${SITE.brandName}`,
     description: "Корпоративний сайт стоматологічної клініки на Next.js з повноцінною адмінкою.",
 };
 
@@ -38,7 +38,7 @@ export default function TokarchukDentalPage() {
                         fontSize: "clamp(32px, 5vw, 52px)",
                         fontWeight: 700,
                         color: "var(--text)",
-                        letterSpacing: "-0.5px",
+                        letterSpacing: "-0.02em",
                         marginBottom: "16px",
                     }}
                 >
@@ -60,7 +60,7 @@ export default function TokarchukDentalPage() {
                 <div style={{ maxWidth: "720px" }}>
                     <Section title="Задача">
                         <p>
-                            Клієнт — стоматологічна клініка — потребував сучасний корпоративний сайт
+                            Клієнт, стоматологічна клініка, потребував сучасний корпоративний сайт
                             з можливістю самостійно оновлювати контент: відгуки, ціни, фото команди,
                             кейси до/після, інформацію про контакти та FAQ.
                         </p>
@@ -69,7 +69,7 @@ export default function TokarchukDentalPage() {
                     <Section title="Рішення">
                         <p>
                             Розроблено повноцінний сайт з адмінкою на Next.js App Router.
-                            Адмін-панель побудована на тому ж стеку — без окремого CMS.
+                            Адмін-панель побудована на тому ж стеку, без окремого CMS.
                             Авторизація через NextAuth v5. Фото зберігаються у Vercel Blob.
                             Для зберігання даних використовується Vercel KV.
                         </p>
@@ -94,7 +94,7 @@ export default function TokarchukDentalPage() {
                     {[1, 2, 3].map((i) => (
                         <div
                             key={i}
-                            className="card mono-label"
+                            className="card meta-label"
                             style={{
                                 aspectRatio: "16/9",
                                 borderRadius: 20,

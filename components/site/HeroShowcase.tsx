@@ -131,7 +131,6 @@ export default function HeroShowcase() {
                             padding: "0 10px",
                             fontSize: 11,
                             color: "var(--text-muted)",
-                            fontFamily: "var(--font-mono)",
                             overflow: "hidden",
                         }}
                     >

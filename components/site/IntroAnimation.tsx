@@ -27,7 +27,7 @@ if (
     img.src = ELECTRIC_SRC;
 }
 
-const TEXT = "Kindratyak.dev";
+const TEXT = "kutsev";
 const STORAGE_KEY = "intro-shown";
 
 /* Timeline (ms). Two variants share one choreography; they differ only in
@@ -39,7 +39,7 @@ const STORAGE_KEY = "intro-shown";
    ~650-1250  full arc
    1250-1500  discharge fades out (canvas opacity), then unmounts
    1500-2050  logo shrinks + group re-centres (discharge is already gone)
-   1500-1990  "Kindratyak.dev" types out next to the logo
+   1500-1710  "kutsev" types out next to the logo
    2390-2790  whole intro fades out, revealing the site
 
    Static fallback (no WebGL2, or ?intro=1 under reduced motion): the same
@@ -143,7 +143,7 @@ const hasWebGL2 = () => {
  * First-visit-per-session splash: the logo pops in large and centred with
  * an electric discharge running along its outline (React Bits ElectricLogo),
  * the discharge dies down, the logo shrinks into a left-aligned mark,
- * "Kindratyak.dev" types out beside it, then the whole thing fades to
+ * "kutsev" types out beside it, then the whole thing fades to
  * reveal the site.
  *
  * The real logo is a plain <img> under the canvas — ElectricLogo only draws
@@ -313,7 +313,7 @@ export default function IntroAnimation() {
             <div className="kd-intro-group">
                 <motion.img
                     src="/logo.svg"
-                    alt="Kindratyak.dev"
+                    alt="kutsev"
                     className="kd-intro-logo"
                     initial={{ opacity: 0, scale: BIG_SCALE * 0.9 }}
                     animate={{ opacity: 1, scale: shrink ? 1 : BIG_SCALE }}

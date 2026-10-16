@@ -40,7 +40,7 @@ export default function Footer() {
                     userSelect: "none",
                 }}
             >
-                {SITE.name}
+                {SITE.brandName}
             </div>
 
             <Container>
@@ -76,6 +76,8 @@ export default function Footer() {
                                         height="16"
                                         viewBox="0 0 16 16"
                                         fill="currentColor"
+                                        role="img"
+                                        aria-label={SITE.brandName}
                                     >
                                         <path d="M3 2h4v6H3V2zm6 0h4v10H9V2zM3 10h4v4H3v-4z" />
                                     </svg>
@@ -89,7 +91,7 @@ export default function Footer() {
                                         letterSpacing: "-0.3px",
                                     }}
                                 >
-                                    {SITE.name}
+                                    {SITE.brandName}
                                 </span>
                             </div>
                             <p
@@ -99,8 +101,8 @@ export default function Footer() {
                                     lineHeight: 1.7,
                                 }}
                             >
-                                Сайти для малого бізнесу в Україні. Швидко, надійно,
-                                з підтримкою після запуску.
+                                Сайти для локального бізнесу. Швидкі, з налаштованим
+                                пошуком, із ціною до початку роботи.
                             </p>
                         </div>
 
@@ -142,7 +144,7 @@ export default function Footer() {
                         }}
                     >
                         <span style={{ fontSize: 13.5, color: "var(--text-muted)" }}>
-                            © {year} {SITE.name}. Зроблено з{" "}
+                            © {year} {SITE.brandName}. Зроблено з{" "}
                             <svg
                                 role="img"
                                 aria-label="любов'ю"
@@ -162,7 +164,7 @@ export default function Footer() {
                         <button
                             type="button"
                             onClick={scrollTop}
-                            className="mono-label"
+                            className="meta-label"
                             style={{
                                 display: "inline-flex",
                                 alignItems: "center",
@@ -184,7 +186,20 @@ export default function Footer() {
                                 e.currentTarget.style.color = "var(--text-muted)";
                             }}
                         >
-                            Наверх ↑
+                            Наверх
+                            <svg
+                                aria-hidden
+                                width="13"
+                                height="13"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                            >
+                                <path d="M12 19V5M6 11l6-6 6 6" />
+                            </svg>
                         </button>
                     </div>
                 </div>
@@ -204,7 +219,7 @@ function FooterCol({
 
     return (
         <div>
-            <div className="mono-label" style={{ marginBottom: 16 }}>
+            <div className="meta-label" style={{ marginBottom: 16 }}>
                 {title}
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>

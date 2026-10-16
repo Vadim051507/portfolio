@@ -70,7 +70,6 @@ export default function PortfolioRing({ live }: { live: ReadonlySet<string> }) {
     const item = GALLERY[active] ?? GALLERY[0];
     const project = HERO_BROWSER_PROJECTS.find((p) => p.slug === item.projectId)!;
     const isLive = live.has(project.slug);
-    const count = String(GALLERY.length).padStart(2, "0");
 
     return (
         <>
@@ -94,9 +93,12 @@ export default function PortfolioRing({ live }: { live: ReadonlySet<string> }) {
             <div className="pf-info">
                 {/* keyed so the text cross-fades when another card comes forward */}
                 <div className="pf-info-text" key={`t${active}`}>
-                    <div className="mono-label pf-info-meta">
-                        <span className="pf-info-count">
-                            {String(active + 1).padStart(2, "0")} / {count}
+                    <div className="meta-label pf-info-meta">
+                        {/* one dot per screen in the ring, the front one lit */}
+                        <span className="pf-info-dots" aria-hidden>
+                            {GALLERY.map((g, k) => (
+                                <span key={g.src} data-on={k === active} />
+                            ))}
                         </span>
                         <span>{item.subtitle}</span>
                         <span>{project.domain}</span>

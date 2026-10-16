@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { JetBrains_Mono } from "next/font/google";
+import { Onest } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 import { SITE } from "@/lib/constants";
@@ -9,13 +9,11 @@ import IntroAnimation from "@/components/site/IntroAnimation";
 import AuroraBackground from "@/components/site/AuroraBackground";
 import ScrollProgress from "@/components/site/ScrollProgress";
 
-// Mono face for service labels only (section numbers, captions) — exposed as
-// --font-jetbrains-mono and consumed through --font-mono in globals.css.
-// Inter / Space Grotesk keep loading via the <link> below.
-const jetbrainsMono = JetBrains_Mono({
-    subsets: ["latin", "cyrillic"],
-    weight: ["400", "500"],
-    variable: "--font-jetbrains-mono",
+// The one typeface of the site. Variable font, so every weight comes from a
+// single file per subset. Exposed as --font-onest and consumed through --font-sans in globals.css.
+const onest = Onest({
+    subsets: ["cyrillic", "latin"],
+    variable: "--font-onest",
     display: "swap",
 });
 
@@ -27,6 +25,7 @@ export const metadata: Metadata = {
         description: SITE.description,
         type: "website",
         locale: "uk_UA",
+        siteName: SITE.brandName,
     },
     twitter: {
         card: "summary",
@@ -54,20 +53,10 @@ export default function RootLayout({
     return (
         <html
             lang="uk"
-            className={jetbrainsMono.variable}
+            className={onest.variable}
             suppressHydrationWarning
         >
             <head>
-                <link rel="preconnect" href="https://fonts.googleapis.com" />
-                <link
-                    rel="preconnect"
-                    href="https://fonts.gstatic.com"
-                    crossOrigin="anonymous"
-                />
-                <link
-                    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap"
-                    rel="stylesheet"
-                />
                 {/* Runs before hydration: flags repeat visits within the same
                     session (or reduced-motion prefs) so the intro splash never
                     paints (see .intro-seen in globals.css) — keeps every

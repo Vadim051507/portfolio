@@ -1,138 +1,146 @@
-# Hero і контакти: звіт
+# Бренд kutsev, «Про мене», телефон, типографіка, нумерація, тире: звіт
 
-Дата: 2026-10-16, гілка `main`. Нічого не закомічено.
+Дата: 2026-10-16, гілка `main`. Нічого не закомічено. `package.json` і `package-lock.json` не змінились.
 
-## 1. Що знайдено до змін
+## 0. Що знайдено до змін
 
 | Що | Де |
 |---|---|
-| Hero | `components/sections/Hero.tsx`, права карусель у `components/site/HeroShowcase.tsx` |
-| Шапка | `components/Nav.tsx` (десктоп) + `components/NavMobile.tsx` (мобільне меню, бере `SOCIAL` з Nav) |
-| Футер | `components/sections/Footer.tsx` |
-| Контакти | `components/sections/Contact.tsx` (картки `ContactCard`) |
-| FAQ | `components/sections/FAQ.tsx`, кнопка «Написати в Telegram» уже брала `SITE.telegram` |
-| Мета-теги | `app/layout.tsx` бере `SITE.title` / `SITE.description` з `lib/constants.ts` |
-| Конфіг | `lib/constants.ts` → об'єкт `SITE` уже існував, тому новий `lib/site-config.ts` не створював |
-| Ефект «кнопки тягнуться за курсором» | `components/site/MagneticButton.tsx` (`onMouseMove` + inline `transform: translate`) |
-| Лічильник цифр | `components/site/Counter.tsx` |
+| Секція «Про мене» | `components/sections/MobileShowcase.tsx` (`id="about"`). Телефон: PNG-рамка `public/phone/iphone-frame.png`, під нею слот `.ms-screen` з написом «демо · скоро» (капслок через CSS). Список із чотирьох пунктів: масив `PILLARS`, активний пункт рахується з `useScroll` секції (`useMotionValueEvent`) |
+| Шрифти | `app/layout.tsx`: `JetBrains_Mono` через `next/font` + `<link>` на Google Fonts (Inter, Space Grotesk). `app/globals.css`: `--font-display`, `--font-body`, `--font-mono`, Tailwind v4 `@theme inline` з `--font-mono`. `tailwind.config` немає (Tailwind 4) |
+| Моноширинний шрифт | `.mono-label`, `.eyebrow`, `.tag` у `globals.css`; `Nav.tsx` (`.nav-lang`), `NavMobile.tsx` (EN/UA), `HeroShowcase.tsx` (адресний рядок), `Process.tsx` (цифри в кружечках), `Portfolio.tsx` (`.pf-domain`, `.pf-soon`), `MobileShowcase.tsx` (`.ms-screen-label`, `.ms-num`) |
+| Капслок і розрідження | `.mono-label`, `.eyebrow`, `.btn` (кнопки), `.tag` у `globals.css`; `.nav-lang`; EN/UA в `NavMobile.tsx`; `.pf-soon`; `.ms-screen-label`, `.ms-num` |
+| Нумерація | `SectionTitle` (`index="02".."06"` у Services, Portfolio, Process, TechStack, FAQ), `eyebrow-num` «01» в «Про мене» і «07» у контактах, `0{i + 1}` у картках послуг, `padStart` у FAQ, «02 / 05» у `PortfolioRing.tsx`, `num: "01".."04"` у списку «Про мене», `number: "01".."04"` у кроках процесу |
+| Старе ім'я | `lib/constants.ts` (`name: "KINDRATYAK"`, `ownerName`, title), `IntroAnimation.tsx` (надрукований текст інтро «Kindratyak.dev» і alt), футер (через `SITE.name`), коментарі в `globals.css` і `ElectricLogo.tsx`. «Fullstack»: тільки `MobileShowcase.tsx` (абзац секції, переписаний за ТЗ) |
 
-Плейсхолдери були в: `lib/constants.ts` (title, telegram, telegramNick, github, instagram),
-`components/Nav.tsx` (3 соцпосилання + «YOUR NAME»), `components/NavMobile.tsx` («YOUR NAME»),
-а також у title сторінок кейсів `app/projects/bavovnastore/page.tsx` і `app/projects/tokarchuk-dental/page.tsx`.
+## 1. Змінені файли
 
-## 2. Змінені файли
-
-| Файл | Що змінено |
+| Файл | Розділи |
 |---|---|
-| `lib/constants.ts` | `SITE`: ім'я, роль, title, description, 2 Telegram, телефон, GitHub, Instagram, LinkedIn. Прибрано `telegramNick` |
-| `app/layout.tsx` | додано `twitter` (card, title, description) |
-| `app/projects/bavovnastore/page.tsx` | title: `BavovnaStore \| Вадим Кіндратяк` (з `SITE.ownerName`) |
-| `app/projects/tokarchuk-dental/page.tsx` | title: `Tokarchuk Dental Clinic \| Вадим Кіндратяк` |
-| `components/Nav.tsx` | ім'я і роль з `SITE`, соцпосилання з `SITE`, українські `aria-label` |
-| `components/NavMobile.tsx` | ім'я і роль з `SITE` |
-| `components/sections/Contact.tsx` | Telegram, Telegram 2, Телефон |
-| `components/sections/Footer.tsx` | додано LinkedIn |
-| `components/site/Icons.tsx` | додано іконку `phone` для картки телефону |
-| `components/sections/Hero.tsx` | новий текст, без цифр, без плашки, без magnetic, CSS-анімація появи |
-| `components/site/HeroShowcase.tsx` | у каруселі лише Tokarchuk Dental Clinic і Bavovna Store |
+| `lib/constants.ts` | 1 (brandName, ownerFirstName, role, title), 6 (FAQ) |
+| `app/layout.tsx` | 1 (siteName), 4 (Onest замість JetBrains Mono, прибрано `<link>` на Inter / Space Grotesk) |
+| `app/globals.css` | 4 (шрифтові змінні, `@theme`, `.meta-label`, `.eyebrow`, `.tag`, `.btn`, заголовки, текст інтро), 5 (`.eyebrow-num` видалено) |
+| `components/Nav.tsx` | 1 (wordmark, підпис, aria-label логотипа), 4 (EN/UA без моно) |
+| `components/NavMobile.tsx` | 1, 4 |
+| `components/sections/Footer.tsx` | 1 (бренд, опис, ©), 4 (стрілка «Наверх» тепер SVG) |
+| `components/site/IntroAnimation.tsx` | 1 (інтро друкує «kutsev», alt «kutsev») |
+| `components/sections/MobileShowcase.tsx` | 2, 3, 4, 5 |
+| `components/ui/SectionTitle.tsx` | 4, 5 (прибрано проп `index`) |
+| `components/sections/Services.tsx`, `TechStack.tsx`, `Process.tsx`, `FAQ.tsx`, `Portfolio.tsx`, `PortfolioRing.tsx`, `Contact.tsx` | 4, 5, 6 |
+| `components/sections/Hero.tsx` | 4 (тільки letter-spacing / line-height заголовка) |
+| `components/site/HeroShowcase.tsx` | 4 (адресний рядок без моно) |
+| `components/ui/BackButton.tsx` | 4 (стрілка тепер SVG) |
+| `app/projects/*/page.tsx` | 1 (title), 4, 6 |
+| `lib/gallery.ts` | 6 (alt), коментар |
+| `public/phone/tokarchuk-mobile-1.webp`, `public/phone/tokarchuk-mobile-2.webp` | 3 (нові) |
 
-## 3. Конфіг (`lib/constants.ts`, `SITE`)
+Клас `.mono-label` перейменовано на `.meta-label` у всіх файлах, бо він більше не моноширинний.
 
-```ts
-ownerName: "Вадим Кіндратяк",
-role: "Розробник сайтів",
-title: "Сайти для локального бізнесу | Вадим Кіндратяк",
-description: "Роблю сайти для клінік, майстерень і локальних послуг. Швидкі, з налаштованим пошуком, із ціною до початку роботи.",
-telegram: "https://t.me/+380966008376",      telegramDisplay: "+38 096 600 83 76",
-telegram2: "https://t.me/+380962380674",     telegram2Display: "+38 096 238 06 74",
-phone: "tel:+380966008376",                  phoneDisplay: "+38 096 600 83 76",
-email: "wadimlikar@gmail.com",
-github: "https://github.com/Vadim051507",
-instagram: "https://www.instagram.com/kindratyak.dev/",   // без srtk і utm_source
-linkedin: encodeURI("https://www.linkedin.com/in/вадим-кіндратяк-869661397"), // без utm
-```
+## 2. Розділ 1: бренд kutsev
 
-## 4. Де замінено кожне посилання
+- `SITE` у `lib/constants.ts`: `brandName: "kutsev"`, `ownerFirstName: "Вадим"`, `role: "Розробка сайтів"`, `title: "Сайти для локального бізнесу | kutsev"`. Поля `name` і `ownerName` прибрано, прізвище в конфігу лишилось тільки всередині URL Instagram і LinkedIn (їх не чіпав).
+- Шапка (десктоп і мобільне меню): wordmark «kutsev» (вага 700, без капслоку), під ним «Розробка сайтів». Квадрат-логотип без змін; це inline SVG, тож замість `alt` у нього `role="img"` і `aria-label="kutsev"`.
+- Футер: «kutsev» (і в рядку бренду, і у великому контурному wordmark на фоні), «© 2026 kutsev. Зроблено з ♥ в Україні.» (рік рахується автоматично; хвіст «Зроблено з ♥ в Україні» лишив як був), новий опис.
+- `layout.tsx`: title з конфігу, `openGraph.siteName: "kutsev"`, description без змін.
+- Заголовки сторінок кейсів: «BavovnaStore | kutsev», «Tokarchuk Dental Clinic | kutsev».
+- Інтро-заставка друкувала «Kindratyak.dev», тепер друкує «kutsev» (вага 700). Тривалість друку рахується від довжини тексту, тож інтро стало на ~0.3 с коротшим.
+- **metadataBase досі не заданий**: реального домену в проєкті немає, я його не додавав.
 
-| Посилання | Місця |
-|---|---|
-| Telegram основний (`SITE.telegram`) | шапка (іконка, десктоп і мобільне меню), hero кнопка «Обговорити проєкт», FAQ «Написати в Telegram», контакти (рядок «Telegram»), футер |
-| Telegram 2 (`SITE.telegram2`) | контакти, рядок «Telegram 2» |
-| Телефон (`SITE.phone`) | контакти, рядок «Телефон» (`tel:`) |
-| Instagram (`SITE.instagram`) | шапка (десктоп і мобільне меню), футер |
-| GitHub (`SITE.github`) | шапка (десктоп і мобільне меню), футер |
-| LinkedIn (`SITE.linkedin`) | футер (новий рядок) |
-| Email | контакти, без змін |
+## 3. Розділ 2: «Про мене»
 
-Усі зовнішні посилання мають `target="_blank"` і `rel="noopener noreferrer"`.
-`aria-label` іконок у шапці: «Сторінка в Instagram», «Написати в Telegram», «Профіль на GitHub».
-У футері та контактах посилання текстові, назва видима.
+Тексти поставлені дослівно:
+- Вступ: «Більшість ваших клієнтів відкриє сайт **із телефона**, і саме там вирішить, лишатися чи піти.» (виділення класом `.ms-key`, як було).
+- H2: «Ви говорите з тим, / хто **пише код**». Перенос задано явно після коми, тому самотніх слів немає на 375, 768 і 1440 (перевірено: два рядки скрізь).
+- Абзац: «Я {ownerFirstName}, засновник {brandName}. …» (ім'я і бренд беруться з конфігу).
+- Чотири пункти: «З телефона», «Швидкість», «Пошук», «Після запуску» з текстами з ТЗ.
+- Механіка підсвічування не змінена. Прибрано лише цифри 01-04 (`.ms-num` і їхні стилі).
+- Eyebrow «Про мене» без цифри.
 
-Мета-теги: `<title>`, `og:title`, `twitter:title` = «Сайти для локального бізнесу | Вадим Кіндратяк»;
-description, og:description, twitter:description = новий текст. Перевірено у зібраному HTML.
+Нюанс, який був і раніше: на ноутбуках з висотою вікна до 800px правило `@media (min-width: 1024px) and (max-height: 800px)` ховає абзац (`.ms-lede`), щоб закріплена колонка влазила в екран. Тепер у цьому абзаці «Я Вадим, засновник kutsev», тож, можливо, варто його не ховати (тоді треба трохи зменшити шрифти пунктів). Я не змінював, вирішіть ви.
 
-**metadataBase не додано**: реального домену в проєкті немає. Коли буде домен, додайте в
-`app/layout.tsx` `metadataBase: new URL("https://ваш-домен")`.
+## 4. Розділ 3: телефон
 
-## 5. Hero
+**Скріншот вдалося створити.** Playwright / puppeteer не знадобились: я керував уже встановленим `google-chrome` у headless-режимі через DevTools Protocol (вбудований `WebSocket` у Node), а у WebP кодував через `sharp`, який уже лежить у `node_modules` як залежність Next. Нічого не встановлювалось, `package.json` і lockfile без змін (перевірено `git diff`).
 
-- Прибрано: блок трьох цифр (масив `STATS`, розмітка, стилі `.hero-stats` / `.hero-stat`, `Counter` з hero),
-  плашку «Доступний для нових проєктів», старий підзаголовок, пословну анімацію старого заголовка.
-- `Counter.tsx` **не видалено**: він ще використовується в `components/sections/Portfolio.tsx` (рядок з фактами).
-  Keyframes `pulse-dot` теж лишились, їх використовує `MobileShowcase.tsx`.
-- H1: «Сайти, через які / вас **знаходять** / **у Google**», акцент той самий клас `gradient-text`, що був у «продають».
-  Шрифт `clamp(36px, 5.4vw, 72px)`. Групи «через які» і «у Google» не розриваються, на вузьких екранах `text-wrap: balance`.
-- Підзаголовок і кнопки дослівно за ТЗ, стрілку `→` з «Обговорити проєкт» прибрано.
-- «Обговорити проєкт» тепер `<a>` на основний Telegram (раніше скрол до #contact), «Подивитись роботи» `<a href="#portfolio">` зі скролом через Lenis.
+- Знімок: https://www.tokarchuk-dental.com.ua/ у ширині 390px, мобільний user agent, повна сторінка (18 089 px висоти).
+- **Відхилення від ТЗ:** один файл неможливий. Формат WebP обмежений 16 383 px по висоті, а сторінка має 18 089 px навіть в 1x. Тому знімок розрізано на дві частини:
+  - `public/phone/tokarchuk-mobile-1.webp`: 390×9045, 261 KB
+  - `public/phone/tokarchuk-mobile-2.webp`: 390×9044, 226 KB
+  - разом 488 KB, якість 80. Варіант 780px (2x) важив би 1.16 MB у трьох частинах; на сторінці екран телефона завширшки ~250 CSS px, тому 390px вже дає ~1.6x щільності, і я обрав легший.
+- Компонент `PhoneScreenSlot` у `MobileShowcase.tsx` приймає масив `screens` (`PHONE_SCREENS` угорі файлу). Частини стоять одна під одною в контейнері з `overflow: hidden` у межах вирізу рамки iPhone. Зсув лише `transform: translate3d(0, calc(-p * (100% - висота екрана)), 0)`, без layout shift. `next/image` з явними `width` / `height`, `loading="lazy"`, `unoptimized` (файли вже оптимізовані, а оптимізатор Next перекодовував би 9000-піксельні картинки).
+- Прогрес: на широких екранах (від 1024px, де секція закріплена) це прогрес закріпленої секції (той самий згладжений `eased`, що веде телефон і пункти); на вузьких екранах, де закріплення немає, це прохід усієї секції через вікно.
+- Перевірено на 1440: при прогресі 0 / 0.25 / 0.5 / 0.75 / 1 зсув 0 / −2756 / −5511 / −8267 / −11023 px, де 11023 = висота сторінки мінус висота екрана. Тобто наприкінці видно саме низ сайту.
+- `prefers-reduced-motion`: зсув 0 (верх сторінки), перевірено; додатково `transform: none !important` у CSS, щоб правильно було з першого кадру.
+- Порожній масив `screens` дає нейтральний темний екран з тонким градієнтом без тексту. Напис «демо · скоро», пульсуюча крапка, кольорове світіння і «блік», що пробігав по екрану, видалені.
+- Iframe не використано, фейкових екранів немає.
+- Щоб замінити знімок: покладіть нові WebP у `public/phone/` і оновіть `src`, `width`, `height` у `PHONE_SCREENS`.
 
-### Magnetic-ефект
+Темп: сторінка завдовжки ~11 000 px проходить за ~2 160 px прокрутки секції, тобто телефон гортається приблизно вп'ятеро швидше за сторінку. Виглядає як швидке гортання. Якщо хочете повільніше, можна показувати лише перші кілька екранів сайту.
 
-У hero `MagneticButton` замінено на звичайні `<a className="btn ...">`. Додатково для `.hero-cta`:
-вимкнено зсув `.btn-face` на 2px при hover і `will-change`, transition 0.2s лише для кольору, фону, рамки
-та світіння (`filter`). Перевірено в headless Chrome: після руху мишею по кнопках позиція і `transform`
-кнопок і їхніх `.btn-face` не змінились (`transform: none`).
+## 5. Розділ 4: типографіка
 
-**Де ще використовується magnetic-ефект (не чіпав):**
-- `components/sections/Portfolio.tsx:427`: `<MagneticButton onClick={() => scrollTo("#contact")}>` у портфоліо.
-- Схожий, але інший ефект: `components/site/HeroShowcase.tsx`, 3D-нахил мокапа браузера за курсором (`useMotionValue` + `useSpring`). Це не кнопки, тож лишив.
-- Глобальний `.btn:hover .btn-face { transform: translate(2px, -2px) }` у `app/globals.css` діє на всі інші кнопки сайту.
+- **Onest** через `next/font/google`, `subsets: ["cyrillic", "latin"]`, змінний шрифт, `display: "swap"`, змінна `--font-onest`. У `globals.css`: `--font-sans` → Onest; `--font-display` і `--font-body` тепер просто псевдоніми `--font-sans`; у Tailwind `@theme inline` `--font-sans` перемаплено на Onest, `--font-mono` видалено.
+- Прибрано JetBrains Mono з layout і `<link>` на Inter + Space Grotesk. У браузері тепер вантажиться лише Onest (перевірено через `document.fonts`).
+- Про «не більше трьох накреслень»: Onest підключений як змінний шрифт, тобто один файл на підмножину містить усі ваги, і кількість використаних ваг на розмір завантаження не впливає. Фіксований діапазон ваг (`"400 800"`) ця версія `next/font` не приймає (помилка типів), тому лишив значення за замовчуванням. На сайті використовуються 400 (текст), 500 (підписи, чіпи, eyebrow), 600 (кнопки, малі заголовки), 700 (заголовки).
+- Капслок і розрідження прибрано з усіх підписів, кнопок і чіпів. У зібраній сторінці на 1440 немає жодного елемента з `text-transform: uppercase`, `letter-spacing > 0.5px` чи моноширинним шрифтом (перевірено скриптом по всьому DOM).
+- Кнопки: звичайний регістр, вага 600, 15px (було 13.5px капслоком; у звичайному регістрі 13.5px виглядало б дрібно). Текстові стрілки замінено на SVG: «Надіслати заявку →», «Наверх ↑», «← Назад до портфоліо». У «Відкрити сайт» стрілка вже була SVG.
+- Eyebrow: 14px, вага 500, акцентний колір (`--accent-text`), тонка лінія зліва, без цифр.
+- Підписи (`.meta-label`): 13px, вага 500. Теги й чіпи (`.tag`, домен і «Скоро» в портфоліо): 13px, вага 500.
+- Заголовки: `letter-spacing: -0.02em` глобально для h1-h4 і в усіх місцях, де були свої значення (hero, «Про мене», `SectionTitle`, контакти, мобільне меню, сторінки кейсів, панель портфоліо). Line-height hero 1.04 → 1.05. Заголовок панелі портфоліо і цифри фактів: вага 600 → 700.
+- Перемикач EN/UA: лише шрифт (без моно і розрідження, вага 600); логіку не чіпав.
+- Кирилиця: тимчасовий рядок «ґ є і ї ь Ґ Є І Ї ґанок, їжак, сім'я» у вагах 400 / 600 / 800 вставив на живу сторінку через скрипт у браузері, все відображається Onest правильно, після перевірки рядок прибрано (у файлах його не було).
+- Стрибка верстки при завантаженні шрифту немає: CLS = 0 на 375, 768 і 1440 (`next/font` додає метрично підігнаний fallback «Onest Fallback»).
 
-### Карусель
+## 6. Розділ 5: нумерація
 
-`HeroShowcase.tsx` фільтрує `HERO_BROWSER_PROJECTS` за `["tokarchuk-dental", "bavovnastore"]`.
-Florist Shop, Eurokitchen і MuscleMania лишились у `lib/constants.ts` і в портфоліо.
-Перевірено: 2 крапки-індикатори, автопрогортання чергує Bavovna Store ↔ Tokarchuk Dental Clinic, помилок у консолі немає.
+Прибрано:
+- цифри в eyebrow усіх секцій (`index` прибрано з `SectionTitle` і з викликів у Services, Portfolio, Process, TechStack, FAQ; `eyebrow-num` прибрано з «Про мене» і «Контакти»; клас `.eyebrow-num` видалено з CSS);
+- 01-03 у картках послуг: лишився рядок з іконкою і лінією під ним;
+- 01-04 у списку «Про мене»;
+- 01-06 перед питаннями FAQ (разом з flex-обгорткою, яка була лише для цифри);
+- лічильник «02 / 05» у панелі портфоліо. Крапок-індикаторів у кільці не було, тому додав прості крапки (одна на кожну картку, активна видовжена й зелена). Вони декоративні (`aria-hidden`), бо карусель не має API для переходу на картку. «Головна сторінка» і домен лишились.
 
-### Анімація появи
+Лишилось: цифри в кружечках «Як проходить робота» (тільки шрифт змінився з моно на Onest 600).
 
-CSS keyframes (без JS, без нових бібліотек): `opacity 0→1` + `translateY(14px)→0`, 450ms,
-затримки 0 / 100 / 200ms для H1, підзаголовка, кнопок. H1 є в серверному HTML одразу.
-Під `prefers-reduced-motion: reduce` анімація вимкнена (перевірено: `animation: none`, `opacity: 1`).
-Фонові частинки, карусель і підказку «Гортайте» не чіпав.
-Нюанс: при першому візиті в сесії поверх сторінки грає інтро з логотипом, тож поява hero відбувається під ним (так було і зі старою анімацією).
+## 7. Розділ 6: заміни тире (було → стало)
 
-## 6. Перевірки
+1. `app/projects/tokarchuk-dental/page.tsx`: «Клієнт — стоматологічна клініка — потребував» → «Клієнт, стоматологічна клініка, потребував»
+2. там само: «на тому ж стеку — без окремого CMS» → «на тому ж стеку, без окремого CMS»
+3. `app/projects/bavovnastore/page.tsx`: «Клієнт — бренд українського одягу — потребував» → «Клієнт, бренд українського одягу, потребував»
+4. FAQ, бокова картка: «Напишіть мені напряму — відповім протягом дня» → «Напишіть мені напряму: відповім протягом дня»
+5. Контакти: «Розкажіть про проєкт — відповім протягом дня» → «Розкажіть про проєкт: відповім протягом дня»
+6. Контакти: «Робочі години: пн–пт, 10:00–19:00» → «Робочі години: пн-пт, 10:00-19:00»
+7. Послуги, підзаголовок: «Повний цикл — від першого дзвінка…» → «Повний цикл: від першого дзвінка…»
+8. Портфоліо, підзаголовок: «Кожен проєкт — від дизайну до запуску.» → «Кожен проєкт: від дизайну до запуску.»
+9. Портфоліо, CTA: «Розкажіть про задачу — відповім протягом дня.» → «Розкажіть про задачу: відповім протягом дня.»
+10. FAQ «Скільки коштує сайт?»: «Лендінг — від $300, корпоративний сайт — від $500, інтернет-магазин — від $800.» → «Лендінг: від $300, корпоративний сайт: від $500, інтернет-магазин: від $800.»
+11. FAQ «Скільки часу…»: «Лендінг — 1–2 тижні. Корпоративний сайт — 3–5 тижнів. Інтернет-магазин — 1–2 місяці.» → «Лендінг: 1-2 тижні. Корпоративний сайт: 3-5 тижнів. Інтернет-магазин: 1-2 місяці.»
+12. FAQ «Хостинг і домен…»: «Хостинг — від $0 до $15/міс залежно від проєкту, домен — $10–15/рік.» → «Хостинг: від $0 до $15/міс залежно від проєкту, домен: $10-15/рік.»
+13. FAQ «Чи можу я сам…»: «робиться адмінка — можна міняти тексти» → «робиться адмінка: можна міняти тексти»
+14. FAQ, питання: «Як ми працюємо — передоплата чи поетапно?» → «Як ми працюємо: передоплата чи поетапно?»
+15. FAQ, відповідь: «30% передоплата перед початком, решта — по етапах або після здачі.» → «30% передоплата перед початком, решта по етапах або після здачі.»
+16. `lib/gallery.ts`, alt скріншотів портфоліо (його читають скрінрідери): «Tokarchuk Dental Clinic — головна сторінка» → «Tokarchuk Dental Clinic, головна сторінка»
+
+Тексти «Про мене» і футера, що містили тире, переписано повністю за розділами 1-2. Тире лишились тільки в коментарях коду.
+
+## 8. Перевірки
 
 - `tsc --noEmit`: без помилок.
-- Lint: **не запускався**. ESLint у проєкті не встановлено, а в Next 16 команди `next lint` немає. Залежності не додавав.
-- `next build`: успішно, всі 6 маршрутів зібрано.
-- grep `YOUR_|YOUR NAME|YOUR_NICK|YOUR_INSTA|github.com/YOUR` по `app components lib types`: **0 збігів**.
-- Hero в headless Chrome:
+- Lint: **не запускався**, ESLint у проєкті не встановлено, а в Next 16 немає `next lint`. Залежності не додавав.
+- `next build`: успішно.
+- Grep по `app components lib` (`.ts`, `.tsx`, `.css`):
+  - `font-mono`, `--font-mono`, `JetBrains`, `monospace`: **0**
+  - `uppercase`, `textTransform`, додатний `letter-spacing`: **0**
+  - `YOUR_`, `YOUR NAME`, `ДЕМО`, `Fullstack`: **0**
+  - `Kindratyak / KINDRATYAK / Кіндратяк`: лише невидиме: коментар `globals.css:4` («KINDRATYAK DESIGN SYSTEM»), коментар у `react-bits/ElectricLogo.tsx:899`, URL Instagram і LinkedIn у `lib/constants.ts` (посилання не чіпав за ТЗ).
+  - нумерація (`eyebrow-num`, `index="0`, `padStart`, `num: "0`, `0{i + 1}`): лише в `react-bits/CircularCarousel.tsx` (лічильник у підписі каруселі, який вимкнено `captions={false}`, на сторінці не показується). `number: "01".."04"` у `PROCESS_STEPS` лишились навмисно.
+- Headless Chrome на 375 / 768 / 1440 (шапка, hero, «Про мене», футер): горизонтального скролу немає, нічого не виходить за межі вікна, CLS = 0, помилок у консолі немає. Скріншоти лежать у `/tmp/claude-1000/-home-vadim-portfolio/9f709c79-d944-43a2-ad22-b47d2d295ea2/scratchpad/` (`r2-hero-*.png`, `r2-about-*.png`, `r2-footer-*.png`, `r2-phone-mid.png`, `r2-reduced.png`, `r2-cyrillic.png`).
+- Телефон гортається зі скролом (цифри в розділі 4), при reduced motion стоїть на верху сторінки.
 
-| Ширина | Горизонтальний скрол | Рядки H1 | Кнопки |
-|---|---|---|---|
-| 375px | немає | 3: «Сайти, через які / вас знаходять / у Google» (36px) | одна під одною, не перекриваються |
-| 768px | немає | 3 (41px) | в один ряд, не перекриваються |
-| 1440px | немає | 3 (72px) | в один ряд, не перекриваються |
+## 9. Що лишилось і на що звернути увагу
 
-Ім'я «Вадим Кіндратяк» у шапці вміщається на всіх трьох ширинах.
-
-## 7. Що з плейсхолдерів лишилось
-
-- `lib/constants.ts`, `SERVICES`: ціни `від $XXX` (×3).
-- «Скоро» на непублікованих проєктах: `components/sections/Portfolio.tsx:331`, `components/sections/PortfolioRing.tsx:146`.
-- `lib/constants.ts`, MuscleMania: `tags: []` з `TODO: вписати стек`.
-- `HERO_BROWSER_PROJECTS`: заглушки в описах («Просто класний сайт», «Ще один класний сайт, написаний мною»).
+- **«Fullstack»** у видимих текстах більше ніде немає (єдиний був в абзаці «Про мене», який переписано за ТЗ).
+- **Форми на «ми»**, які я не чіпав (секції під забороною, і більшість означає «ми з вами», а не команду): «Надсилаємо...» на кнопці форми (`Contact.tsx:260`, тут «ми» звучить саме як команда, раджу «Надсилаю...»), «Давайте зробимо щось круте» (`Contact.tsx`), кроки процесу «Зідзвонимось», «Уточнюємо», «Узгоджуємо», FAQ «домовляємось», «Як ми працюємо».
 - `metadataBase` і og:image: немає домену.
-- Перемикач EN/UA поки лише візуальний (окреме завдання).
-- Тире в існуючих текстах, яких я не торкався: контакти («Розкажіть про проєкт — відповім…», «пн–пт, 10:00–19:00»), FAQ, футер.
+- Абзац «Я Вадим, засновник kutsev» ховається на ноутбуках з висотою вікна до 800px (див. розділ 3).
+- Без змін: ціни `$XXX`, «Скоро» в портфоліо, порожній стек MuscleMania (TODO), заглушки в описах проєктів, перемикач EN без логіки.

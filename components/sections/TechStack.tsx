@@ -26,7 +26,6 @@ export default function TechStack() {
             `}</style>
             <Container>
                 <SectionTitle
-                    index="05"
                     eyebrow="Стек"
                     title="Технології"
                     accentWord="Технології"

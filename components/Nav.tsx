@@ -267,10 +267,9 @@ export default function Nav() {
                     background: transparent;
                     border: 1px solid transparent;
                     cursor: pointer;
-                    font-family: var(--font-mono);
-                    font-size: 11.5px;
-                    font-weight: 500;
-                    letter-spacing: 0.08em;
+                    font-family: inherit;
+                    font-size: 12px;
+                    font-weight: 600;
                     padding: 4px 8px;
                     border-radius: 100px;
                     color: var(--text-muted);
@@ -380,12 +379,12 @@ export default function Nav() {
                     {/* Logo */}
                     <div className="nav-brand">
                         <div className="logo-mark nav-logo">
-                            <svg viewBox="0 0 16 16" fill="currentColor">
+                            <svg viewBox="0 0 16 16" fill="currentColor" role="img" aria-label={SITE.brandName}>
                                 <path d="M3 2h4v6H3V2zm6 0h4v10H9V2zM3 10h4v4H3v-4z"/>
                             </svg>
                         </div>
                         <div>
-                            <div className="nav-name">{SITE.ownerName}</div>
+                            <div className="nav-name">{SITE.brandName}</div>
                             <div className="nav-role">{SITE.role}</div>
                         </div>
                     </div>

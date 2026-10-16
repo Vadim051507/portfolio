@@ -5,15 +5,12 @@ export default function SectionTitle({
     title,
     subtitle,
     eyebrow,
-    index,
     accentWord,
     align = "left",
 }: {
     title: string;
     subtitle?: string;
     eyebrow?: string;
-    /** section number shown in mono before the eyebrow, e.g. "02" */
-    index?: string;
     /** substring inside `title` set as the accent word: mint text on dark,
      *  a mint marker on a light surface (.accent-word in globals.css) */
     accentWord?: string;
@@ -50,7 +47,6 @@ export default function SectionTitle({
                                 : undefined
                         }
                     >
-                        {index && <span className="eyebrow-num">{index}</span>}
                         {eyebrow}
                     </span>
                 </Reveal>
@@ -61,7 +57,7 @@ export default function SectionTitle({
                     fontSize: "clamp(30px, 4.6vw, 52px)",
                     fontWeight: 700,
                     color: "var(--text)",
-                    letterSpacing: "-1.5px",
+                    letterSpacing: "-0.02em",
                     lineHeight: 1.05,
                 }}
             />

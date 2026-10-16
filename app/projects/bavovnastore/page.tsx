@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 import { SITE } from "@/lib/constants";
 
 export const metadata: Metadata = {
-    title: `BavovnaStore | ${SITE.ownerName}`,
+    title: `BavovnaStore | ${SITE.brandName}`,
     description: "Інтернет-магазин українського одягу на Spring Boot + React.",
 };
 
@@ -38,7 +38,7 @@ export default function BavovnaStorePage() {
                         fontSize: "clamp(32px, 5vw, 52px)",
                         fontWeight: 700,
                         color: "var(--text)",
-                        letterSpacing: "-0.5px",
+                        letterSpacing: "-0.02em",
                         marginBottom: "16px",
                     }}
                 >
@@ -60,7 +60,7 @@ export default function BavovnaStorePage() {
                 <div style={{ maxWidth: "720px" }}>
                     <Section title="Задача">
                         <p>
-                            Клієнт — бренд українського одягу — потребував інтернет-магазин
+                            Клієнт, бренд українського одягу, потребував інтернет-магазин
                             з інтеграцією Нової Пошти, сповіщеннями про замовлення в Telegram
                             та зручною адмінкою для управління товарами.
                         </p>
@@ -102,7 +102,7 @@ export default function BavovnaStorePage() {
                     {[1, 2, 3].map((i) => (
                         <div
                             key={i}
-                            className="card mono-label"
+                            className="card meta-label"
                             style={{
                                 aspectRatio: "16/9",
                                 borderRadius: 20,

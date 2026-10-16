@@ -22,7 +22,6 @@ export default function Process() {
         <section id="process" style={{ padding: "130px 0", position: "relative" }}>
             <Container>
                 <SectionTitle
-                    index="04"
                     eyebrow="Процес"
                     title="Як проходить робота"
                     accentWord="робота"
@@ -122,8 +121,7 @@ function Step({
                     borderRadius: "50%",
                     display: "grid",
                     placeItems: "center",
-                    fontFamily: "var(--font-mono)",
-                    fontWeight: 500,
+                    fontWeight: 600,
                     fontSize: 16,
                     color: nodeColor,
                     background: nodeBg,

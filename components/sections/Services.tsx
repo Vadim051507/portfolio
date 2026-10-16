@@ -34,11 +34,10 @@ export default function Services() {
         <section id="services" style={{ padding: "130px 0", position: "relative" }}>
             <Container>
                 <SectionTitle
-                    index="02"
                     eyebrow="Послуги"
                     title="Що я роблю"
                     accentWord="роблю"
-                    subtitle="Повний цикл — від першого дзвінка до запущеного сайту з адмінкою."
+                    subtitle="Повний цикл: від першого дзвінка до запущеного сайту з адмінкою."
                 />
 
                 <div
@@ -57,23 +56,16 @@ export default function Services() {
                                     onMouseMove={spotlight}
                                     style={{ padding: 32, height: "100%" }}
                                 >
-                                    {/* index + icon share one row, split by a rule */}
+                                    {/* icon row, split from the text by a rule */}
                                     <div
                                         style={{
                                             display: "flex",
                                             alignItems: "center",
-                                            justifyContent: "space-between",
                                             paddingBottom: 22,
                                             marginBottom: 24,
                                             borderBottom: "1px solid var(--border)",
                                         }}
                                     >
-                                        <span
-                                            className="mono-label"
-                                            style={{ fontSize: 13 }}
-                                        >
-                                            0{i + 1}
-                                        </span>
                                         <div
                                             className="tile"
                                             style={{
@@ -132,7 +124,7 @@ export default function Services() {
                                             borderTop: "1px solid var(--border)",
                                         }}
                                     >
-                                        <span className="mono-label">вартість</span>
+                                        <span className="meta-label">вартість</span>
                                         <span
                                             style={{
                                                 fontFamily: "var(--font-display)",
