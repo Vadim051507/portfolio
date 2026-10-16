@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import {
     MotionConfig,
+    MotionValue,
     motion,
     useAnimationControls,
     useInView,
@@ -16,7 +17,8 @@ import Container from "@/components/ui/Container";
 import Reveal from "@/components/site/Reveal";
 import AnimatedHeading from "@/components/site/AnimatedHeading";
 import phoneFrame from "@/public/phone/iphone-frame.png";
-import { COLORS, PILLAR_COLORS } from "@/lib/colors";
+import { PILLAR_COLORS } from "@/lib/colors";
+import { SITE } from "@/lib/constants";
 
 /**
  * Geometry of the supplied iPhone render (public/phone/iphone-frame.png).
@@ -27,6 +29,24 @@ import { COLORS, PILLAR_COLORS } from "@/lib/colors";
  */
 const SCREEN = { left: 5.263, top: 2.381, width: 89.035, height: 95.238 };
 
+/**
+ * What the phone shows: the mobile version of a launched site, as a stack of
+ * full-width tiles (a full page is taller than one WebP may be). It scrolls
+ * inside the screen with the section's progress. An empty list leaves the
+ * plain dark screen.
+ */
+type PhoneScreen = { src: string; width: number; height: number; alt: string };
+
+const PHONE_SCREENS: PhoneScreen[] = [
+    {
+        src: "/phone/tokarchuk-mobile-1.webp",
+        width: 390,
+        height: 9045,
+        alt: "Мобільна версія сайту Tokarchuk Dental Clinic",
+    },
+    { src: "/phone/tokarchuk-mobile-2.webp", width: 390, height: 9044, alt: "" },
+];
+
 /** Scroll window (in section progress) the four pillars are spread across. */
 const LIST_FROM = 0.3;
 const LIST_TO = 0.96;
@@ -35,27 +55,23 @@ const EASE = [0.16, 1, 0.3, 1] as const;
 
 const PILLARS = [
     {
-        num: "01",
-        title: "Швидкість",
-        text: "Легкий код і сучасний стек: сторінка встигає відкритись, поки палець ще тягнеться до кнопки «назад».",
+        title: "З телефона",
+        text: "Більшість відвідувачів приходить зі смартфона, тому мобільну версію роблю першою, а вже потім комп'ютерну.",
         color: PILLAR_COLORS[0],
     },
     {
-        num: "02",
-        title: "Результат",
-        text: "Кнопка, форма й оффер — у зоні великого пальця. Дизайн заточений під заявки, а не під «просто красиво».",
+        title: "Швидкість",
+        text: "Сайт завантажується швидко. Це подобається і відвідувачам, і Google.",
         color: PILLAR_COLORS[1],
     },
     {
-        num: "03",
-        title: "Адмінка",
-        text: "Тексти, фото й ціни змінюєте самі — з ноутбука або з того ж телефона, без розробника.",
+        title: "Пошук",
+        text: "Налаштовую заголовки, описи і структуру сторінок, щоб пошукові системи легко розуміли, про що ваш сайт.",
         color: PILLAR_COLORS[2],
     },
     {
-        num: "04",
-        title: "Підтримка",
-        text: "Не зникаю після здачі: лишаюсь на зв'язку, оновлюю й підстраховую далі.",
+        title: "Після запуску",
+        text: "Показую, як самому змінювати тексти, фото і ціни. Якщо щось треба поправити, пишете мені, і я відповідаю.",
         color: PILLAR_COLORS[3],
     },
 ];
@@ -90,6 +106,7 @@ function useStageEnv() {
 }
 
 export default function MobileShowcase() {
+    const section = useRef<HTMLElement>(null);
     const track = useRef<HTMLDivElement>(null);
     const listRef = useRef<HTMLUListElement>(null);
     const rowRefs = useRef<(HTMLLIElement | null)[]>([]);
@@ -114,6 +131,12 @@ export default function MobileShowcase() {
     const { scrollYProgress } = useScroll({
         target: track,
         offset: ["start start", "end end"],
+    });
+    // Unpinned (narrow screens): the whole pass of the section through the
+    // viewport drives the phone's page instead.
+    const { scrollYProgress: passProgress } = useScroll({
+        target: section,
+        offset: ["start end", "end start"],
     });
     // …and through the whole page, for the slow band parallax.
     const { scrollYProgress: pageProgress } = useScroll();
@@ -214,7 +237,7 @@ export default function MobileShowcase() {
 
     return (
         <MotionConfig reducedMotion="user">
-            <section id="about" className="ms-section">
+            <section ref={section} id="about" className="ms-section">
                 <style>{styles}</style>
 
                 <div ref={track} className="ms-track">
@@ -268,42 +291,13 @@ export default function MobileShowcase() {
                                         />
 
                                         <div className="ms-phone">
-                                            {/* ── SCREEN SLOT ───────────────────────
-                                    Sits BEHIND the frame PNG and is clipped to
-                                    its transparent cut-out. To drop the real
-                                    demo in later, swap the placeholder children
-                                    for e.g.
-
-                                      <video src="/phone/demo.mp4" autoPlay muted
-                                             loop playsInline
-                                             style={{width:"100%",height:"100%",
-                                                     objectFit:"cover"}} />
-
-                                    or an <iframe style={{width:"100%",
-                                    height:"100%",border:0}} />. Radius and
-                                    overflow already live on the slot — nothing
-                                    else needs to change. */}
-                                            <div className="ms-screen">
-                                                <motion.div
-                                                    aria-hidden
-                                                    className="ms-screen-glow"
-                                                    animate={{
-                                                        background: `radial-gradient(120% 60% at 50% 8%, ${accent}40, transparent 70%)`,
-                                                    }}
-                                                    transition={{
-                                                        duration: 0.8,
-                                                        ease: EASE,
-                                                    }}
-                                                />
-                                                <div
-                                                    aria-hidden
-                                                    className="ms-sweep"
-                                                />
-                                                <div className="ms-screen-label">
-                                                    <span className="ms-dot" />
-                                                    демо · скоро
-                                                </div>
-                                            </div>
+                                            {/* Screen slot: sits BEHIND the frame PNG and is
+                                                clipped to its transparent cut-out. */}
+                                            <PhoneScreenSlot
+                                                screens={PHONE_SCREENS}
+                                                progress={wide ? eased : passProgress}
+                                                moving={!reduce}
+                                            />
 
                                             <Image
                                                 className="ms-frame"
@@ -323,41 +317,36 @@ export default function MobileShowcase() {
                                 {/* ── RIGHT: the copy ─────────────────────────── */}
                                 <div className="ms-copy">
                                     <Reveal style={{ marginBottom: 18 }}>
-                                        <span className="eyebrow">
-                                            <span className="eyebrow-num">01</span>
-                                            Про мене
-                                        </span>
+                                        <span className="eyebrow">Про мене</span>
                                     </Reveal>
 
                                     <Reveal delay={0.05} style={{ marginBottom: 18 }}>
                                         <p className="ms-accent-line">
-                                            Ваш сайт спершу відкривають{" "}
+                                            Більшість ваших клієнтів відкриє сайт{" "}
                                             <span className="ms-key">
-                                                з телефона
-                                            </span>{" "}
-                                            — і саме там вирішують, лишатися чи
-                                            піти. Тому адаптив у мене не «опція
-                                            наприкінці», а точка відліку.
+                                                із телефона
+                                            </span>
+                                            , і саме там вирішить, лишатися чи
+                                            піти.
                                         </p>
                                     </Reveal>
 
                                     <AnimatedHeading
                                         segments={[
-                                            { text: "Роблю сайти, які" },
-                                            {
-                                                text: "працюють на бізнес,",
-                                                accent: true,
-                                            },
-                                            { text: "а не просто існують" },
+                                            { text: "Ви говорите з тим, <br> хто" },
+                                            { text: "пише код", accent: true },
                                         ]}
                                         className="ms-heading"
                                     />
 
                                     <Reveal delay={0.15} style={{ marginTop: 18 }}>
                                         <p className="ms-lede">
-                                            Fullstack-розробник для малого бізнесу:
-                                            дизайн, розробка, адмінка й підтримка —
-                                            від першої ідеї до запуску.
+                                            Я {SITE.ownerFirstName}, засновник{" "}
+                                            {SITE.brandName}. Сам обговорюю задачу,
+                                            роблю дизайн, пишу код і запускаю сайт.
+                                            Між вами і результатом немає
+                                            менеджерів, тому на кожне питання
+                                            відповідає той, хто це робить.
                                         </p>
                                     </Reveal>
 
@@ -435,21 +424,6 @@ export default function MobileShowcase() {
                                                         />
 
                                                         <div className="ms-row-body">
-                                                            <motion.span
-                                                                className="ms-num"
-                                                                animate={{
-                                                                    color: on
-                                                                        ? p.color
-                                                                        : COLORS.textMuted,
-                                                                }}
-                                                                transition={{
-                                                                    duration: 0.5,
-                                                                    ease: EASE,
-                                                                }}
-                                                            >
-                                                                {p.num}
-                                                            </motion.span>
-
                                                             <motion.h3
                                                                 className="ms-title"
                                                                 animate={{
@@ -550,8 +524,8 @@ const styles = `
     height: auto;
     pointer-events: none;
 }
-/* The slot the future <video>/<iframe> drops into — clipped to the frame's
-   transparent screen cut-out, which the PNG then overlaps on all sides. */
+/* The screen slot, clipped to the frame's transparent cut-out, which the
+   PNG then overlaps on all sides. Empty, it is a plain dark screen. */
 .ms-screen {
     position: absolute;
     left: ${SCREEN.left}%;
@@ -563,46 +537,19 @@ const styles = `
     border-radius: calc(var(--phone-w) * 0.09);
     background:
         linear-gradient(168deg, var(--bg) 0%, var(--surface-2) 48%, var(--bg) 100%);
-    display: grid;
-    place-items: center;
 }
-.ms-screen > * { max-width: 100%; }
-.ms-screen-glow { position: absolute; inset: 0; }
-.ms-sweep {
+/* The page inside the phone: full-width tiles, moved by transform only. */
+.ms-screen-page {
     position: absolute;
-    inset: -40% -60%;
-    background: linear-gradient(
-        104deg,
-        transparent 38%,
-        rgba(244, 255, 251, 0.05) 48%,
-        rgba(244, 255, 251, 0.10) 51%,
-        transparent 62%
-    );
-    animation: ms-sweep 5.5s var(--ease-out) infinite;
+    top: 0;
+    left: 0;
+    width: 100%;
+    will-change: transform;
 }
-@keyframes ms-sweep {
-    0%, 100% { transform: translate3d(-38%, 0, 0); }
-    55%      { transform: translate3d(38%, 0, 0); }
-}
-.ms-screen-label {
-    position: relative;
-    z-index: 1;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-family: var(--font-mono);
-    font-size: 10.5px;
-    font-weight: 500;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: var(--text-muted);
-}
-.ms-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--accent);
-    animation: pulse-dot 2.4s ease-in-out infinite;
+.ms-screen-page img {
+    display: block;
+    width: 100%;
+    height: auto;
 }
 /* Glass glare — stays above whatever ends up in the slot. */
 .ms-glare {
@@ -634,7 +581,7 @@ const styles = `
 .ms-heading {
     font-size: clamp(27px, 3.6vw, 44px);
     font-weight: 700;
-    letter-spacing: -1.4px;
+    letter-spacing: -0.02em;
     line-height: 1.1;
     color: var(--text);
 }
@@ -707,20 +654,11 @@ const styles = `
     transform-origin: center;
 }
 .ms-row-body { min-width: 0; }
-.ms-num {
-    display: block;
-    font-family: var(--font-mono);
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: 0.16em;
-    line-height: 1;
-    margin-bottom: 7px;
-}
 .ms-title {
     font-family: var(--font-display);
     font-size: clamp(26px, 3.1vw, 40px);
     font-weight: 700;
-    letter-spacing: -1px;
+    letter-spacing: -0.02em;
     line-height: 1.05;
     color: var(--text);
     transform-origin: left center;
@@ -761,7 +699,6 @@ const styles = `
     }
     .ms-heading {
         font-size: clamp(24px, 3.6vh, 38px);
-        letter-spacing: -1.1px;
     }
     .ms-lede {
         font-size: clamp(13.5px, 1.75vh, 16px);
@@ -804,8 +741,67 @@ const styles = `
     }
     .ms-desc { opacity: 1 !important; }
     .ms-bar { transform: none !important; }
-    .ms-sweep, .ms-dot { animation: none !important; }
+    .ms-screen-page { transform: none !important; }
     .ms-band-outer, .ms-band { transform: none !important; }
     .ms-band { top: 50%; }
 }
 `;
+
+/**
+ * Contents of the phone's screen. The stack of tiles slides up from the top
+ * of the page (progress 0) to its bottom edge resting on the screen's bottom
+ * edge (progress 1): translateY(-p * (stack height - screen height)), where
+ * a percentage in translate is the stack's own height and the screen height
+ * is measured into --ms-screen-h.
+ */
+function PhoneScreenSlot({
+    screens,
+    progress,
+    moving,
+}: {
+    screens: PhoneScreen[];
+    progress: MotionValue<number>;
+    moving: boolean;
+}) {
+    const slot = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const el = slot.current;
+        if (!el) return;
+        const sync = () =>
+            el.style.setProperty("--ms-screen-h", `${el.clientHeight}px`);
+        sync();
+        const ro = new ResizeObserver(sync);
+        ro.observe(el);
+        return () => ro.disconnect();
+    }, []);
+
+    const transform = useTransform(
+        progress,
+        (p) =>
+            `translate3d(0, calc(${-Math.min(1, Math.max(0, p))} * (100% - var(--ms-screen-h, 0px))), 0)`
+    );
+
+    return (
+        <div ref={slot} className="ms-screen">
+            {screens.length > 0 && (
+                <motion.div
+                    className="ms-screen-page"
+                    style={moving ? { transform } : undefined}
+                >
+                    {screens.map((sc) => (
+                        <Image
+                            key={sc.src}
+                            src={sc.src}
+                            alt={sc.alt}
+                            width={sc.width}
+                            height={sc.height}
+                            loading="lazy"
+                            unoptimized
+                        />
+                    ))}
+                </motion.div>
+            )}
+        </div>
+    );
+}

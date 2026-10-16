@@ -48,21 +48,12 @@ function FAQItem({
                 >
                     <span
                         style={{
-                            display: "flex",
-                            alignItems: "baseline",
-                            gap: 16,
                             fontSize: 16,
                             fontWeight: 600,
                             color: "var(--text)",
                             fontFamily: "var(--font-display)",
                         }}
                     >
-                        <span
-                            className="mono-label"
-                            style={{ color: "var(--accent-text)", flexShrink: 0 }}
-                        >
-                            {String(index + 1).padStart(2, "0")}
-                        </span>
                         {question}
                     </span>
                     <motion.span
@@ -134,7 +125,6 @@ export default function FAQSection() {
             `}</style>
             <Container>
                 <SectionTitle
-                    index="06"
                     eyebrow="FAQ"
                     title="Часті питання"
                     accentWord="питання"
@@ -192,7 +182,7 @@ export default function FAQSection() {
                                         marginBottom: 22,
                                     }}
                                 >
-                                    Напишіть мені напряму — відповім протягом дня і
+                                    Напишіть мені напряму: відповім протягом дня і
                                     безкоштовно проконсультую щодо вашого проєкту.
                                 </p>
 

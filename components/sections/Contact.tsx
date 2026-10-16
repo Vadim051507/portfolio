@@ -121,7 +121,6 @@ export default function Contact() {
                                 className="eyebrow"
                                 style={{ marginBottom: 18 }}
                             >
-                                <span className="eyebrow-num">07</span>
                                 Контакти
                             </span>
                             <AnimatedHeading
@@ -132,7 +131,7 @@ export default function Contact() {
                                 style={{
                                     fontSize: "clamp(28px, 4vw, 44px)",
                                     fontWeight: 700,
-                                    letterSpacing: "-1.2px",
+                                    letterSpacing: "-0.02em",
                                     lineHeight: 1.05,
                                     color: "var(--text)",
                                 }}
@@ -147,7 +146,7 @@ export default function Contact() {
                                     maxWidth: 400,
                                 }}
                             >
-                                Розкажіть про проєкт — відповім протягом дня. Без
+                                Розкажіть про проєкт: відповім протягом дня. Без
                                 передоплати, поки не побачите результат.
                             </p>
 
@@ -186,10 +185,10 @@ export default function Contact() {
                                     href={`mailto:${SITE.email}`}
                                 />
                                 <p
-                                    className="mono-label"
+                                    className="meta-label"
                                     style={{ marginTop: 6 }}
                                 >
-                                    Робочі години: пн–пт, 10:00–19:00
+                                    Робочі години: пн-пт, 10:00-19:00
                                 </p>
                             </div>
                         </div>
@@ -257,9 +256,26 @@ export default function Contact() {
                                     style={{ display: "flex", marginTop: 4 }}
                                 >
                                     <span className="btn-face">
-                                        {status === "loading"
-                                            ? "Надсилаємо..."
-                                            : "Надіслати заявку →"}
+                                        {status === "loading" ? (
+                                            "Надсилаємо..."
+                                        ) : (
+                                            <>
+                                                Надіслати заявку
+                                                <svg
+                                                    aria-hidden
+                                                    width="15"
+                                                    height="15"
+                                                    viewBox="0 0 24 24"
+                                                    fill="none"
+                                                    stroke="currentColor"
+                                                    strokeWidth="2"
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                >
+                                                    <path d="M5 12h14M13 6l6 6-6 6" />
+                                                </svg>
+                                            </>
+                                        )}
                                     </span>
                                 </button>
 
@@ -333,7 +349,7 @@ function ContactCard({
                 <Icon name={icon} size={20} />
             </span>
             <div style={{ minWidth: 0 }}>
-                <div className="mono-label" style={{ marginBottom: 2 }}>
+                <div className="meta-label" style={{ marginBottom: 2 }}>
                     {label}
                 </div>
                 <div

@@ -96,8 +96,8 @@ export default function Portfolio() {
                     top: 14px;
                     left: 14px;
                     padding: 5px 11px;
-                    font-family: var(--font-mono);
-                    font-size: 11px;
+                    font-size: 13px;
+                    font-weight: 500;
                     color: var(--white);
                     background: rgba(7, 12, 11, 0.62);
                     border: 1px solid rgba(244, 255, 251, 0.24);
@@ -110,11 +110,8 @@ export default function Portfolio() {
                     top: 14px;
                     right: 14px;
                     padding: 5px 11px;
-                    font-family: var(--font-mono);
-                    font-size: 11px;
+                    font-size: 13px;
                     font-weight: 500;
-                    letter-spacing: 0.1em;
-                    text-transform: uppercase;
                     color: var(--text-on-accent);
                     background: var(--accent);
                     border-radius: 100px;
@@ -185,12 +182,20 @@ export default function Portfolio() {
                     from { opacity: 0; transform: translateY(8px); }
                     to   { opacity: 1; transform: none; }
                 }
-                .pf-info-meta { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-bottom: 12px; }
-                .pf-info-count { color: var(--accent-text); }
+                .pf-info-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 18px; margin-bottom: 12px; }
+                .pf-info-dots { display: inline-flex; gap: 6px; }
+                .pf-info-dots > span {
+                    width: 7px;
+                    height: 7px;
+                    border-radius: 100px;
+                    background: var(--border-strong);
+                    transition: width 0.35s var(--ease-out), background-color 0.35s;
+                }
+                .pf-info-dots > span[data-on="true"] { width: 22px; background: var(--accent-text); }
                 .pf-info-title {
                     font-size: 28px;
-                    font-weight: 600;
-                    letter-spacing: -0.5px;
+                    font-weight: 700;
+                    letter-spacing: -0.02em;
                     color: var(--text);
                     margin-bottom: 8px;
                 }
@@ -224,8 +229,8 @@ export default function Portfolio() {
                     display: block;
                     font-family: var(--font-display);
                     font-size: 44px;
-                    font-weight: 600;
-                    letter-spacing: -1.5px;
+                    font-weight: 700;
+                    letter-spacing: -0.02em;
                     line-height: 1;
                     color: var(--text);
                 }
@@ -264,11 +269,10 @@ export default function Portfolio() {
 
             <Container>
                 <SectionTitle
-                    index="03"
                     eyebrow="Портфоліо"
                     title="Обрані роботи"
                     accentWord="роботи"
-                    subtitle="Кожен проєкт — від дизайну до запуску. Наведіть, щоб роздивитись."
+                    subtitle="Кожен проєкт: від дизайну до запуску. Наведіть, щоб роздивитись."
                 />
 
                 <div className="pf-grid">
@@ -422,7 +426,7 @@ export default function Portfolio() {
                         <div className="pf-cta">
                             <div>
                                 <p className="pf-cta-title">Ваш проєкт може бути наступним</p>
-                                <p className="pf-cta-sub">Розкажіть про задачу — відповім протягом дня.</p>
+                                <p className="pf-cta-sub">Розкажіть про задачу: відповім протягом дня.</p>
                             </div>
                             <MagneticButton onClick={() => scrollTo("#contact")}>
                                 Обговорити

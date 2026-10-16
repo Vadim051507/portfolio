@@ -11,7 +11,7 @@
  *   не дублюються. Кілька екранів одного проєкту мають однаковий projectId.
  * - src       — шлях від public/. WebP, ширина ~1400px, пропорції близько
  *               2:1 (картка обрізає зайве знизу, вирівнювання по верху).
- * - subtitle  — коротко, що це за екран; показується в mono-мітці панелі.
+ * - subtitle  — коротко, що це за екран; показується в підписі панелі.
  *
  * Порядок у масиві — порядок карток по колу. Екрани одного проєкту
  * варто ставити поруч.
@@ -40,7 +40,7 @@ const screen = (
     src,
     subtitle,
     title: titleOf(projectId),
-    alt: `${titleOf(projectId)} — ${subtitle.toLowerCase()}`,
+    alt: `${titleOf(projectId)}, ${subtitle.toLowerCase()}`,
 });
 
 export const GALLERY: GalleryItem[] = [

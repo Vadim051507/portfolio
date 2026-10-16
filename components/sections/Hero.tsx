@@ -49,8 +49,8 @@ export default function Hero() {
                     font-family: var(--font-display);
                     font-size: clamp(36px, 5.4vw, 72px);
                     font-weight: 700;
-                    line-height: 1.04;
-                    letter-spacing: -0.035em;
+                    line-height: 1.05;
+                    letter-spacing: -0.02em;
                     margin-bottom: 26px;
                     color: var(--text);
                 }
@@ -182,7 +182,7 @@ export default function Hero() {
                     alignItems: "center",
                     gap: 8,
                 }}
-                className="mono-label"
+                className="meta-label"
             >
                 Гортайте
                 <motion.div

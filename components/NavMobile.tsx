@@ -104,12 +104,12 @@ export default function NavMobile({ open, onClose, links, social }: NavMobilePro
                     {/* Logo mini */}
                     <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
                         <div className="logo-mark" style={{ width: "34px", height: "34px", borderRadius: "10px" }}>
-                            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" role="img" aria-label={SITE.brandName}>
                                 <path d="M3 2h4v6H3V2zm6 0h4v10H9V2zM3 10h4v4H3v-4z"/>
                             </svg>
                         </div>
                         <div style={{ lineHeight: 1.2 }}>
-                            <div style={{ color: "var(--text)", fontWeight: 700, fontSize: "14px" }}>{SITE.ownerName}</div>
+                            <div style={{ color: "var(--text)", fontWeight: 700, fontSize: "14px" }}>{SITE.brandName}</div>
                             <div style={{ color: "var(--text-muted)", fontSize: "11px" }}>{SITE.role}</div>
                         </div>
                     </div>
@@ -142,7 +142,7 @@ export default function NavMobile({ open, onClose, links, social }: NavMobilePro
                                 textDecoration: "none",
                                 fontSize: "clamp(32px, 8vw, 48px)",
                                 fontWeight: 700,
-                                letterSpacing: "-1px",
+                                letterSpacing: "-0.02em",
                                 padding: "10px 0",
                                 display: "block",
                                 borderBottom: "1px solid var(--border)",
@@ -231,11 +231,10 @@ export default function NavMobile({ open, onClose, links, social }: NavMobilePro
                                     borderRadius: "100px",
                                     color: l === "UA" ? "var(--accent)" : "var(--text-muted)",
                                     cursor: "pointer",
-                                    fontFamily: "var(--font-mono)",
+                                    fontFamily: "inherit",
                                     fontSize: "12px",
-                                    fontWeight: 500,
+                                    fontWeight: 600,
                                     padding: "6px 14px",
-                                    letterSpacing: "0.08em",
                                     transition: "all 0.2s",
                                 }}
                             >
