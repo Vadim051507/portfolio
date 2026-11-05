@@ -1,11 +1,14 @@
 import Container from "@/components/ui/Container";
 import BackButton from "@/components/ui/BackButton";
 import type { Metadata } from "next";
-import { SITE } from "@/lib/constants";
+import { SITE } from "@/config/site";
 
 export const metadata: Metadata = {
-    title: `BavovnaStore | ${SITE.brandName}`,
+    title: `BavovnaStore | ${SITE.brandTitle}`,
     description: "Інтернет-магазин українського одягу на Spring Boot + React.",
+    alternates: { canonical: "/projects/bavovnastore" },
+    // Сайт зараз не працює, з портфоліо сторінка не посилається.
+    robots: { index: false, follow: true },
 };
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {

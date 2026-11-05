@@ -1,7 +1,7 @@
 "use client";
 
 import Container from "@/components/ui/Container";
-import { SITE } from "@/lib/constants";
+import { SITE } from "@/config/site";
 import { useSmoothScroll } from "@/components/SmoothScrollProvider";
 
 export default function Footer() {
@@ -30,8 +30,10 @@ export default function Footer() {
                     transform: "translateX(-50%)",
                     fontFamily: "var(--font-display)",
                     fontWeight: 700,
-                    fontSize: "clamp(70px, 18vw, 240px)",
-                    letterSpacing: "-6px",
+                    // "kindratyak" is ten letters: sized to stay inside the
+                    // viewport at every width
+                    fontSize: "clamp(56px, 13vw, 190px)",
+                    letterSpacing: "-0.03em",
                     lineHeight: 1,
                     whiteSpace: "nowrap",
                     color: "transparent",

@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import dynamic from "next/dynamic";
 import Container from "@/components/ui/Container";
 import { useSmoothScroll } from "@/components/SmoothScrollProvider";
-import { SITE } from "@/lib/constants";
+import { SITE } from "@/config/site";
 
 const HeroShowcase = dynamic(() => import("@/components/site/HeroShowcase"), {
     ssr: false,

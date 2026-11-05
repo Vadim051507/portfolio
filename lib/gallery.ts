@@ -45,10 +45,10 @@ const screen = (
 
 export const GALLERY: GalleryItem[] = [
     screen("tokarchuk-dental", "/projects/tokarchuk-dental.webp", "Головна сторінка"),
-    screen("bavovnastore", "/projects/bavovnastore.webp", "Головна сторінка"),
-    screen("florist-shop", "/projects/florist-shop.webp", "Головна сторінка"),
     screen("furniture-site", "/projects/furniture-site.webp", "Головна сторінка"),
     screen("muscle-mania", "/projects/muscle-mania.webp", "Головна сторінка"),
+    screen("bavovnastore", "/projects/bavovnastore.webp", "Головна сторінка"),
+    screen("florist-shop", "/projects/florist-shop.webp", "Головна сторінка"),
 ];
 
 /** Перший екран проєкту з GALLERY, інакше його PNG з HERO_BROWSER_PROJECTS. */

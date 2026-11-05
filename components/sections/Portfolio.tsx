@@ -6,25 +6,22 @@ import { useRouter } from "next/navigation";
 import Container from "@/components/ui/Container";
 import SectionTitle from "@/components/ui/SectionTitle";
 import Reveal from "@/components/site/Reveal";
-import Counter from "@/components/site/Counter";
 import MagneticButton from "@/components/site/MagneticButton";
 import { useSmoothScroll } from "@/components/SmoothScrollProvider";
 import { HERO_BROWSER_PROJECTS } from "@/lib/constants";
 import { screenOf } from "@/lib/gallery";
 
-// Which projects have a live detail page.
-const LIVE: ReadonlySet<string> = new Set(["tokarchuk-dental", "bavovnastore"]);
+// Which projects have a detail (case) page. Only live projects are linked.
+const CASES: ReadonlySet<string> = new Set(["tokarchuk-dental"]);
 
-// The facts under the work are counted from the data above, never typed
-// in, so they stay true when a project is added.
-const FACTS = [
-    { value: HERO_BROWSER_PROJECTS.length, label: "проєкти в портфоліо" },
-    { value: LIVE.size, label: "кейси з детальним розбором" },
-    {
-        value: new Set(HERO_BROWSER_PROJECTS.flatMap((p) => p.tags)).size,
-        label: "технологій у роботі",
-    },
-];
+type Project = (typeof HERO_BROWSER_PROJECTS)[number];
+
+/** Where a live project card leads: its case page or its live site. */
+const openProject = (p: Project, push: (href: string) => void) => {
+    if (!p.live) return;
+    if (CASES.has(p.slug)) push(p.href);
+    else window.open(`https://${p.domain}`, "_blank", "noopener,noreferrer");
+};
 
 // The 3D ring replaces the card grid from 1024px up. Which of the two is
 // visible is decided in CSS (no layout jump on hydration); this query only
@@ -104,17 +101,6 @@ export default function Portfolio() {
                     border-radius: 100px;
                     -webkit-backdrop-filter: blur(10px) saturate(1.4);
                     backdrop-filter: blur(10px) saturate(1.4);
-                }
-                .pf-soon {
-                    position: absolute;
-                    top: 14px;
-                    right: 14px;
-                    padding: 5px 11px;
-                    font-size: 13px;
-                    font-weight: 500;
-                    color: var(--text-on-accent);
-                    background: var(--accent);
-                    border-radius: 100px;
                 }
                 .pf-arrow {
                     display: grid;
@@ -209,32 +195,8 @@ export default function Portfolio() {
                 .pf-info-tags { display: flex; flex-wrap: wrap; gap: 8px; }
                 .pf-info-actions { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
                 .pf-info-actions .btn-face { padding: 14px 26px; }
-                .pf-info-soon { position: static; padding: 9px 18px; font-size: 12px; }
-                /* ── Facts + CTA, every width ── */
-                .pf-facts {
-                    display: grid;
-                    grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(0, 2.1fr);
-                    gap: 16px;
-                    margin-top: 72px;
-                }
-                .pf-fact {
-                    display: flex;
-                    flex-direction: column;
-                    justify-content: space-between;
-                    gap: 18px;
-                    height: 100%;
-                    padding: 22px 24px;
-                }
-                .pf-fact-num {
-                    display: block;
-                    font-family: var(--font-display);
-                    font-size: 44px;
-                    font-weight: 700;
-                    letter-spacing: -0.02em;
-                    line-height: 1;
-                    color: var(--text);
-                }
-                .pf-fact-label { font-size: 14px; color: var(--text-muted); line-height: 1.45; }
+                /* ── CTA under the work, every width ── */
+                .pf-cta-wrap { margin-top: 72px; }
                 .pf-cta {
                     display: flex;
                     align-items: center;
@@ -252,14 +214,8 @@ export default function Portfolio() {
                 .pf-cta .btn-primary:hover .btn-face { background: var(--text); }
                 .pf-cta-title { font-size: 20px; font-weight: 600; letter-spacing: -0.3px; line-height: 1.25; }
                 .pf-cta-sub { margin-top: 6px; font-size: 14px; opacity: 0.75; }
-                @media (max-width: 1024px) {
-                    .pf-facts { grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: 48px; }
-                    .pf-facts > :last-child { grid-column: 1 / -1; }
-                }
+                @media (max-width: 1024px) { .pf-cta-wrap { margin-top: 48px; } }
                 @media (max-width: 560px) {
-                    .pf-facts { grid-template-columns: 1fr 1fr; }
-                    .pf-fact { padding: 20px; }
-                    .pf-fact-num { font-size: 36px; }
                     .pf-cta { flex-direction: column; align-items: flex-start; }
                 }
                 @media (prefers-reduced-motion: reduce) {
@@ -277,19 +233,19 @@ export default function Portfolio() {
 
                 <div className="pf-grid">
                     {HERO_BROWSER_PROJECTS.map((p, i) => {
-                        const live = LIVE.has(p.slug);
+                        const live = p.live;
                         return (
                             <Reveal key={p.slug} delay={i * 0.1} y={44}>
                                 <div
                                     className={`pf-card card card-clip${live ? " card-hover" : ""}`}
                                     data-live={live}
-                                    onClick={() => live && router.push(p.href)}
                                     {...(live
                                         ? {
+                                              onClick: () => openProject(p, router.push),
                                               role: "link",
                                               tabIndex: 0,
                                               onKeyDown: (e: React.KeyboardEvent) => {
-                                                  if (e.key === "Enter") router.push(p.href);
+                                                  if (e.key === "Enter") openProject(p, router.push);
                                               },
                                           }
                                         : {})}
@@ -330,9 +286,8 @@ export default function Portfolio() {
                                                 background: `linear-gradient(180deg, transparent 40%, rgba(7,12,11,0.6))`,
                                             }}
                                         />
-                                        {/* domain chip */}
-                                        <span className="pf-domain">{p.domain}</span>
-                                        {!live && <span className="pf-soon">Скоро</span>}
+                                        {/* domain chip: only for sites that work */}
+                                        {live && <span className="pf-domain">{p.domain}</span>}
                                     </div>
 
                                     {/* body */}
@@ -387,19 +342,21 @@ export default function Portfolio() {
                                         >
                                             {p.description}
                                         </p>
-                                        <div
-                                            style={{
-                                                display: "flex",
-                                                flexWrap: "wrap",
-                                                gap: 8,
-                                            }}
-                                        >
-                                            {p.tags.map((t) => (
-                                                <span key={t} className="tag">
-                                                    {t}
-                                                </span>
-                                            ))}
-                                        </div>
+                                        {p.tags.length > 0 && (
+                                            <div
+                                                style={{
+                                                    display: "flex",
+                                                    flexWrap: "wrap",
+                                                    gap: 8,
+                                                }}
+                                            >
+                                                {p.tags.map((t) => (
+                                                    <span key={t} className="tag">
+                                                        {t}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             </Reveal>
@@ -408,32 +365,20 @@ export default function Portfolio() {
                 </div>
 
                 <div className="pf-ring-slot" ref={ringSlot}>
-                    {ringMounted && <PortfolioRing live={LIVE} />}
+                    {ringMounted && <PortfolioRing cases={CASES} />}
                 </div>
 
-                <div className="pf-facts">
-                    {FACTS.map((f, i) => (
-                        <Reveal key={f.label} delay={i * 0.08}>
-                            <div className="card pf-fact">
-                                <span className="pf-fact-num">
-                                    <Counter value={f.value} prefix={f.value < 10 ? "0" : ""} />
-                                </span>
-                                <span className="pf-fact-label">{f.label}</span>
-                            </div>
-                        </Reveal>
-                    ))}
-                    <Reveal delay={FACTS.length * 0.08}>
-                        <div className="pf-cta">
-                            <div>
-                                <p className="pf-cta-title">Ваш проєкт може бути наступним</p>
-                                <p className="pf-cta-sub">Розкажіть про задачу: відповім протягом дня.</p>
-                            </div>
-                            <MagneticButton onClick={() => scrollTo("#contact")}>
-                                Обговорити
-                            </MagneticButton>
+                <Reveal className="pf-cta-wrap">
+                    <div className="pf-cta">
+                        <div>
+                            <p className="pf-cta-title">Ваш проєкт може бути наступним</p>
+                            <p className="pf-cta-sub">Розкажіть про задачу: відповім протягом дня.</p>
                         </div>
-                    </Reveal>
-                </div>
+                        <MagneticButton onClick={() => scrollTo("#contact")}>
+                            Обговорити
+                        </MagneticButton>
+                    </div>
+                </Reveal>
             </Container>
         </section>
     );

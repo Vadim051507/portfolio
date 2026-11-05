@@ -1,24 +1,4 @@
-// Єдине джерело правди для імені й контактів: шапка, hero, FAQ, контакти,
-// футер і мета-теги беруть дані тільки звідси. Бренд kutsev; прізвище
-// у видимих текстах не показується.
-export const SITE = {
-    brandName: "kutsev",
-    ownerFirstName: "Вадим",
-    role: "Розробка сайтів",
-    title: "Сайти для локального бізнесу | kutsev",
-    description:
-        "Роблю сайти для клінік, майстерень і локальних послуг. Швидкі, з налаштованим пошуком, із ціною до початку роботи.",
-    telegram: "https://t.me/+380966008376",
-    telegramDisplay: "+38 096 600 83 76",
-    telegram2: "https://t.me/+380962380674",
-    telegram2Display: "+38 096 238 06 74",
-    phone: "tel:+380966008376",
-    phoneDisplay: "+38 096 600 83 76",
-    email: "wadimlikar@gmail.com",
-    github: "https://github.com/Vadim051507",
-    instagram: "https://www.instagram.com/kindratyak.dev/",
-    linkedin: encodeURI("https://www.linkedin.com/in/вадим-кіндратяк-869661397"),
-};
+// Текстовий контент секцій. Бренд, контакти й URL сайту лежать в config/site.ts.
 
 export const SERVICES = [
     {
@@ -26,21 +6,21 @@ export const SERVICES = [
         title: "Інтернет-магазини",
         description:
             "Каталог, кошик, оплата, інтеграція з Новою Поштою. Адмінка для самостійного керування товарами.",
-        price: "від $XXX",
+        price: "від $300",
     },
     {
         id: "corporate",
         title: "Корпоративні сайти",
         description:
             "Багатосторінкові сайти для клінік, студій, агенцій. Адмінка для редагування контенту.",
-        price: "від $XXX",
+        price: "від $300",
     },
     {
         id: "landing",
         title: "Landing pages",
         description:
             "Односторінкові сайти під рекламні кампанії або презентацію продукту.",
-        price: "від $XXX",
+        price: "від $200",
     },
 ];
 
@@ -103,106 +83,102 @@ export const FAQ = [
     {
         question: "Скільки коштує сайт?",
         answer:
-            "Залежить від типу та обсягу проєкту. Лендінг: від $300, корпоративний сайт: від $500, інтернет-магазин: від $800. Точна ціна визначається після обговорення.",
+            "Лендінг від $200, корпоративний сайт від $300, інтернет-магазин від $300 до $600. Проєкти з індивідуальним функціоналом від $600. Точну ціну називаю після обговорення задачі, ще до початку роботи, і в процесі вона не змінюється. Оплачувати можна в гривнях за курсом НБУ на день платежу.",
     },
     {
         question: "Скільки часу займає розробка?",
         answer:
-            "Лендінг: 1-2 тижні. Корпоративний сайт: 3-5 тижнів. Інтернет-магазин: 1-2 місяці.",
+            "Лендінг: 1-2 тижні. Інтернет-магазин: близько місяця. Більші проєкти: від місяця, точний термін узгоджуємо на етапі планування.",
     },
     {
         question: "Хостинг і домен входять у вартість?",
         answer:
-            "Ні, це окремі витрати. Хостинг: від $0 до $15/міс залежно від проєкту, домен: $10-15/рік. Допоможу з вибором і налаштуванням.",
+            "Ні, вони оплачуються окремо. Я допоможу обрати домен і хостинг під ваш проєкт і все налаштую сам.",
     },
     {
         question: "Що з підтримкою після запуску?",
         answer:
-            "Перший місяць безкоштовно: фікс багів, дрібні правки. Далі домовляємось індивідуально.",
+            "Перший місяць після запуску підтримка безкоштовна: правки, дрібні доопрацювання, відповіді на питання. Далі працюємо за домовленістю.",
     },
     {
         question: "Чи можу я сам редагувати контент?",
         answer:
-            "Так. Для всіх проєктів робиться адмінка: можна міняти тексти, фото, ціни без допомоги розробника.",
+            "Так. Для сайтів з адмінкою показую, як самостійно змінювати тексти, фото і ціни. Якщо щось не виходить, пишете мені.",
     },
     {
         question: "Як ми працюємо: передоплата чи поетапно?",
         answer:
-            "30% передоплата перед початком, решта по етапах або після здачі. Залежить від обсягу проєкту.",
+            "30% передоплата на старті, решта поетапно, по мірі готовності сайту. Ви бачите проміжний результат на кожному етапі.",
     },
 ];
-/**
- * Додати у lib/constants.ts (поряд з PROJECTS).
- *
- * Тут зумисне окремий масив, а не повторне використання PROJECTS,
- * бо для Hero потрібен підмножина проєктів + спеціальний accent-колір,
- * а PROJECTS може містити проєкти, які в Hero не показуються.
- */
 
+/** Рядок під картками послуг. */
+export const PRICING_NOTE =
+    "Ціну фіксуємо до початку роботи. Оплачувати можна в гривнях за курсом НБУ на день платежу. Проєкти з індивідуальним функціоналом від $600.";
+/**
+ * Проєкти портфоліо (і Hero), у порядку показу.
+ *
+ * - live: true  сайт працює: картка клікабельна, веде на кейс (якщо є) або
+ *               на https://{domain}.
+ * - live: false сайт зараз не працює: картка зі скріншотом і стеком, без
+ *               посилання, без hover-стану і без домену.
+ * - tags        тільки технології, не функції сайту.
+ */
 export const HERO_BROWSER_PROJECTS = [
     {
         slug: "tokarchuk-dental",
         domain: "tokarchuk-dental.com.ua",
         title: "Tokarchuk Dental Clinic",
+        live: true,
         tags: ["Next.js", "Tailwind", "Framer Motion"],
-        description: "Лендінг, який викликає в пацієнтів більше довіри",
+        description:
+            "Лендінг для стоматологічної клініки: послуги, лікарі і запис на прийом в одному місці. Мобільна версія в пріоритеті.",
         image: "/projects/tokarchuk-dental.png",
-        // Холодний м'ятно-блакитний — характерний для медицини
-        accent: "rgba(56, 178, 172, 0.45)",
         href: "/projects/tokarchuk-dental",
-    },
-    {
-        slug: "bavovnastore",
-        domain: "bavovnastore.com.ua",
-        title: "Bavovna Store",
-        tags: ["Spring Boot", "React", "PostgreSQL"],
-        description: "Просто класний сайт",
-        image: "/projects/bavovnastore.png",
-        // Теплий бурштиновий — товари, тепло, український колорит
-        accent: "rgba(217, 119, 6, 0.4)",
-        href: "/projects/bavovnastore",
-    },
-
-    {
-        slug: "florist-shop",
-        domain: "florist-shop.com.ua",
-        title: "Florist Shop",
-        tags: ["Spring Boot", "React", "PostgreSQL"],
-        description: "Ще один класний сайт, написаний мною",
-        image: "/projects/florist-shop.png",
-        accent: "rgba(217, 119, 6, 0.4)",
-        href: "/projects/florist-shop",
     },
     {
         slug: "furniture-site",
         domain: "eurokitchen.com.ua",
         title: "Eurokitchen",
+        live: true,
         tags: ["Next.js", "Tailwind", "Framer Motion"],
-        description: "Лендінг для компанії меблів на замовлення",
+        description:
+            "Лендінг для виробника меблів на замовлення з Житомира: каталог робіт і швидка заявка на прорахунок.",
         image: "/projects/furniture-site.png",
-        accent: "rgba(146, 104, 52, 0.4)",
         href: "/projects/furniture-site",
     },
     {
         slug: "muscle-mania",
-        domain: "musclemania.com",
+        domain: "musclemania.com.ua",
         title: "MuscleMania",
-        // TODO: вписати стек. Теги рахуються у факті «технологій у роботі»
-        // в Портфоліо, тож сюди тільки технології, не функції сайту.
+        live: true,
+        // TODO: вписати стек.
         tags: [],
-        description: "Інтернет-магазин спортивного харчування",
+        description:
+            "Інтернет-магазин спортивного харчування: каталог, кошик, оформлення замовлення і адмінка для керування товарами.",
         image: "/projects/muscle-mania.png",
-        // Жовтий бренду на чорному
-        accent: "rgba(245, 197, 24, 0.4)",
         href: "/projects/muscle-mania",
     },
-    // Якщо додаси третій проєкт, наприклад адмін-панель Bavovna:
-    // {
-    //   slug: "bavovnastore-admin",
-    //   domain: "admin.bavovnastore.com.ua",
-    //   title: "Bavovna — адмін-панель",
-    //   image: "/projects/bavovnastore-admin.png",
-    //   accent: "rgba(107, 63, 240, 0.4)",
-    //   href: "/projects/bavovnastore", // або окрема сторінка
-    // },
+    {
+        slug: "bavovnastore",
+        domain: "bavovnastore.com.ua",
+        title: "Bavovna Store",
+        live: false,
+        tags: ["Spring Boot", "React", "PostgreSQL"],
+        description:
+            "Інтернет-магазин одягу: каталог, кошик і адмінка на власному бекенді.",
+        image: "/projects/bavovnastore.png",
+        href: "/projects/bavovnastore",
+    },
+    {
+        slug: "florist-shop",
+        domain: "florist-shop.com.ua",
+        title: "Florist Shop",
+        live: false,
+        tags: ["Spring Boot", "React", "PostgreSQL"],
+        description:
+            "Інтернет-магазин квітів з каталогом букетів і оформленням замовлення.",
+        image: "/projects/florist-shop.png",
+        href: "/projects/florist-shop",
+    },
 ] as const;

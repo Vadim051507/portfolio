@@ -1,6 +1,6 @@
 # KINDRATYAK — архітектура
 
-Актуально на 2026-10-12, гілка `redesign/mint-square`. Це єдиний актуальний опис проєкту:
+Актуально на 2026-11-05, гілка `redesign/mint-square`. Це єдиний актуальний опис проєкту:
 `ARCHITECTURE2.md`, `ARCHITECTURE3.md`, `ARCHITECTURE4.md` і `Portfolio.md` застаріли
 (стара палітра, видалені компоненти) і лишені тільки як історія.
 
@@ -8,7 +8,7 @@
 
 Особисте one-page портфоліо, бренд KINDRATYAK / Kindratyak.dev. Продає розробку сайтів
 малому бізнесу в Україні; головна конверсія — заявка через форму, яка йде в Telegram.
-Мова інтерфейсу українська (`<html lang="uk">`), i18n немає: перемикач EN/UA декоративний.
+Мова інтерфейсу українська (`<html lang="uk">`), i18n немає, перемикача мов немає (прибрано 2026-11-05).
 
 ## 2. Стек
 
@@ -23,8 +23,12 @@
 | three | 0.184 (тільки `ParticleTrail`) |
 | react-hook-form + zod | форма контактів |
 
-Скрипти: `dev`, `build`, `start`. Немає `lint`, тестів, CI — перевірка це `npm run build`.
-GSAP у проєкті немає. Змінні оточення: `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`.
+Скрипти: `dev`, `build`, `start`, `lint` (ESLint 9, flat config `eslint.config.mjs`, `eslint-config-next`;
+`components/react-bits` ігнорується як сторонній код). Тестів і CI немає.
+GSAP у проєкті немає. Аналітика: `@vercel/analytics` + `@vercel/speed-insights` у root layout,
+кастомні події `lead_submit` і `telegram_click`.
+Змінні оточення (див. `.env.example`): `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`,
+`NEXT_PUBLIC_SITE_URL`, `NEXT_PUBLIC_GSC_VERIFICATION`.
 
 ## 3. Структура
 
@@ -32,10 +36,11 @@ GSAP у проєкті немає. Змінні оточення: `TELEGRAM_BOT_
 app/
   layout.tsx            шрифти, metadata, themeColor, глобальні шари (Intro, Aurora, ScrollProgress, grain, Nav)
   page.tsx              головна: 8 секцій у <main> + Footer; Services і Portfolio обгорнуті в .light-sheet
-  globals.css           ВСЯ дизайн-система: токени, світла тема, спільні класи, інтро
+  globals.css           ВСЯ дизайн-система: токени, світла тема, спільні класи
   icon.svg, favicon.ico логотип-плитка (favicon згенеровано з icon.svg через sharp)
-  logo/logo(1).svg      логотип для інтро
-  api/contact/route.ts  POST → zod → honeypot → Telegram (rate limit у пам'яті)
+  api/lead/route.ts     POST → zod → honeypot → Telegram (rate limit 3 / 10 хв на IP, у пам'яті)
+  opengraph-image.tsx   OG/Twitter-картинка 1200×630 (next/og, шрифти з assets/fonts)
+  sitemap.ts, robots.ts
   projects/*/page.tsx   дві кейс-сторінки (Server Components)
 components/
   Nav.tsx, NavMobile.tsx        фіксована скляна pill-навігація (два розміри), повноекранне мобільне меню
@@ -43,13 +48,15 @@ components/
   ParticleTrail.tsx             Three.js частинки, тільки в Hero
   sections/                     Hero, MobileShowcase (#about), Services, Portfolio,
                                 Process, TechStack (#tech), FAQ, Contact, Footer
-  site/                         AnimatedHeading, AuroraBackground, Counter, HeroShowcase,
-                                Icons, IntroAnimation, MagneticButton, Reveal,
+  site/                         AnimatedHeading, AuroraBackground, HeroShowcase,
+                                Icons, MagneticButton, Reveal, TelegramClickTracker,
                                 ScrollProgress, TechLogos
   ui/                           Container, SectionTitle, BackButton
 lib/
   colors.ts             JS-дзеркало кольорів для Three.js і Framer Motion
-  constants.ts          увесь текстовий контент сайту
+  constants.ts          текстовий контент секцій, проєкти (поле live)
+config/
+  site.ts               бренд, контакти, години, URL сайту: єдине місце
   telegram.ts, validation.ts
 public/
   phone/iphone-frame.png        рамка телефона з прозорим вирізом екрана
@@ -221,8 +228,7 @@ teal-500, ~8% мʼята, ~3% білі. Additive blending, `opacity: 0.42` — �
 - **Скрол** — завжди через `useSmoothScroll().scrollTo()` (Lenis), не `window.scrollTo`.
 - **Важкі клієнтські компоненти** (`ParticleTrail`, `HeroShowcase`) — `dynamic(..., { ssr: false })`.
 - **`prefers-reduced-motion`** обробляється в кожному анімованому компоненті: Lenis не
-  створюється, інтро не показується, частинки не монтуються, пін знімається, marquee стоїть.
-- **Інтро** не використовує viewport-юнітів (фікс iOS Safari) — див. коментарі в `globals.css`.
+  створюється, частинки не монтуються, пін знімається, marquee стоїть.
 - **Стилі — inline `style` і локальні `<style>` блоки**, не Tailwind-класи. Hover там, де
   стилі inline, робиться через `onMouseEnter/Leave`; нові речі краще класом у CSS.
 
@@ -239,12 +245,8 @@ teal-500, ~8% мʼята, ~3% білі. Additive blending, `opacity: 0.42` — �
 
 ## 10. Відкладено
 
-- OG-картинка, `manifest`, `metadataBase`, sitemap/robots, JSON-LD.
-- ElectricLogo і CircularCarousel з React Bits.
-- Плейсхолдери в `lib/constants.ts` і навігації: `YOUR_NAME`, `YOUR_NICK`, `YOUR`,
-  `YOUR_INSTA`, ціни `від $XXX` у Services (розходяться з конкретними цінами у FAQ).
-- Реальне демо в екрані телефона MobileShowcase (зараз «демо · скоро»).
-- UA/EN перемикач нічого не робить; у `florist-shop` немає кейс-сторінки.
-- `lib/constants.ts`: невживані `PROJECTS`, `TECH_STACK` і поле `accent` у
-  `HERO_BROWSER_PROJECTS`.
+- `manifest`, JSON-LD.
+- MuscleMania: не вписаний стек (`tags: []` у `lib/constants.ts`).
+- У `florist-shop` немає кейс-сторінки; кейс `bavovnastore` не залінкований і noindex.
+- `lib/constants.ts`: невживані `PROJECTS`, `TECH_STACK`.
 - Скриншоти: Портфоліо бере WebP з `lib/gallery.ts` (`screenOf()`), але Hero досі важкі PNG через `<img>`, не `next/image`.

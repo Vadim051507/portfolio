@@ -76,6 +76,9 @@ export default function SmoothScrollProvider({
             // (an easeOutExpo-ish curve) already reads well.
         });
         lenisRef.current = instance;
+        // Lenis is an external instance that only exists client-side, after
+        // mount; publishing it to context once is the intended effect here.
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setLenis(instance);
 
         let rafId: number;

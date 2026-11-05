@@ -8,8 +8,14 @@ import Container from "@/components/ui/Container";
 import Reveal from "@/components/site/Reveal";
 import AnimatedHeading from "@/components/site/AnimatedHeading";
 import Icon from "@/components/site/Icons";
-import { contactSchema, ContactFormData } from "@/lib/validation";
-import { SITE } from "@/lib/constants";
+import { track } from "@vercel/analytics";
+import {
+    LEAD_LIMITS,
+    leadSchema,
+    type LeadData,
+    type LeadFormInput,
+} from "@/lib/validation";
+import { SITE } from "@/config/site";
 
 const errorStyle: React.CSSProperties = {
     fontSize: 12,
@@ -27,18 +33,21 @@ export default function Contact() {
         handleSubmit,
         reset,
         formState: { errors },
-    } = useForm<ContactFormData>({ resolver: zodResolver(contactSchema) });
+    } = useForm<LeadFormInput, unknown, LeadData>({
+        resolver: zodResolver(leadSchema),
+    });
 
-    const onSubmit = async (data: ContactFormData) => {
+    const onSubmit = async (data: LeadData) => {
         setStatus("loading");
         try {
-            const res = await fetch("/api/contact", {
+            const res = await fetch("/api/lead", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
             });
             if (res.ok) {
                 setStatus("success");
+                track("lead_submit");
                 reset();
             } else setStatus("error");
         } catch {
@@ -89,6 +98,13 @@ export default function Contact() {
                     text-decoration: none;
                     cursor: pointer;
                     transition: border-color 0.25s, background 0.25s, transform 0.25s;
+                }
+                .hp-field {
+                    position: absolute;
+                    left: -10000px;
+                    width: 1px;
+                    height: 1px;
+                    overflow: hidden;
                 }
                 .contact-card:hover {
                     border-color: var(--border-strong);
@@ -146,8 +162,8 @@ export default function Contact() {
                                     maxWidth: 400,
                                 }}
                             >
-                                Розкажіть про проєкт: відповім протягом дня. Без
-                                передоплати, поки не побачите результат.
+                                Розкажіть про проєкт: відповім протягом дня і
+                                безкоштовно проконсультую.
                             </p>
 
                             <div
@@ -166,13 +182,6 @@ export default function Contact() {
                                     external
                                 />
                                 <ContactCard
-                                    icon="telegram"
-                                    label="Telegram 2"
-                                    value={SITE.telegram2Display}
-                                    href={SITE.telegram2}
-                                    external
-                                />
-                                <ContactCard
                                     icon="phone"
                                     label="Телефон"
                                     value={SITE.phoneDisplay}
@@ -188,7 +197,7 @@ export default function Contact() {
                                     className="meta-label"
                                     style={{ marginTop: 6 }}
                                 >
-                                    Робочі години: пн-пт, 10:00-19:00
+                                    Робочі години: {SITE.hours}
                                 </p>
                             </div>
                         </div>
@@ -196,6 +205,8 @@ export default function Contact() {
                         {/* Right — form */}
                         <Reveal delay={0.1}>
                             <form
+                                noValidate
+                                aria-label="Заявка на проєкт"
                                 onSubmit={handleSubmit(onSubmit)}
                                 style={{
                                     display: "flex",
@@ -203,17 +214,27 @@ export default function Contact() {
                                     gap: 16,
                                 }}
                             >
-                                <input
-                                    {...register("honeypot")}
-                                    type="text"
-                                    style={{ display: "none" }}
-                                    tabIndex={-1}
-                                    autoComplete="off"
-                                />
+                                {/* honeypot: off-screen, not display:none, so
+                                    bots still see and fill it */}
+                                <div aria-hidden="true" className="hp-field">
+                                    <label>
+                                        Сайт
+                                        <input
+                                            {...register("website")}
+                                            type="text"
+                                            tabIndex={-1}
+                                            autoComplete="off"
+                                        />
+                                    </label>
+                                </div>
                                 <div>
                                     <input
                                         {...register("name")}
                                         placeholder="Ваше ім'я"
+                                        aria-label="Ваше ім'я"
+                                        aria-invalid={errors.name ? true : undefined}
+                                        autoComplete="name"
+                                        maxLength={LEAD_LIMITS.name}
                                         className="field"
                                     />
                                     {errors.name && (
@@ -225,7 +246,11 @@ export default function Contact() {
                                 <div>
                                     <input
                                         {...register("contact")}
-                                        placeholder="Telegram або телефон"
+                                        placeholder="Телефон або Telegram"
+                                        aria-label="Телефон або Telegram"
+                                        aria-invalid={errors.contact ? true : undefined}
+                                        autoComplete="tel"
+                                        maxLength={LEAD_LIMITS.contact}
                                         className="field"
                                     />
                                     {errors.contact && (
@@ -237,7 +262,9 @@ export default function Contact() {
                                 <div>
                                     <textarea
                                         {...register("message")}
-                                        placeholder="Опишіть проєкт"
+                                        placeholder="Коротко про проєкт (необов'язково)"
+                                        aria-label="Коротко про проєкт, необов'язково"
+                                        maxLength={LEAD_LIMITS.message}
                                         rows={5}
                                         className="field"
                                         style={{ resize: "vertical", display: "block" }}
@@ -257,7 +284,7 @@ export default function Contact() {
                                 >
                                     <span className="btn-face">
                                         {status === "loading" ? (
-                                            "Надсилаємо..."
+                                            "Надсилаю..."
                                         ) : (
                                             <>
                                                 Надіслати заявку
@@ -281,6 +308,7 @@ export default function Contact() {
 
                                 {status === "success" && (
                                     <motion.p
+                                        role="status"
                                         initial={{ opacity: 0, y: 8 }}
                                         animate={{ opacity: 1, y: 0 }}
                                         style={{
@@ -302,14 +330,25 @@ export default function Contact() {
                                         >
                                             <Icon name="check" size={16} />
                                         </span>
-                                        Дякую! Отримав повідомлення. Відповім
-                                        якнайшвидше.
+                                        Дякую! Відповім протягом дня.
                                     </motion.p>
                                 )}
                                 {status === "error" && (
-                                    <p style={{ fontSize: 14, color: "var(--danger)" }}>
-                                        Щось пішло не так. Напишіть мені напряму в
-                                        Telegram.
+                                    <p
+                                        role="alert"
+                                        style={{ fontSize: 14, color: "var(--danger)", lineHeight: 1.6 }}
+                                    >
+                                        Не вдалося надіслати заявку. Напишіть мені
+                                        напряму в{" "}
+                                        <a
+                                            href={SITE.telegram}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            style={{ color: "inherit", fontWeight: 600 }}
+                                        >
+                                            Telegram
+                                        </a>
+                                        .
                                     </p>
                                 )}
                             </form>

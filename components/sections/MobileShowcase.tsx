@@ -18,7 +18,7 @@ import Reveal from "@/components/site/Reveal";
 import AnimatedHeading from "@/components/site/AnimatedHeading";
 import phoneFrame from "@/public/phone/iphone-frame.png";
 import { PILLAR_COLORS } from "@/lib/colors";
-import { SITE } from "@/lib/constants";
+import { SITE } from "@/config/site";
 
 /**
  * Geometry of the supplied iPhone render (public/phone/iphone-frame.png).
@@ -44,6 +44,7 @@ const PHONE_SCREENS: PhoneScreen[] = [
         height: 9045,
         alt: "Мобільна версія сайту Tokarchuk Dental Clinic",
     },
+    // Continuation of the same long page: decorative, hidden from screen readers.
     { src: "/phone/tokarchuk-mobile-2.webp", width: 390, height: 9044, alt: "" },
 ];
 
@@ -316,11 +317,11 @@ export default function MobileShowcase() {
 
                                 {/* ── RIGHT: the copy ─────────────────────────── */}
                                 <div className="ms-copy">
-                                    <Reveal style={{ marginBottom: 18 }}>
+                                    <Reveal style={{ marginBottom: "var(--ms-gap)" }}>
                                         <span className="eyebrow">Про мене</span>
                                     </Reveal>
 
-                                    <Reveal delay={0.05} style={{ marginBottom: 18 }}>
+                                    <Reveal delay={0.05} style={{ marginBottom: "var(--ms-gap)" }}>
                                         <p className="ms-accent-line">
                                             Більшість ваших клієнтів відкриє сайт{" "}
                                             <span className="ms-key">
@@ -339,10 +340,9 @@ export default function MobileShowcase() {
                                         className="ms-heading"
                                     />
 
-                                    <Reveal delay={0.15} style={{ marginTop: 18 }}>
+                                    <Reveal delay={0.15} style={{ marginTop: "var(--ms-gap)" }}>
                                         <p className="ms-lede">
-                                            Я {SITE.ownerFirstName}, засновник{" "}
-                                            {SITE.brandName}. Сам обговорюю задачу,
+                                            Я {SITE.ownerName}. Сам обговорюю задачу,
                                             роблю дизайн, пишу код і запускаю сайт.
                                             Між вами і результатом немає
                                             менеджерів, тому на кожне питання
@@ -570,7 +570,11 @@ const styles = `
 }
 
 /* ── Copy ──────────────────────────────────────────────── */
-.ms-copy { position: relative; }
+.ms-copy {
+    position: relative;
+    /* vertical rhythm between eyebrow, accent line, heading and lede */
+    --ms-gap: 18px;
+}
 .ms-accent-line {
     font-size: clamp(14px, 1.1vw, 16px);
     line-height: 1.65;
@@ -715,11 +719,15 @@ const styles = `
     .ms-list-wrap { margin-top: clamp(14px, 3vh, 40px); }
 }
 
-/* Short laptop viewports: the pinned column has no room for the lede as
-   well — the accent line and the heading already carry the pitch. */
+/* Short laptop viewports: the lede stays; the pinned column fits by
+   tightening the rest. Smaller heading (about 13%), tighter gaps between
+   the copy blocks and between the pillars. */
 @media (min-width: 1024px) and (max-height: 800px) {
-    .ms-lede { display: none; }
-    .ms-pin { padding: 76px 0 32px; }
+    .ms-pin { padding: 76px 0 28px; }
+    .ms-copy { --ms-gap: 10px; }
+    .ms-heading { font-size: clamp(21px, 3.1vh, 33px); }
+    .ms-list { gap: clamp(4px, 0.8vh, 12px); }
+    .ms-list-wrap { margin-top: clamp(10px, 2vh, 24px); }
 }
 
 /* ── Reduced motion: static final state, no pin, no 3D ──
@@ -794,6 +802,7 @@ function PhoneScreenSlot({
                             key={sc.src}
                             src={sc.src}
                             alt={sc.alt}
+                            aria-hidden={sc.alt === "" ? true : undefined}
                             width={sc.width}
                             height={sc.height}
                             loading="lazy"

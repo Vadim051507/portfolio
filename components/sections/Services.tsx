@@ -5,7 +5,7 @@ import Container from "@/components/ui/Container";
 import SectionTitle from "@/components/ui/SectionTitle";
 import Reveal from "@/components/site/Reveal";
 import Icon from "@/components/site/Icons";
-import { SERVICES } from "@/lib/constants";
+import { PRICING_NOTE, SERVICES } from "@/lib/constants";
 
 const META = [
     {
@@ -145,6 +145,17 @@ export default function Services() {
                         );
                     })}
                 </div>
+
+                <p
+                    style={{
+                        marginTop: 24,
+                        fontSize: 14,
+                        lineHeight: 1.6,
+                        color: "var(--text-muted)",
+                    }}
+                >
+                    {PRICING_NOTE}
+                </p>
             </Container>
         </section>
     );

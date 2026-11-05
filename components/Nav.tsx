@@ -4,7 +4,7 @@ import { useState, useEffect, useLayoutEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import NavMobile from "./NavMobile";
 import { useSmoothScroll } from "./SmoothScrollProvider";
-import { SITE } from "@/lib/constants";
+import { SITE } from "@/config/site";
 
 const NAV_LINKS = [
     { label: "Головна",    href: "#hero" },
@@ -236,7 +236,6 @@ export default function Nav() {
                     margin: 0 16px;
                     flex-shrink: 0;
                 }
-                .nav-divider-sm { height: 16px; margin: 0 8px; }
                 .nav-links-desktop { display: flex; align-items: center; gap: 2px; flex: 1; }
                 .nav-right { display: flex; align-items: center; gap: 2px; margin-left: auto; }
                 .nav-socials-desktop { display: flex; align-items: center; gap: 1px; }
@@ -263,32 +262,6 @@ export default function Nav() {
                 }
                 .nav-social:hover { color: var(--accent); background: var(--nav-tint); }
                 .nav-bar[data-surface="light"] .nav-social:hover { color: var(--text); }
-                .nav-lang {
-                    background: transparent;
-                    border: 1px solid transparent;
-                    cursor: pointer;
-                    font-family: inherit;
-                    font-size: 12px;
-                    font-weight: 600;
-                    padding: 4px 8px;
-                    border-radius: 100px;
-                    color: var(--text-muted);
-                    transition: color 0.2s, border-color 0.2s, background 0.2s;
-                }
-                .nav-lang:hover { color: var(--text); }
-                /* active language: a chip of slightly lighter glass */
-                .nav-lang[aria-pressed="true"] {
-                    color: var(--accent);
-                    background: rgba(255, 255, 255, 0.12);
-                    border-color: rgba(255, 255, 255, 0.2);
-                    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28);
-                }
-                .nav-bar[data-surface="light"] .nav-lang[aria-pressed="true"] {
-                    color: var(--text);
-                    background: rgba(33, 241, 168, 0.3);
-                    border-color: rgba(0, 105, 92, 0.25);
-                    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
-                }
                 .nav-hamburger { display: none; width: 34px; height: 34px; }
                 .nav-bar[data-surface="light"] .nav-hamburger {
                     color: var(--text);
@@ -310,12 +283,10 @@ export default function Nav() {
                     [data-scrolled="false"] .nav-name { font-size: 15px; }
                     [data-scrolled="false"] .nav-role { font-size: 11.5px; }
                     [data-scrolled="false"] .nav-divider { margin: 0 24px; }
-                    [data-scrolled="false"] .nav-divider-sm { margin: 0 14px; }
                     [data-scrolled="false"] .nav-links-desktop { gap: 8px; }
                     [data-scrolled="false"] .nav-link { font-size: 14.5px; padding: 8px 16px; }
                     [data-scrolled="false"] .nav-socials-desktop { gap: 6px; }
                     [data-scrolled="false"] .nav-social { width: 36px; height: 36px; }
-                    [data-scrolled="false"] .nav-lang { font-size: 12.5px; padding: 5px 10px; }
 
                     /* backdrop-filter is deliberately not in any of these lists */
                     .nav-shell[data-ready="true"] { transition: top 0.48s cubic-bezier(0.22, 1, 0.36, 1); }
@@ -344,15 +315,11 @@ export default function Nav() {
                     [data-ready="true"] .nav-social {
                         transition: width 0.48s var(--nav-ease), height 0.48s var(--nav-ease), color 0.2s, background 0.2s;
                     }
-                    [data-ready="true"] .nav-lang {
-                        transition: font-size 0.48s var(--nav-ease), padding 0.48s var(--nav-ease), color 0.2s, border-color 0.2s, background 0.2s;
-                    }
                 }
 
                 @media (max-width: 768px) {
                     .nav-links-desktop { display: none !important; }
                     .nav-socials-desktop { display: none !important; }
-                    .nav-lang-desktop { display: none !important; }
                     .nav-hamburger { display: flex; }
                 }
 
@@ -405,10 +372,6 @@ export default function Nav() {
                                 <SocialIcon key={s.label} href={s.href} label={s.label}>{s.icon}</SocialIcon>
                             ))}
                         </div>
-                        <div className="nav-divider nav-divider-sm nav-socials-desktop" />
-                        <div className="nav-lang-desktop">
-                            <LangSwitcher />
-                        </div>
                         <button
                             className="nav-hamburger glass-chip"
                             onClick={() => setMobileOpen(true)}
@@ -450,23 +413,5 @@ function SocialIcon({ href, label, children }: { href: string; label: string; ch
         >
             {children}
         </a>
-    );
-}
-
-function LangSwitcher() {
-    const [lang, setLang] = useState<"UA" | "EN">("UA");
-    return (
-        <div style={{ display: "flex", alignItems: "center", gap: "2px" }}>
-            {(["EN", "UA"] as const).map((l) => (
-                <button
-                    key={l}
-                    onClick={() => setLang(l)}
-                    aria-pressed={lang === l}
-                    className="nav-lang"
-                >
-                    {l}
-                </button>
-            ))}
-        </div>
     );
 }

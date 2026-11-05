@@ -31,11 +31,20 @@ export default function AnimatedHeading({
     const ref = useRef(null);
     const inView = useInView(ref, { once: true, margin: "-12% 0px" });
 
+    // The words are split into animated spans, so the heading's accessible
+    // name is given in one piece; the spans themselves are aria-hidden.
+    const label = segments
+        .map((s) => s.text.replace(/<br>/g, " "))
+        .join(" ")
+        .replace(/\s+/g, " ")
+        .trim();
+
     return (
         <h2
             ref={ref}
             className={className}
             data-inview={inView}
+            aria-label={label}
             style={{ ...style }}
         >
             {segments.map((seg, si) => {
@@ -54,6 +63,7 @@ export default function AnimatedHeading({
                     return (
                         <span
                             key={`${si}-${wi}`}
+                            aria-hidden="true"
                             style={{
                                 display: "inline-block",
                                 overflow: "hidden",
@@ -103,6 +113,10 @@ export default function AnimatedHeading({
                                     word
                                 )}
                             </motion.span>
+                            {/* a real space for the HTML text (crawlers,
+                                copy-paste); a trailing space inside an
+                                inline-block takes no room */}
+                            {" "}
                         </span>
                     );
                 });

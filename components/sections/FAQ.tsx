@@ -6,7 +6,8 @@ import Container from "@/components/ui/Container";
 import SectionTitle from "@/components/ui/SectionTitle";
 import Reveal from "@/components/site/Reveal";
 import Icon from "@/components/site/Icons";
-import { FAQ, SITE } from "@/lib/constants";
+import { FAQ } from "@/lib/constants";
+import { SITE } from "@/config/site";
 
 function FAQItem({
     question,
@@ -214,7 +215,7 @@ export default function FAQSection() {
                                 >
                                     {[
                                         { icon: "clock", t: "Відповідь протягом дня" },
-                                        { icon: "shield", t: "Без передоплати" },
+                                        { icon: "shield", t: "Фіксована ціна до старту" },
                                         { icon: "check", t: "Безкоштовна консультація" },
                                     ].map((r) => (
                                         <div

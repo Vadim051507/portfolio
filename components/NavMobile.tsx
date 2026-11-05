@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { useSmoothScroll } from "./SmoothScrollProvider";
-import { SITE } from "@/lib/constants";
+import { SITE } from "@/config/site";
 
 type Link = { label: string; href: string };
 type Social = { label: string; href: string; icon: React.ReactNode };
@@ -168,7 +168,7 @@ export default function NavMobile({ open, onClose, links, social }: NavMobilePro
                     ))}
                 </nav>
 
-                {/* Bottom: socials + lang */}
+                {/* Bottom: socials */}
                 <div
                     style={{
                         display: "flex",
@@ -216,30 +216,6 @@ export default function NavMobile({ open, onClose, links, social }: NavMobilePro
                             >
                                 {s.icon}
                             </a>
-                        ))}
-                    </div>
-
-                    {/* Lang switcher */}
-                    <div style={{ display: "flex", gap: "4px" }}>
-                        {(["EN", "UA"] as const).map((l) => (
-                            <button
-                                key={l}
-                                style={{
-                                    background: l === "UA" ? "rgba(255, 255, 255, 0.12)" : "transparent",
-                                    border: l === "UA" ? "1px solid rgba(255, 255, 255, 0.2)" : "1px solid transparent",
-                                    boxShadow: l === "UA" ? "inset 0 1px 0 rgba(255, 255, 255, 0.28)" : "none",
-                                    borderRadius: "100px",
-                                    color: l === "UA" ? "var(--accent)" : "var(--text-muted)",
-                                    cursor: "pointer",
-                                    fontFamily: "inherit",
-                                    fontSize: "12px",
-                                    fontWeight: 600,
-                                    padding: "6px 14px",
-                                    transition: "all 0.2s",
-                                }}
-                            >
-                                {l}
-                            </button>
                         ))}
                     </div>
                 </div>

@@ -43,7 +43,11 @@ const RING = {
  * (lib/gallery.ts) with an info panel for whichever card is in front.
  * Loaded through next/dynamic from Portfolio.tsx, only from 1024px up.
  */
-export default function PortfolioRing({ live }: { live: ReadonlySet<string> }) {
+export default function PortfolioRing({
+    cases,
+}: {
+    cases: ReadonlySet<string>;
+}) {
     const router = useRouter();
     const [active, setActive] = useState(0);
     // The carousel reports the front card through onChange a frame or more
@@ -62,14 +66,18 @@ export default function PortfolioRing({ live }: { live: ReadonlySet<string> }) {
             const project = HERO_BROWSER_PROJECTS.find(
                 (p) => p.slug === GALLERY[index].projectId
             );
-            if (project && live.has(project.slug)) router.push(project.href);
+            // Projects whose site is down are not links.
+            if (!project?.live) return;
+            if (cases.has(project.slug)) router.push(project.href);
+            else window.open(`https://${project.domain}`, "_blank", "noopener,noreferrer");
         },
-        [live, router]
+        [cases, router]
     );
 
     const item = GALLERY[active] ?? GALLERY[0];
     const project = HERO_BROWSER_PROJECTS.find((p) => p.slug === item.projectId)!;
-    const isLive = live.has(project.slug);
+    const hasCase = cases.has(project.slug);
+    const live = project.live;
 
     return (
         <>
@@ -101,27 +109,31 @@ export default function PortfolioRing({ live }: { live: ReadonlySet<string> }) {
                             ))}
                         </span>
                         <span>{item.subtitle}</span>
-                        <span>{project.domain}</span>
+                        {live && <span>{project.domain}</span>}
                     </div>
                     <h3 className="pf-info-title">{project.title}</h3>
                     <p className="pf-info-desc">{project.description}</p>
-                    <div className="pf-info-tags">
-                        {project.tags.map((t) => (
-                            <span key={t} className="tag">
-                                {t}
-                            </span>
-                        ))}
-                    </div>
+                    {project.tags.length > 0 && (
+                        <div className="pf-info-tags">
+                            {project.tags.map((t) => (
+                                <span key={t} className="tag">
+                                    {t}
+                                </span>
+                            ))}
+                        </div>
+                    )}
                 </div>
 
                 <div className="pf-info-actions" key={`a${active}`}>
-                    {isLive ? (
+                    {live && (
                         <>
-                            <Link className="btn btn-primary" href={project.href}>
-                                <span className="btn-face">Кейс</span>
-                            </Link>
+                            {hasCase && (
+                                <Link className="btn btn-primary" href={project.href}>
+                                    <span className="btn-face">Кейс</span>
+                                </Link>
+                            )}
                             <a
-                                className="btn btn-ghost"
+                                className={`btn ${hasCase ? "btn-ghost" : "btn-primary"}`}
                                 href={`https://${project.domain}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
@@ -144,8 +156,6 @@ export default function PortfolioRing({ live }: { live: ReadonlySet<string> }) {
                                 </span>
                             </a>
                         </>
-                    ) : (
-                        <span className="pf-soon pf-info-soon">Скоро</span>
                     )}
                 </div>
             </div>

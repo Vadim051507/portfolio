@@ -1,11 +1,12 @@
 import Container from "@/components/ui/Container";
 import BackButton from "@/components/ui/BackButton";
 import type { Metadata } from "next";
-import { SITE } from "@/lib/constants";
+import { SITE } from "@/config/site";
 
 export const metadata: Metadata = {
-    title: `Tokarchuk Dental Clinic | ${SITE.brandName}`,
+    title: `Tokarchuk Dental Clinic | ${SITE.brandTitle}`,
     description: "Корпоративний сайт стоматологічної клініки на Next.js з повноцінною адмінкою.",
+    alternates: { canonical: "/projects/tokarchuk-dental" },
 };
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
