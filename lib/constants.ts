@@ -138,7 +138,7 @@ export const HERO_BROWSER_PROJECTS = [
     },
     {
         slug: "furniture-site",
-        domain: "eurokitchen.com.ua",
+        domain: "furniture-site-topaz.vercel.app",
         title: "Eurokitchen",
         live: true,
         tags: ["Next.js", "Tailwind", "Framer Motion"],

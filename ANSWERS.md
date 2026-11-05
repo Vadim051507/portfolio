@@ -14,7 +14,7 @@
    - Порядок: Tokarchuk, Eurokitchen, MuscleMania, Bavovna, Florist. Описи нові, плашок «Скоро» немає.
    - Статус проєкту тепер задає поле `live` у `HERO_BROWSER_PROJECTS`.
    - Bavovna і Florist (`live: false`): скріншот і стек лишились. Немає посилання, `role="link"`, hover-підйому, стрілки й кнопок «Кейс / Відкрити сайт» у 3D-кільці. Домен на картці не показується зовсім.
-   - Tokarchuk, як і раніше, веде на свою кейс-сторінку. Eurokitchen (eurokitchen.com.ua) і MuscleMania (musclemania.com.ua) ведуть на живі сайти.
+   - Tokarchuk, як і раніше, веде на свою кейс-сторінку. Eurokitchen (furniture-site-topaz.vercel.app) і MuscleMania (musclemania.com.ua) ведуть на живі сайти.
    - Hero-карусель показує лише живі проєкти: Tokarchuk, Eurokitchen, MuscleMania. Bavovna звідти прибрано.
    - **Скріншоти перевірено, описи збігаються:** на Bavovna одяг («Одяг, що говорить українською»), на Florist квіткова крамниця з букетами.
 8. **Лічильники прибрано.** Блоку «проєкти / кейси / технологій» більше немає, `Counter.tsx` видалено. Зелена CTA-плашка «Ваш проєкт може бути наступним» лишилась окремим рядком на всю ширину.
